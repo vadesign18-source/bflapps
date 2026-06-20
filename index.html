@@ -1386,7 +1386,7 @@ position:relative;z-index:1;}
               <thead><tr>
                 <th>#</th><th>Kelompok</th><th>Tanggal</th>
                 <th>Uang Merah</th><th>Pot. 1</th><th>Pot. 2</th>
-                <th>Uang Hijau</th><th>Est. Selesai</th><th>Status</th>
+                <th>Uang Hijau</th><th>Status</th>
                 <th>Progress Cuci</th><th>Pekerja</th><th>Diinput Oleh</th><th>Aksi</th>
               </tr></thead>
               <tbody id="historyTbody"></tbody>
@@ -1787,10 +1787,6 @@ position:relative;z-index:1;}
           <input type="number" id="edit-jumlah" oninput="editPreviewCalc()" min="0">
         </div>
         <div class="edit-field">
-          <label>ESTIMASI SELESAI</label>
-          <input type="datetime-local" id="edit-estimasi">
-        </div>
-        <div class="edit-field">
           <label>STATUS</label>
           <select id="edit-status">
             <option value="pending">⏳ Dalam Proses</option>
@@ -1855,7 +1851,7 @@ position:relative;z-index:1;}
         <div><div class="rcf-k">ID Transaksi</div><div class="rcf-v" id="r-id">—</div></div>
         <div><div class="rcf-k">Tanggal</div><div class="rcf-v" id="r-tgl">—</div></div>
         <div><div class="rcf-k">Kelompok</div><div class="rcf-v" id="r-klp">—</div></div>
-        <div><div class="rcf-k">Est. Selesai</div><div class="rcf-v" id="r-est">—</div></div>
+        <div><div class="rcf-k">Diinput Oleh</div><div class="rcf-v" id="r-est">—</div></div>
         <div style="grid-column:1/-1"><div class="rcf-k">Catatan</div><div class="rcf-v" id="r-cat">—</div></div>
       </div>
       <div class="rc-money">
@@ -2209,7 +2205,6 @@ async function submitForm(){
   const kelompok=document.getElementById('f-kelompok').value.trim();
   const tanggal=document.getElementById('f-tanggal').value;
   const jumlah=parseFloat(document.getElementById('f-jumlah').value);
-  const estimasi='';
   const pekerja=document.getElementById('f-pekerja').value;
   const inputBy=document.getElementById('f-input-by').value;
   const catatan=document.getElementById('f-catatan').value.trim();
@@ -2223,7 +2218,7 @@ async function submitForm(){
   const c=calcWash(jumlah);
   const id=genId();
   const tx={id,kelompok,tanggal,jumlah,pot1:c.pot1,sisa1:c.sisa1,pot2:c.pot2,
-    bersih:c.bersih,profit:c.profit,pajak:c.pajak,estimasi,pekerja,inputBy,catatan,status,createdAt:Date.now()};
+    bersih:c.bersih,profit:c.profit,pajak:c.pajak,pekerja,inputBy,catatan,status,createdAt:Date.now()};
 
   // Update weeklyData
   weeklyData.masuk+=jumlah;weeklyData.bersih+=c.bersih;weeklyData.profit+=c.profit;
@@ -2277,7 +2272,7 @@ function showReceipt(tx){
   document.getElementById('r-id').textContent=tx.id;
   document.getElementById('r-klp').textContent=tx.kelompok;
   document.getElementById('r-tgl').textContent=tx.tanggal;
-  document.getElementById('r-est').textContent=tx.estimasi?tx.estimasi.replace('T',' '):'—';
+  document.getElementById('r-est').textContent=tx.inputBy||'—';
   document.getElementById('r-cat').textContent=tx.catatan||'—';
   document.getElementById('r-masuk').textContent=fmt(tx.jumlah);
   document.getElementById('r-pot1').textContent='− '+fmt(tx.pot1);
@@ -2496,7 +2491,6 @@ function renderHistoryData(data){
       <td style="color:var(--cr);font-family:var(--fm);font-size:0.75rem">− ${fmt(tx.pot1)}</td>
       <td style="color:var(--cr);font-family:var(--fm);font-size:0.75rem">− ${fmt(tx.pot2)}</td>
       <td style="color:var(--em);font-family:var(--fm);font-size:0.75rem;font-weight:600">${fmt(tx.bersih)}</td>
-      <td style="font-family:var(--fm);font-size:0.65rem">${tx.estimasi?`<div style="color:var(--t3)">${tx.estimasi.split('T')[0]}</div><div style="color:var(--t3);opacity:.6;font-size:0.58rem">${tx.estimasi.split('T')[1]||''}</div>`:'<span style="color:var(--t3)">—</span>'}</td>
       <td>
         <select class="s-sel ${tx.status}" onchange="updateStatus('${tx.id}',this.value,this)">
           <option value="pending" ${tx.status==='pending'?'selected':''}>⏳ Proses</option>
@@ -2540,7 +2534,6 @@ function openEditModal(txId){
   document.getElementById('edit-kelompok').value=tx.kelompok;
   document.getElementById('edit-tanggal').value=tx.tanggal;
   document.getElementById('edit-jumlah').value=tx.jumlah;
-  document.getElementById('edit-estimasi').value=tx.estimasi||'';
   document.getElementById('edit-status').value=tx.status;
   document.getElementById('edit-catatan').value=tx.catatan||'';
   populatePekerjaSelects();
@@ -2567,7 +2560,6 @@ async function saveEdit(){
   const kelompok=document.getElementById('edit-kelompok').value.trim();
   const tanggal=document.getElementById('edit-tanggal').value;
   const jumlah=parseFloat(document.getElementById('edit-jumlah').value);
-  const estimasi=document.getElementById('edit-estimasi').value;
   const status=document.getElementById('edit-status').value;
   const pekerja=document.getElementById('edit-pekerja').value;
   const inputBy=document.getElementById('edit-input-by').value;
@@ -2582,7 +2574,7 @@ async function saveEdit(){
   const old=transactions.find(t=>t.id===id);
   const updated={...old,kelompok,tanggal,jumlah,
     pot1:c.pot1,sisa1:c.sisa1,pot2:c.pot2,bersih:c.bersih,profit:c.profit,pajak:c.pajak,
-    estimasi,status,pekerja,inputBy,catatan};
+    status,pekerja,inputBy,catatan};
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='MENYIMPAN...';
   try{
@@ -2609,13 +2601,13 @@ async function saveEdit(){
 function exportExcel(){
   if(transactions.length===0){alert('Belum ada data!');return}
   const data=[
-    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Est. Selesai','Pekerja','Diinput Oleh','Catatan','Status'],
+    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Pekerja','Diinput Oleh','Catatan','Status'],
     ...transactions.map(tx=>[tx.id,tx.kelompok,tx.tanggal,tx.jumlah,tx.pot1,tx.pot2,tx.bersih,
-      tx.pajak||tx.pot1,tx.estimasi||'',tx.pekerja||'',tx.inputBy||'',tx.catatan||'',
+      tx.pajak||tx.pot1,tx.pekerja||'',tx.inputBy||'',tx.catatan||'',
       tx.status==='done'?'Berhasil':tx.status==='cancel'?'Cancel':'Dalam Proses'])
   ];
   const ws=XLSX.utils.aoa_to_sheet(data);
-  ws['!cols']=[10,20,12,15,18,18,15,18,18,18,18,20,12].map(w=>({wch:w}));
+  ws['!cols']=[10,20,12,15,18,18,15,18,18,18,20,12].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Transaksi BFL');
   XLSX.writeFile(wb,'BFL-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
