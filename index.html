@@ -1266,9 +1266,14 @@ position:relative;z-index:1;}
                 </div>
                 <div class="form-field">
                   <label class="ff-lbl">Diinput Oleh</label>
-                  <select class="ff-sel" id="f-input-by">
-                    <option value="">— Pilih Yang Input —</option>
-                  </select>
+                  <div style="position:relative">
+                    <input id="f-input-by-search" type="text" autocomplete="off" placeholder="🔍 Cari nama yang input..."
+                      class="ff-inp"
+                      onfocus="inputByAcShow('f');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{inputByAcClose('f');document.getElementById('f-input-by-search').style.borderColor='var(--ln)'},200)"
+                      oninput="inputByAcShow('f')">
+                    <div id="f-input-by-ac" class="ac-list"></div>
+                  </div>
+                  <input type="hidden" id="f-input-by">
                 </div>
                 <div class="form-field">
                   <label class="ff-lbl">Catatan (Opsional)</label>
@@ -1530,6 +1535,9 @@ position:relative;z-index:1;}
 
       <div class="content" style="padding-top:24px">
 
+        <!-- Statistik Jabatan -->
+        <div id="mb-jabatan-stats" style="margin-bottom:20px"></div>
+
         <!-- Filter & search -->
         <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
           <input id="mb-filter" type="text" placeholder="🔍 Cari nama member..."
@@ -1786,9 +1794,14 @@ position:relative;z-index:1;}
         </div>
         <div class="edit-field">
           <label>DIINPUT OLEH</label>
-          <select id="edit-input-by">
-            <option value="">— Pilih Yang Input —</option>
-          </select>
+          <div style="position:relative">
+            <input id="edit-input-by-search" type="text" autocomplete="off" placeholder="🔍 Cari nama yang input..."
+              style="width:100%;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.85rem;outline:none;box-sizing:border-box"
+              onfocus="inputByAcShow('edit');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{inputByAcClose('edit');document.getElementById('edit-input-by-search').style.borderColor='var(--ln)'},200)"
+              oninput="inputByAcShow('edit')">
+            <div id="edit-input-by-ac" class="ac-list"></div>
+          </div>
+          <input type="hidden" id="edit-input-by">
         </div>
         <div class="edit-field" style="grid-column:1/-1">
           <label>CATATAN</label>
@@ -2464,7 +2477,7 @@ function renderHistoryData(data){
       <td style="color:var(--cr);font-family:var(--fm);font-size:0.75rem">− ${fmt(tx.pot1)}</td>
       <td style="color:var(--cr);font-family:var(--fm);font-size:0.75rem">− ${fmt(tx.pot2)}</td>
       <td style="color:var(--em);font-family:var(--fm);font-size:0.75rem;font-weight:600">${fmt(tx.bersih)}</td>
-      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem">${tx.estimasi?tx.estimasi.replace('T',' '):'—'}</td>
+      <td style="font-family:var(--fm);font-size:0.65rem">${tx.estimasi?`<div style="color:var(--t3)">${tx.estimasi.split('T')[0]}</div><div style="color:var(--t3);opacity:.6;font-size:0.58rem">${tx.estimasi.split('T')[1]||''}</div>`:'<span style="color:var(--t3)">—</span>'}</td>
       <td>
         <select class="s-sel ${tx.status}" onchange="updateStatus('${tx.id}',this.value,this)">
           <option value="pending" ${tx.status==='pending'?'selected':''}>⏳ Proses</option>
@@ -2473,7 +2486,7 @@ function renderHistoryData(data){
         </select>
       </td>
       <td>${buildProgCell(tx)}</td>
-      <td style="color:var(--vi);font-family:var(--fm);font-size:0.72rem;font-weight:600">${tx.pekerja?tx.pekerja:'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
+      <td style="min-width:120px;max-width:160px">${tx.pekerja?tx.pekerja.split(',').map(n=>`<div style="color:var(--vi);font-family:var(--fm);font-size:0.7rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6">${n.trim()}</div>`).join(''):'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
       <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem;font-weight:600">${tx.inputBy?tx.inputBy:'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
       <td>
         <div class="row-actions">
@@ -2518,6 +2531,8 @@ function openEditModal(txId){
     editInputBy.insertAdjacentHTML('beforeend',`<option value="${tx.inputBy}">${tx.inputBy} (non-member)</option>`);
   }
   editInputBy.value=tx.inputBy||'';
+  const editInputBySearch=document.getElementById('edit-input-by-search');
+  if(editInputBySearch)editInputBySearch.value=tx.inputBy||'';
   editPreviewCalc();
   document.getElementById('editOverlay').style.display='flex';
 }
@@ -3005,19 +3020,37 @@ function pekerjaResetValue(prefix){
   if(inp)inp.value='';
 }
 
-// Populate "Diinput Oleh" — tetap dropdown tapi dari memberList
+// ── SEARCH "DIINPUT OLEH" ──
+function inputByAcShow(prefix){
+  const inpId=prefix+'-input-by-search';
+  const listId=prefix+'-input-by-ac';
+  const hiddenId=prefix+'-input-by';
+  const inp=document.getElementById(inpId);
+  const listEl=document.getElementById(listId);
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>{
+    const jab=`<span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${m.jabatan||''}</span>`;
+    return`<div class="ac-item" onmousedown="inputByPick('${m.nama.replace(/'/g,"\'")}','${prefix}')"><span style="font-weight:600">${m.nama}</span>${jab}</div>`;
+  }).join('');
+  listEl.style.display='block';
+}
+function inputByPick(val,prefix){
+  const inp=document.getElementById(prefix+'-input-by-search');
+  const hidden=document.getElementById(prefix+'-input-by');
+  if(inp)inp.value=val;
+  if(hidden)hidden.value=val;
+  inputByAcClose(prefix);
+}
+function inputByAcClose(prefix){
+  const l=document.getElementById(prefix+'-input-by-ac');
+  if(l)l.style.display='none';
+}
+
 function populatePekerjaSelects(){
-  // Hanya update f-input-by dan edit-input-by (select dropdown), pekerja sudah pakai search
-  const aktif=getAktifMembers();
-  const optsHtml=ph=>'<option value="">'+ph+'</option>'+
-    aktif.map(m=>`<option value="${m.nama.replace(/"/g,'&quot;')}">${m.nama}</option>`).join('');
-  ['f-input-by','edit-input-by'].forEach(elId=>{
-    const sel=document.getElementById(elId);
-    if(!sel)return;
-    const current=sel.value;
-    sel.innerHTML=optsHtml('— Pilih Yang Input —');
-    if([...sel.options].some(o=>o.value===current))sel.value=current;
-  });
+  // Sudah pakai search input semua, tidak perlu populate select
 }
 
 // Master Daftar Barang (terpisah dari nama anggota, dikelola manual oleh admin)
@@ -3309,10 +3342,56 @@ async function deleteMemberById(id){
 function updateMemberStats(){
   const aktif=memberList.filter(m=>m.status==='AKTIF'||!m.status).length;
   const rehat=memberList.filter(m=>m.status==='REHAT').length;
+  const total=memberList.length;
   const elA=document.getElementById('member-aktif-count');
   const elR=document.getElementById('member-rehat-count');
   if(elA)elA.textContent=aktif+' Aktif';
   if(elR)elR.textContent=rehat+' Rehat';
+
+  // Render jabatan stats bar
+  const statsEl=document.getElementById('mb-jabatan-stats');
+  if(!statsEl)return;
+  const order=['OG','UNDER OG','COMMANDER','PJ BISNIS','HOODPRESS','MEMBER','YB','OUTSIDER'];
+  const grouped={};
+  memberList.forEach(m=>{const j=m.jabatan||'MEMBER';if(!grouped[j])grouped[j]=[];grouped[j].push(m);});
+
+  statsEl.innerHTML=`
+    <div style="background:var(--s1);border:1px solid var(--ln);padding:18px 20px;margin-bottom:4px">
+      <!-- Total bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--ln)">
+        <div>
+          <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:4px">TOTAL ANGGOTA</div>
+          <div style="font-family:var(--fw);font-size:2.4rem;color:#fff;line-height:1;letter-spacing:1px">${total}<span style="font-size:1rem;color:var(--t3);margin-left:6px">member</span></div>
+        </div>
+        <div style="display:flex;gap:20px">
+          <div style="text-align:center">
+            <div style="font-family:var(--fw);font-size:1.5rem;color:var(--em)">${aktif}</div>
+            <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:2px;margin-top:2px">AKTIF</div>
+          </div>
+          <div style="width:1px;background:var(--ln)"></div>
+          <div style="text-align:center">
+            <div style="font-family:var(--fw);font-size:1.5rem;color:var(--gd)">${rehat}</div>
+            <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:2px;margin-top:2px">REHAT</div>
+          </div>
+        </div>
+      </div>
+      <!-- Per jabatan -->
+      <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:10px">BREAKDOWN PER JABATAN</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
+        ${order.filter(j=>grouped[j]).map(j=>{
+          const col=jabatanColors[j]||'var(--t2)';
+          const cnt=grouped[j].length;
+          const aktifJ=grouped[j].filter(m=>m.status==='AKTIF'||!m.status).length;
+          const pct=total>0?Math.round(cnt/total*100):0;
+          return`<div style="padding:10px 12px;background:var(--s2);border:1px solid var(--ln);border-left:3px solid ${col};position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background:${col};opacity:${pct*0.003};pointer-events:none"></div>
+            <div style="font-family:var(--fw);font-size:1.3rem;color:${col};line-height:1">${cnt}</div>
+            <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t2);letter-spacing:1px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${j}</div>
+            <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);margin-top:2px">${aktifJ} aktif · ${pct}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
 }
 
 function getMemberSetoranSummary(nama){
@@ -3464,6 +3543,9 @@ window.saveEditTarget=saveEditTarget;
 window.stUpdateJumlahHint=stUpdateJumlahHint;
 window.esUpdateJumlahHint=esUpdateJumlahHint;
 window.stNamaAcInput=stNamaAcInput;
+window.inputByAcShow=inputByAcShow;
+window.inputByPick=inputByPick;
+window.inputByAcClose=inputByAcClose;
 window.stNamaPick=stNamaPick;
 window.stNamaAcClose=stNamaAcClose;
 window.esNamaAcInput=esNamaAcInput;
