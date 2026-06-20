@@ -610,6 +610,14 @@ tbody tr:hover td{background:rgba(255,255,255,0.01)}
 }
 .btn-excel:hover{background:var(--em2)}
 
+/* MEMBER SEARCH AUTOCOMPLETE */
+.ac-wrap .ac-list{border-radius:0}
+
+/* PEKERJA MULTI-CHIPS */
+.pekerja-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 10px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);font-size:0.75rem;color:var(--t1);font-family:var(--fb)}
+.pekerja-chip-x{cursor:pointer;color:var(--cr);font-size:0.9rem;line-height:1;padding:0 2px}
+.pekerja-chip-x:hover{color:#ff6b8a}
+
 /* EMPTY STATE */
 .empty-state{text-align:center;padding:60px 20px;color:var(--t3)}
 .empty-state-icon{font-family:var(--fw);font-size:4rem;color:rgba(255,255,255,0.04);margin-bottom:12px;letter-spacing:2px}
@@ -1245,10 +1253,16 @@ position:relative;z-index:1;}
                   <input class="ff-inp" type="datetime-local" id="f-estimasi">
                 </div>
                 <div class="form-field">
-                  <label class="ff-lbl">Yang Kerja / Cuci</label>
-                  <select class="ff-sel" id="f-pekerja">
-                    <option value="">— Pilih Pekerja —</option>
-                  </select>
+                  <label class="ff-lbl">Yang Kerja / Cuci <span id="f-pekerja-count" style="font-size:0.6rem;color:var(--gd);letter-spacing:1px"></span></label>
+                  <div id="f-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;min-height:0"></div>
+                  <div style="position:relative">
+                    <input id="f-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari &amp; pilih pekerja (maks 8)..."
+                      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                      onfocus="pekerjaAcInput(this,'f');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('f');document.getElementById('f-pekerja-search').style.borderColor='var(--ln)'},200)"
+                      oninput="pekerjaAcInput(this,'f')">
+                    <div id="f-pekerja-ac" class="ac-list"></div>
+                  </div>
+                  <input type="hidden" id="f-pekerja">
                 </div>
                 <div class="form-field">
                   <label class="ff-lbl">Diinput Oleh</label>
@@ -1425,11 +1439,13 @@ position:relative;z-index:1;}
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
               <div>
                 <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">NAMA ANGGOTA</label>
-                <select id="st-nama"
-                  style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;cursor:pointer"
-                  onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
-                  <option value="">— Pilih Anggota —</option>
-                </select>
+                <div class="ac-wrap" style="position:relative">
+                  <input id="st-nama" type="text" autocomplete="off" placeholder="🔍 Cari nama member..."
+                    style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+                    onfocus="stNamaAcInput(this);this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{stNamaAcClose();document.getElementById('st-nama').style.borderColor='var(--ln)'},200)"
+                    oninput="stNamaAcInput(this)">
+                  <div id="stNamaAcList" class="ac-list"></div>
+                </div>
               </div>
               <div>
                 <label style="display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">
@@ -1572,10 +1588,13 @@ position:relative;z-index:1;}
       <input type="hidden" id="es-id">
       <div style="margin-bottom:14px">
         <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">NAMA ANGGOTA</label>
-        <select id="es-nama" style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box;cursor:pointer"
-          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
-          <option value="">— Pilih Anggota —</option>
-        </select>
+        <div class="ac-wrap" style="position:relative">
+          <input id="es-nama" type="text" autocomplete="off" placeholder="🔍 Cari nama member..."
+            style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+            onfocus="esNamaAcInput(this);this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{esNamaAcClose();document.getElementById('es-nama').style.borderColor='var(--ln)'},200)"
+            oninput="esNamaAcInput(this)">
+          <div id="esNamaAcList" class="ac-list"></div>
+        </div>
       </div>
       <div style="margin-bottom:14px">
         <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">NAMA BARANG / ITEM</label>
@@ -1754,10 +1773,16 @@ position:relative;z-index:1;}
           </select>
         </div>
         <div class="edit-field">
-          <label>YANG KERJA / CUCI</label>
-          <select id="edit-pekerja">
-            <option value="">— Pilih Pekerja —</option>
-          </select>
+          <label>YANG KERJA / CUCI <span id="edit-pekerja-count" style="font-size:0.55rem;color:var(--gd)"></span></label>
+          <div id="edit-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;min-height:0"></div>
+          <div style="position:relative">
+            <input id="edit-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari pekerja (maks 8)..."
+              style="width:100%;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.85rem;outline:none;box-sizing:border-box"
+              onfocus="pekerjaAcInput(this,'edit');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('edit');document.getElementById('edit-pekerja-search').style.borderColor='var(--ln)'},200)"
+              oninput="pekerjaAcInput(this,'edit')">
+            <div id="edit-pekerja-ac" class="ac-list"></div>
+          </div>
+          <input type="hidden" id="edit-pekerja">
         </div>
         <div class="edit-field">
           <label>DIINPUT OLEH</label>
@@ -2195,8 +2220,8 @@ function resetForm(){
     document.getElementById(id).value='';
   });
   document.getElementById('f-status').value='pending';
-  document.getElementById('f-pekerja').value='';
   document.getElementById('f-input-by').value='';
+  pekerjaResetValue('f');
   updateCalc();
 }
 
@@ -2487,11 +2512,7 @@ function openEditModal(txId){
   document.getElementById('edit-status').value=tx.status;
   document.getElementById('edit-catatan').value=tx.catatan||'';
   populatePekerjaSelects();
-  const editPekerja=document.getElementById('edit-pekerja');
-  if(tx.pekerja&&![...editPekerja.options].some(o=>o.value===tx.pekerja)){
-    editPekerja.insertAdjacentHTML('beforeend',`<option value="${tx.pekerja}">${tx.pekerja} (non-member)</option>`);
-  }
-  editPekerja.value=tx.pekerja||'';
+  pekerjaSetValue(tx.pekerja||'','edit');
   const editInputBy=document.getElementById('edit-input-by');
   if(tx.inputBy&&![...editInputBy.options].some(o=>o.value===tx.inputBy)){
     editInputBy.insertAdjacentHTML('beforeend',`<option value="${tx.inputBy}">${tx.inputBy} (non-member)</option>`);
@@ -2775,7 +2796,10 @@ async function addSetoran(){
   const nama=document.getElementById('st-nama').value.trim();
   const barang=document.getElementById('st-barang').value.trim();
   const jumlah=parseInt(document.getElementById('st-jumlah').value)||0;
-  if(!nama){alert('⚠ Pilih nama anggota dari daftar member!');return}
+  if(!nama){alert('⚠ Ketik dan pilih nama anggota dari daftar member!');return}
+  // Validasi nama harus ada di memberList
+  const isValid=memberList.some(m=>m.nama.toLowerCase()===nama.toLowerCase());
+  if(!isValid){alert('⚠ Nama tidak ditemukan di daftar member! Pilih dari saran yang muncul.');return}
   if(!barang){alert('⚠ Pilih nama barang/item!');return}
   const masterItem=masterBarangList.find(b=>b.nama===barang);
   const target=masterItem?.target||0;
@@ -2803,12 +2827,7 @@ function openEditSetoran(id){
   if(!item)return;
   renderBarangOptions();
   document.getElementById('es-id').value=id;
-  populateStNamaSelect();
-  const esNama=document.getElementById('es-nama');
-  if(item.nama&&![...esNama.options].some(o=>o.value===item.nama)){
-    esNama.insertAdjacentHTML('beforeend',`<option value="${item.nama}">${item.nama} (non-member)</option>`);
-  }
-  esNama.value=item.nama;
+  document.getElementById('es-nama').value=item.nama||'';
   const esSel=document.getElementById('es-barang');
   if(item.barang&&!masterBarangList.some(b=>b.nama===item.barang)){
     esSel.insertAdjacentHTML('beforeend',`<option value="${item.barang}">${item.barang} (lama)</option>`);
@@ -2869,33 +2888,129 @@ async function doResetSetoran(mode){
 }
 
 // Dropdown nama anggota di form Setoran (tambah & edit) — sumber: daftar Member (sidebar Member)
+// ── SEARCH NAMA ANGGOTA (Setoran form) ──
 function populateStNamaSelect(){
-  const opts=()=>{
-    const aktif=memberList.filter(m=>m.status==='AKTIF'||!m.status).slice().sort((a,b)=>a.nama.localeCompare(b.nama));
-    return'<option value="">— Pilih Anggota —</option>'+
-      aktif.map(m=>`<option value="${m.nama.replace(/"/g,'&quot;')}">${m.nama}</option>`).join('');
-  };
-  ['st-nama','es-nama'].forEach(elId=>{
-    const sel=document.getElementById(elId);
-    if(!sel)return;
-    const current=sel.value;
-    sel.innerHTML=opts();
-    if([...sel.options].some(o=>o.value===current))sel.value=current;
-  });
+  // Sekarang pakai search input, tidak perlu populate select
+  // Tapi kita reset value input jika kosong
+}
+function getAktifMembers(){
+  return memberList.filter(m=>m.status==='AKTIF'||!m.status).slice().sort((a,b)=>a.nama.localeCompare(b.nama));
+}
+function stNamaAcInput(inp){
+  const q=inp.value.trim().toLowerCase();
+  const list=document.getElementById('stNamaAcList');
+  if(!list)return;
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){list.style.display='none';return}
+  list.innerHTML=pool.map(m=>{
+    const jab=`<span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${m.jabatan||''}</span>`;
+    return`<div class="ac-item" onmousedown="stNamaPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span>${jab}</div>`;
+  }).join('');
+  list.style.display='block';
+}
+function stNamaPick(val){
+  document.getElementById('st-nama').value=val;
+  stNamaAcClose();
+}
+function stNamaAcClose(){
+  const l=document.getElementById('stNamaAcList');
+  if(l)l.style.display='none';
 }
 
-// Dropdown "Yang Kerja / Cuci" di form Cuci Uang (tambah & edit) — sumber: daftar Member (sidebar Member)
+// ── SEARCH NAMA ANGGOTA (Edit Setoran modal) ──
+function esNamaAcInput(inp){
+  const q=inp.value.trim().toLowerCase();
+  const list=document.getElementById('esNamaAcList');
+  if(!list)return;
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){list.style.display='none';return}
+  list.innerHTML=pool.map(m=>{
+    const jab=`<span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${m.jabatan||''}</span>`;
+    return`<div class="ac-item" onmousedown="esNamaPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span>${jab}</div>`;
+  }).join('');
+  list.style.display='block';
+}
+function esNamaPick(val){
+  document.getElementById('es-nama').value=val;
+  esNamaAcClose();
+}
+function esNamaAcClose(){
+  const l=document.getElementById('esNamaAcList');
+  if(l)l.style.display='none';
+}
+
+// ── MULTI-SELECT PEKERJA (maks 8) ──
+// prefix: 'f' untuk form cuci, 'edit' untuk edit modal
+const _pekerjaSelected={f:[],edit:[]};
+const MAX_PEKERJA=8;
+
+function pekerjaAcInput(inp,prefix){
+  const q=inp.value.trim().toLowerCase();
+  const listEl=document.getElementById(prefix+'-pekerja-ac');
+  if(!listEl)return;
+  const aktif=getAktifMembers();
+  const selected=_pekerjaSelected[prefix]||[];
+  const pool=(q?aktif.filter(m=>m.nama.toLowerCase().includes(q)):aktif).filter(m=>!selected.includes(m.nama));
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>{
+    const jab=`<span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${m.jabatan||''}</span>`;
+    return`<div class="ac-item" onmousedown="pekerjaPick('${m.nama.replace(/'/g,"\\'")}','${prefix}')"><span style="font-weight:600">${m.nama}</span>${jab}</div>`;
+  }).join('');
+  listEl.style.display='block';
+}
+function pekerjaPick(nama,prefix){
+  const sel=_pekerjaSelected[prefix]=_pekerjaSelected[prefix]||[];
+  if(sel.includes(nama))return;
+  if(sel.length>=MAX_PEKERJA){alert('⚠ Maksimal '+MAX_PEKERJA+' pekerja!');return}
+  sel.push(nama);
+  renderPekerjaChips(prefix);
+  const inp=document.getElementById(prefix+'-pekerja-search');
+  if(inp){inp.value='';inp.focus();}
+  pekerjaAcClose(prefix);
+}
+function pekerjaRemove(nama,prefix){
+  const sel=_pekerjaSelected[prefix]||[];
+  const idx=sel.indexOf(nama);
+  if(idx>-1)sel.splice(idx,1);
+  renderPekerjaChips(prefix);
+}
+function pekerjaAcClose(prefix){
+  const l=document.getElementById(prefix+'-pekerja-ac');
+  if(l)l.style.display='none';
+}
+function renderPekerjaChips(prefix){
+  const sel=_pekerjaSelected[prefix]||[];
+  const chipsEl=document.getElementById(prefix+'-pekerja-chips');
+  const hiddenEl=document.getElementById(prefix+'-pekerja');
+  const countEl=document.getElementById(prefix+'-pekerja-count');
+  if(chipsEl){
+    chipsEl.innerHTML=sel.map(n=>`
+      <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 10px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);font-size:0.75rem;color:var(--t1);font-family:var(--fb)">
+        ${n}
+        <span onmousedown="pekerjaRemove('${n.replace(/'/g,"\\'")}','${prefix}')" style="cursor:pointer;color:var(--cr);font-size:0.9rem;line-height:1;padding:0 2px">×</span>
+      </span>`).join('');
+  }
+  if(hiddenEl)hiddenEl.value=sel.join(', ');
+  if(countEl)countEl.textContent=sel.length?sel.length+'/'+MAX_PEKERJA+' dipilih':'';
+}
+function pekerjaSetValue(val,prefix){
+  // Set dari existing value (comma-separated string)
+  _pekerjaSelected[prefix]=val?val.split(',').map(s=>s.trim()).filter(Boolean):[];
+  renderPekerjaChips(prefix);
+}
+function pekerjaResetValue(prefix){
+  _pekerjaSelected[prefix]=[];
+  renderPekerjaChips(prefix);
+  const inp=document.getElementById(prefix+'-pekerja-search');
+  if(inp)inp.value='';
+}
+
+// Populate "Diinput Oleh" — tetap dropdown tapi dari memberList
 function populatePekerjaSelects(){
-  const aktif=memberList.filter(m=>m.status==='AKTIF'||!m.status).slice().sort((a,b)=>a.nama.localeCompare(b.nama));
+  // Hanya update f-input-by dan edit-input-by (select dropdown), pekerja sudah pakai search
+  const aktif=getAktifMembers();
   const optsHtml=ph=>'<option value="">'+ph+'</option>'+
     aktif.map(m=>`<option value="${m.nama.replace(/"/g,'&quot;')}">${m.nama}</option>`).join('');
-  ['f-pekerja','edit-pekerja'].forEach(elId=>{
-    const sel=document.getElementById(elId);
-    if(!sel)return;
-    const current=sel.value;
-    sel.innerHTML=optsHtml('— Pilih Pekerja —');
-    if([...sel.options].some(o=>o.value===current))sel.value=current;
-  });
   ['f-input-by','edit-input-by'].forEach(elId=>{
     const sel=document.getElementById(elId);
     if(!sel)return;
@@ -3348,6 +3463,18 @@ window.closeEditTarget=closeEditTarget;
 window.saveEditTarget=saveEditTarget;
 window.stUpdateJumlahHint=stUpdateJumlahHint;
 window.esUpdateJumlahHint=esUpdateJumlahHint;
+window.stNamaAcInput=stNamaAcInput;
+window.stNamaPick=stNamaPick;
+window.stNamaAcClose=stNamaAcClose;
+window.esNamaAcInput=esNamaAcInput;
+window.esNamaPick=esNamaPick;
+window.esNamaAcClose=esNamaAcClose;
+window.pekerjaAcInput=pekerjaAcInput;
+window.pekerjaPick=pekerjaPick;
+window.pekerjaRemove=pekerjaRemove;
+window.pekerjaAcClose=pekerjaAcClose;
+window.pekerjaResetValue=pekerjaResetValue;
+window.pekerjaSetValue=pekerjaSetValue;
 
 window.openRekrutModal=openRekrutModal;
 window.closeRekrutModal=closeRekrutModal;
