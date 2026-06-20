@@ -565,7 +565,7 @@ tbody tr:hover td{background:rgba(255,255,255,0.01)}
 /* CALC STICKY PANEL */
 .calc-stick{
   background:var(--s1);border:1px solid var(--ln);
-  position:sticky;top:20px;overflow:hidden;
+  position:sticky;top:20px;
 }
 .calc-display{
   padding:24px;background:var(--void);
@@ -596,10 +596,12 @@ tbody tr:hover td{background:rgba(255,255,255,0.01)}
   padding:20px 24px;
   background:linear-gradient(135deg,rgba(0,255,148,0.04),rgba(0,255,148,0.02));
   border-top:1px solid var(--em3);
-  text-align:center;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  flex-wrap:wrap;text-align:left;
 }
 .co-lbl{font-family:var(--fm);font-size:0.5rem;color:rgba(0,255,148,0.5);letter-spacing:4px}
 .co-amt{font-family:var(--fw);font-size:2.4rem;color:var(--em);margin-top:4px;letter-spacing:1px}
+.co-inputby{flex:1 1 200px;min-width:180px;max-width:240px}
 
 /* toolbar btns */
 .btn-excel{
@@ -968,6 +970,8 @@ gap:18px;padding:0 24px 24px;border:none!important}
 background:#151c31!important;border-radius:24px!important;
 border:1px solid rgba(255,255,255,.05)!important;
 box-shadow:0 15px 40px rgba(0,0,0,.25)!important}
+.calc-display{border-radius:24px 24px 0 0!important}
+.calc-out{border-radius:0 0 24px 24px!important}
 .content{padding:0 24px 24px!important}
 .panel-head{background:#171f35!important}
 .btn-fire,.btn-enter{
@@ -1265,10 +1269,6 @@ position:relative;z-index:1;}
                   <span class="ff-hint" id="f-jumlah-hint">// masukkan nominal</span>
                 </div>
                 <div class="form-field">
-                  <label class="ff-lbl">Estimasi Selesai</label>
-                  <input class="ff-inp" type="datetime-local" id="f-estimasi">
-                </div>
-                <div class="form-field">
                   <label class="ff-lbl">Yang Kerja / Cuci <span id="f-pekerja-count" style="font-size:0.6rem;color:var(--gd);letter-spacing:1px"></span></label>
                   <div id="f-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;min-height:0"></div>
                   <div style="position:relative">
@@ -1279,17 +1279,6 @@ position:relative;z-index:1;}
                     <div id="f-pekerja-ac" class="ac-list"></div>
                   </div>
                   <input type="hidden" id="f-pekerja">
-                </div>
-                <div class="form-field">
-                  <label class="ff-lbl">Diinput Oleh</label>
-                  <div style="position:relative">
-                    <input id="f-input-by-search" type="text" autocomplete="off" placeholder="🔍 Cari nama yang input..."
-                      class="ff-inp"
-                      onfocus="inputByAcShow('f');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{inputByAcClose('f');document.getElementById('f-input-by-search').style.borderColor='var(--ln)'},200)"
-                      oninput="inputByAcShow('f')">
-                    <div id="f-input-by-ac" class="ac-list"></div>
-                  </div>
-                  <input type="hidden" id="f-input-by">
                 </div>
                 <div class="form-field">
                   <label class="ff-lbl">Catatan (Opsional)</label>
@@ -1339,8 +1328,21 @@ position:relative;z-index:1;}
               </div>
             </div>
             <div class="calc-out">
-              <div class="co-lbl">UANG HIJAU DITERIMA</div>
-              <div class="co-amt" id="c-bersih">$ 0</div>
+              <div>
+                <div class="co-lbl">UANG HIJAU DITERIMA</div>
+                <div class="co-amt" id="c-bersih">$ 0</div>
+              </div>
+              <div class="co-inputby">
+                <label class="ff-lbl" style="color:rgba(0,255,148,0.6)">Diinput Oleh</label>
+                <div style="position:relative">
+                  <input id="f-input-by-search" type="text" autocomplete="off" placeholder="🔍 Cari nama yang input..."
+                    style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--em3);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                    onfocus="inputByAcShow('f');this.style.borderColor='var(--em)'" onblur="setTimeout(()=>{inputByAcClose('f');document.getElementById('f-input-by-search').style.borderColor='var(--em3)'},200)"
+                    oninput="inputByAcShow('f')">
+                  <div id="f-input-by-ac" class="ac-list"></div>
+                </div>
+                <input type="hidden" id="f-input-by">
+              </div>
             </div>
           </div>
         </div>
@@ -2207,7 +2209,7 @@ async function submitForm(){
   const kelompok=document.getElementById('f-kelompok').value.trim();
   const tanggal=document.getElementById('f-tanggal').value;
   const jumlah=parseFloat(document.getElementById('f-jumlah').value);
-  const estimasi=document.getElementById('f-estimasi').value;
+  const estimasi='';
   const pekerja=document.getElementById('f-pekerja').value;
   const inputBy=document.getElementById('f-input-by').value;
   const catatan=document.getElementById('f-catatan').value.trim();
@@ -2245,11 +2247,12 @@ async function submitForm(){
 }
 
 function resetForm(){
-  ['f-kelompok','f-tanggal','f-jumlah','f-estimasi','f-catatan'].forEach(id=>{
+  ['f-kelompok','f-tanggal','f-jumlah','f-catatan'].forEach(id=>{
     document.getElementById(id).value='';
   });
   document.getElementById('f-status').value='pending';
   document.getElementById('f-input-by').value='';
+  document.getElementById('f-input-by-search').value='';
   pekerjaResetValue('f');
   updateCalc();
 }
@@ -2358,26 +2361,26 @@ function buildChart(){
 
 // AUTOCOMPLETE KELOMPOK
 function getKelompokList(){
-  // Gabungkan nama dari memberList + riwayat transaksi, member diutamakan
-  const fromMembers=memberList.map(m=>m.nama).filter(Boolean);
-  const fromTx=transactions.map(t=>t.kelompok).filter(Boolean);
-  const set=new Set([...fromMembers,...fromTx]);
-  return[...set].sort((a,b)=>a.localeCompare(b));
+  // Hanya kelompok yang sudah pernah cuci sebelumnya (murni dari riwayat transaksi)
+  const lastUse={};
+  transactions.forEach(t=>{
+    if(!t.kelompok)return;
+    if(!lastUse[t.kelompok]||(t.tanggal||'')>lastUse[t.kelompok])lastUse[t.kelompok]=t.tanggal||'';
+  });
+  return Object.keys(lastUse).sort((a,b)=>lastUse[b].localeCompare(lastUse[a]));
 }
 function acInput(inp){
   const q=inp.value.trim().toLowerCase();
   const list=document.getElementById('acList');
-  // Kalau kosong, tampilkan semua member
+  // Selalu tampilkan kelompok yang pernah cuci, walau field masih kosong
   const pool=q
     ?getKelompokList().filter(k=>k.toLowerCase().includes(q))
-    :memberList.filter(m=>m.status==='AKTIF'||!m.status).map(m=>m.nama).sort((a,b)=>a.localeCompare(b));
+    :getKelompokList();
   if(pool.length===0){list.style.display='none';return}
   list.innerHTML=pool.map(k=>{
-    const member=memberList.find(m=>m.nama===k);
-    const jabBadge=member?`<span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${member.jabatan}</span>`:'';
-    const statusDot=member&&member.status==='REHAT'?`<span style="font-size:0.6rem;color:var(--gd)"> 😴</span>`:'';
+    const count=transactions.filter(t=>t.kelompok===k).length;
     return`<div class="ac-item" onmousedown="acPick('${k.replace(/'/g,"\\'")}')">
-      <span style="font-weight:600">${k}</span>${jabBadge}${statusDot}
+      <span style="font-weight:600">${k}</span><span style="font-size:0.58rem;color:var(--vi);margin-left:6px">📋 ${count}x pernah cuci</span>
     </div>`;
   }).join('');
   list.style.display='block';
@@ -2542,11 +2545,7 @@ function openEditModal(txId){
   document.getElementById('edit-catatan').value=tx.catatan||'';
   populatePekerjaSelects();
   pekerjaSetValue(tx.pekerja||'','edit');
-  const editInputBy=document.getElementById('edit-input-by');
-  if(tx.inputBy&&![...editInputBy.options].some(o=>o.value===tx.inputBy)){
-    editInputBy.insertAdjacentHTML('beforeend',`<option value="${tx.inputBy}">${tx.inputBy} (non-member)</option>`);
-  }
-  editInputBy.value=tx.inputBy||'';
+  document.getElementById('edit-input-by').value=tx.inputBy||'';
   const editInputBySearch=document.getElementById('edit-input-by-search');
   if(editInputBySearch)editInputBySearch.value=tx.inputBy||'';
   editPreviewCalc();
