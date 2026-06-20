@@ -1245,6 +1245,18 @@ position:relative;z-index:1;}
                   <input class="ff-inp" type="datetime-local" id="f-estimasi">
                 </div>
                 <div class="form-field">
+                  <label class="ff-lbl">Yang Kerja / Cuci</label>
+                  <select class="ff-sel" id="f-pekerja">
+                    <option value="">— Pilih Pekerja —</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="ff-lbl">Diinput Oleh</label>
+                  <select class="ff-sel" id="f-input-by">
+                    <option value="">— Pilih Yang Input —</option>
+                  </select>
+                </div>
+                <div class="form-field">
                   <label class="ff-lbl">Catatan (Opsional)</label>
                   <input class="ff-inp" type="text" id="f-catatan" placeholder="Keterangan tambahan...">
                 </div>
@@ -1338,7 +1350,7 @@ position:relative;z-index:1;}
                 <th>#</th><th>Kelompok</th><th>Tanggal</th>
                 <th>Uang Merah</th><th>Pot. 1</th><th>Pot. 2</th>
                 <th>Uang Hijau</th><th>Est. Selesai</th><th>Status</th>
-                <th>Progress Cuci</th><th>Aksi</th>
+                <th>Progress Cuci</th><th>Pekerja</th><th>Diinput Oleh</th><th>Aksi</th>
               </tr></thead>
               <tbody id="historyTbody"></tbody>
             </table>
@@ -1411,12 +1423,13 @@ position:relative;z-index:1;}
           </div>
           <div class="panel-body">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
-              <div style="position:relative">
+              <div>
                 <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">NAMA ANGGOTA</label>
-                <input id="st-nama" type="text" placeholder="Nama anggota..." oninput="stAcInput(this.value)"
-                  style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
-                  onfocus="this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{this.style.borderColor='var(--ln)';closeStAc()},200)">
-                <div id="st-ac-list" style="position:absolute;background:var(--s2);border:1px solid var(--cr);z-index:100;max-height:160px;overflow-y:auto;display:none;min-width:200px"></div>
+                <select id="st-nama"
+                  style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;cursor:pointer"
+                  onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                  <option value="">— Pilih Anggota —</option>
+                </select>
               </div>
               <div>
                 <label style="display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">
@@ -1513,6 +1526,7 @@ position:relative;z-index:1;}
             <option>OG</option>
             <option>UNDER OG</option>
             <option>COMMANDER</option>
+            <option>PJ BISNIS</option>
             <option>HOODPRESS</option>
             <option>MEMBER</option>
             <option>YB</option>
@@ -1558,8 +1572,10 @@ position:relative;z-index:1;}
       <input type="hidden" id="es-id">
       <div style="margin-bottom:14px">
         <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">NAMA ANGGOTA</label>
-        <input id="es-nama" type="text" style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+        <select id="es-nama" style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box;cursor:pointer"
           onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+          <option value="">— Pilih Anggota —</option>
+        </select>
       </div>
       <div style="margin-bottom:14px">
         <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">NAMA BARANG / ITEM</label>
@@ -1737,6 +1753,18 @@ position:relative;z-index:1;}
             <option value="cancel">❌ Cancel</option>
           </select>
         </div>
+        <div class="edit-field">
+          <label>YANG KERJA / CUCI</label>
+          <select id="edit-pekerja">
+            <option value="">— Pilih Pekerja —</option>
+          </select>
+        </div>
+        <div class="edit-field">
+          <label>DIINPUT OLEH</label>
+          <select id="edit-input-by">
+            <option value="">— Pilih Yang Input —</option>
+          </select>
+        </div>
         <div class="edit-field" style="grid-column:1/-1">
           <label>CATATAN</label>
           <input type="text" id="edit-catatan" placeholder="Opsional...">
@@ -1819,6 +1847,7 @@ position:relative;z-index:1;}
           <option value="OG">OG</option>
           <option value="UNDER OG">UNDER OG</option>
           <option value="COMMANDER">COMMANDER</option>
+          <option value="PJ BISNIS">PJ BISNIS</option>
           <option value="HOODPRESS">HOODPRESS</option>
           <option value="MEMBER">MEMBER</option>
           <option value="YB">YB</option>
@@ -1856,6 +1885,7 @@ position:relative;z-index:1;}
           <option value="OG">OG</option>
           <option value="UNDER OG">UNDER OG</option>
           <option value="COMMANDER">COMMANDER</option>
+          <option value="PJ BISNIS">PJ BISNIS</option>
           <option value="HOODPRESS">HOODPRESS</option>
           <option value="MEMBER">MEMBER</option>
           <option value="YB">YB</option>
@@ -2124,15 +2154,20 @@ async function submitForm(){
   const tanggal=document.getElementById('f-tanggal').value;
   const jumlah=parseFloat(document.getElementById('f-jumlah').value);
   const estimasi=document.getElementById('f-estimasi').value;
+  const pekerja=document.getElementById('f-pekerja').value;
+  const inputBy=document.getElementById('f-input-by').value;
   const catatan=document.getElementById('f-catatan').value.trim();
   const status=document.getElementById('f-status').value;
   if(!kelompok||!tanggal||!jumlah||jumlah<=0){
     alert('⚠ Isi Nama Kelompok, Tanggal, dan Jumlah Uang terlebih dahulu!');return;
   }
+  if(!inputBy){
+    alert('⚠ Pilih siapa yang menginput data ini!');return;
+  }
   const c=calcWash(jumlah);
   const id=genId();
   const tx={id,kelompok,tanggal,jumlah,pot1:c.pot1,sisa1:c.sisa1,pot2:c.pot2,
-    bersih:c.bersih,profit:c.profit,pajak:c.pajak,estimasi,catatan,status,createdAt:Date.now()};
+    bersih:c.bersih,profit:c.profit,pajak:c.pajak,estimasi,pekerja,inputBy,catatan,status,createdAt:Date.now()};
 
   // Update weeklyData
   weeklyData.masuk+=jumlah;weeklyData.bersih+=c.bersih;weeklyData.profit+=c.profit;
@@ -2160,6 +2195,8 @@ function resetForm(){
     document.getElementById(id).value='';
   });
   document.getElementById('f-status').value='pending';
+  document.getElementById('f-pekerja').value='';
+  document.getElementById('f-input-by').value='';
   updateCalc();
 }
 
@@ -2411,6 +2448,8 @@ function renderHistoryData(data){
         </select>
       </td>
       <td>${buildProgCell(tx)}</td>
+      <td style="color:var(--vi);font-family:var(--fm);font-size:0.72rem;font-weight:600">${tx.pekerja?tx.pekerja:'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
+      <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem;font-weight:600">${tx.inputBy?tx.inputBy:'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
       <td>
         <div class="row-actions">
           <button class="btn-row-edit" onclick="openEditModal('${tx.id}')">✏</button>
@@ -2447,6 +2486,17 @@ function openEditModal(txId){
   document.getElementById('edit-estimasi').value=tx.estimasi||'';
   document.getElementById('edit-status').value=tx.status;
   document.getElementById('edit-catatan').value=tx.catatan||'';
+  populatePekerjaSelects();
+  const editPekerja=document.getElementById('edit-pekerja');
+  if(tx.pekerja&&![...editPekerja.options].some(o=>o.value===tx.pekerja)){
+    editPekerja.insertAdjacentHTML('beforeend',`<option value="${tx.pekerja}">${tx.pekerja} (non-member)</option>`);
+  }
+  editPekerja.value=tx.pekerja||'';
+  const editInputBy=document.getElementById('edit-input-by');
+  if(tx.inputBy&&![...editInputBy.options].some(o=>o.value===tx.inputBy)){
+    editInputBy.insertAdjacentHTML('beforeend',`<option value="${tx.inputBy}">${tx.inputBy} (non-member)</option>`);
+  }
+  editInputBy.value=tx.inputBy||'';
   editPreviewCalc();
   document.getElementById('editOverlay').style.display='flex';
 }
@@ -2468,15 +2518,20 @@ async function saveEdit(){
   const jumlah=parseFloat(document.getElementById('edit-jumlah').value);
   const estimasi=document.getElementById('edit-estimasi').value;
   const status=document.getElementById('edit-status').value;
+  const pekerja=document.getElementById('edit-pekerja').value;
+  const inputBy=document.getElementById('edit-input-by').value;
   const catatan=document.getElementById('edit-catatan').value.trim();
   if(!kelompok||!tanggal||!jumlah||jumlah<=0){
     alert('⚠ Isi semua field wajib!');return;
+  }
+  if(!inputBy){
+    alert('⚠ Pilih siapa yang menginput data ini!');return;
   }
   const c=calcWash(jumlah);
   const old=transactions.find(t=>t.id===id);
   const updated={...old,kelompok,tanggal,jumlah,
     pot1:c.pot1,sisa1:c.sisa1,pot2:c.pot2,bersih:c.bersih,profit:c.profit,pajak:c.pajak,
-    estimasi,status,catatan};
+    estimasi,status,pekerja,inputBy,catatan};
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='MENYIMPAN...';
   try{
@@ -2503,13 +2558,13 @@ async function saveEdit(){
 function exportExcel(){
   if(transactions.length===0){alert('Belum ada data!');return}
   const data=[
-    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Est. Selesai','Catatan','Status'],
+    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Est. Selesai','Pekerja','Diinput Oleh','Catatan','Status'],
     ...transactions.map(tx=>[tx.id,tx.kelompok,tx.tanggal,tx.jumlah,tx.pot1,tx.pot2,tx.bersih,
-      tx.pajak||tx.pot1,tx.estimasi||'',tx.catatan||'',
+      tx.pajak||tx.pot1,tx.estimasi||'',tx.pekerja||'',tx.inputBy||'',tx.catatan||'',
       tx.status==='done'?'Berhasil':tx.status==='cancel'?'Cancel':'Dalam Proses'])
   ];
   const ws=XLSX.utils.aoa_to_sheet(data);
-  ws['!cols']=[10,20,12,15,18,18,15,18,18,20,12].map(w=>({wch:w}));
+  ws['!cols']=[10,20,12,15,18,18,15,18,18,18,18,20,12].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Transaksi BFL');
   XLSX.writeFile(wb,'BFL-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
@@ -2720,7 +2775,7 @@ async function addSetoran(){
   const nama=document.getElementById('st-nama').value.trim();
   const barang=document.getElementById('st-barang').value.trim();
   const jumlah=parseInt(document.getElementById('st-jumlah').value)||0;
-  if(!nama){alert('⚠ Isi nama anggota!');return}
+  if(!nama){alert('⚠ Pilih nama anggota dari daftar member!');return}
   if(!barang){alert('⚠ Pilih nama barang/item!');return}
   const masterItem=masterBarangList.find(b=>b.nama===barang);
   const target=masterItem?.target||0;
@@ -2748,7 +2803,12 @@ function openEditSetoran(id){
   if(!item)return;
   renderBarangOptions();
   document.getElementById('es-id').value=id;
-  document.getElementById('es-nama').value=item.nama;
+  populateStNamaSelect();
+  const esNama=document.getElementById('es-nama');
+  if(item.nama&&![...esNama.options].some(o=>o.value===item.nama)){
+    esNama.insertAdjacentHTML('beforeend',`<option value="${item.nama}">${item.nama} (non-member)</option>`);
+  }
+  esNama.value=item.nama;
   const esSel=document.getElementById('es-barang');
   if(item.barang&&!masterBarangList.some(b=>b.nama===item.barang)){
     esSel.insertAdjacentHTML('beforeend',`<option value="${item.barang}">${item.barang} (lama)</option>`);
@@ -2766,7 +2826,7 @@ async function saveEditSetoran(){
   const nama=document.getElementById('es-nama').value.trim();
   const barang=document.getElementById('es-barang').value.trim();
   const jumlah=parseInt(document.getElementById('es-jumlah').value)||0;
-  if(!nama||!barang){alert('⚠ Isi semua field!');return}
+  if(!nama||!barang){alert('⚠ Pilih nama anggota dan barang!');return}
   const item=setoranList.find(s=>s.id===id);
   if(!item)return;
   const masterItem=masterBarangList.find(b=>b.nama===barang);
@@ -2808,28 +2868,41 @@ async function doResetSetoran(mode){
   renderSetoran();
 }
 
-// Autocomplete nama dari history setoran
-let stAcNames=[];
-async function loadStAcNames(){
-  const snap=await getDocs(collection(db,'setoran_'+setoranWeekKey));
-  const names=new Set();
-  snap.forEach(d=>names.add(d.data().nama));
-  stAcNames=[...names];
+// Dropdown nama anggota di form Setoran (tambah & edit) — sumber: daftar Member (sidebar Member)
+function populateStNamaSelect(){
+  const opts=()=>{
+    const aktif=memberList.filter(m=>m.status==='AKTIF'||!m.status).slice().sort((a,b)=>a.nama.localeCompare(b.nama));
+    return'<option value="">— Pilih Anggota —</option>'+
+      aktif.map(m=>`<option value="${m.nama.replace(/"/g,'&quot;')}">${m.nama}</option>`).join('');
+  };
+  ['st-nama','es-nama'].forEach(elId=>{
+    const sel=document.getElementById(elId);
+    if(!sel)return;
+    const current=sel.value;
+    sel.innerHTML=opts();
+    if([...sel.options].some(o=>o.value===current))sel.value=current;
+  });
 }
-function stAcInput(v){
-  const list=document.getElementById('st-ac-list');
-  if(!v){list.style.display='none';return}
-  const matches=stAcNames.filter(n=>n.toLowerCase().includes(v.toLowerCase())).slice(0,6);
-  if(!matches.length){list.style.display='none';return}
-  list.innerHTML=matches.map(n=>`<div onclick="stAcPick('${n}')" style="padding:10px 14px;cursor:pointer;font-size:0.85rem;color:var(--t2);border-bottom:1px solid var(--ln)" onmouseover="this.style.background='var(--s3)';this.style.color='var(--t1)'" onmouseout="this.style.background='';this.style.color='var(--t2)'">${n}</div>`).join('');
-  list.style.display='block';
-}
-function stAcPick(name){
-  document.getElementById('st-nama').value=name;
-  document.getElementById('st-ac-list').style.display='none';
-}
-function closeStAc(){
-  document.getElementById('st-ac-list').style.display='none';
+
+// Dropdown "Yang Kerja / Cuci" di form Cuci Uang (tambah & edit) — sumber: daftar Member (sidebar Member)
+function populatePekerjaSelects(){
+  const aktif=memberList.filter(m=>m.status==='AKTIF'||!m.status).slice().sort((a,b)=>a.nama.localeCompare(b.nama));
+  const optsHtml=ph=>'<option value="">'+ph+'</option>'+
+    aktif.map(m=>`<option value="${m.nama.replace(/"/g,'&quot;')}">${m.nama}</option>`).join('');
+  ['f-pekerja','edit-pekerja'].forEach(elId=>{
+    const sel=document.getElementById(elId);
+    if(!sel)return;
+    const current=sel.value;
+    sel.innerHTML=optsHtml('— Pilih Pekerja —');
+    if([...sel.options].some(o=>o.value===current))sel.value=current;
+  });
+  ['f-input-by','edit-input-by'].forEach(elId=>{
+    const sel=document.getElementById(elId);
+    if(!sel)return;
+    const current=sel.value;
+    sel.innerHTML=optsHtml('— Pilih Yang Input —');
+    if([...sel.options].some(o=>o.value===current))sel.value=current;
+  });
 }
 
 // Master Daftar Barang (terpisah dari nama anggota, dikelola manual oleh admin)
@@ -3004,7 +3077,6 @@ function renderSetoran(){
   }).join('');
 
   updateSetoranTimer();
-  loadStAcNames();
 }
 
 // ─── MEMBER SYSTEM ────────────────────────────────────────────────
@@ -3012,7 +3084,7 @@ let memberList=[];
 
 // Jabatan color map
 const jabatanColors={
-  'OG':'#ff2d55','UNDER OG':'#ff6b8a','COMMANDER':'#a855f7',
+  'OG':'#ff2d55','UNDER OG':'#ff6b8a','COMMANDER':'#a855f7','PJ BISNIS':'#ff9d2d',
   'HOODPRESS':'#3b82f6','MEMBER':'#00ff94','YB':'#ffb800','OUTSIDER':'#6b6b85'
 };
 
@@ -3025,6 +3097,8 @@ async function fbLoadMember(){
   memberList.sort((a,b)=>a.nama.localeCompare(b.nama));
   renderMember();
   updateMemberStats();
+  populateStNamaSelect();
+  populatePekerjaSelects();
 }
 async function fbSaveMember(m){
   await setDoc(doc(db,'members',m.id),m);
@@ -3054,6 +3128,8 @@ async function saveRekrut(){
     closeRekrutModal();
     renderMember();
     updateMemberStats();
+    populateStNamaSelect();
+    populatePekerjaSelects();
   }catch(err){
     memberList=memberList.filter(x=>x.id!==m.id);
     alert('⚠ Gagal simpan: '+err.message);
@@ -3099,6 +3175,8 @@ async function saveEditMember(){
     closeEditMember();
     renderMember();
     updateMemberStats();
+    populateStNamaSelect();
+    populatePekerjaSelects();
   }catch(err){alert('⚠ Gagal simpan: '+err.message)}
 }
 async function deleteMemberById(id){
@@ -3108,6 +3186,8 @@ async function deleteMemberById(id){
     memberList=memberList.filter(x=>x.id!==id);
     renderMember();
     updateMemberStats();
+    populateStNamaSelect();
+    populatePekerjaSelects();
   }catch(err){alert('⚠ Gagal hapus: '+err.message)}
 }
 
@@ -3153,7 +3233,7 @@ function renderMember(){
   emptyEl.style.display='none';
 
   // Group by jabatan
-  const order=['OG','UNDER OG','COMMANDER','HOODPRESS','MEMBER','YB','OUTSIDER'];
+  const order=['OG','UNDER OG','COMMANDER','PJ BISNIS','HOODPRESS','MEMBER','YB','OUTSIDER'];
   const grouped={};
   filtered.forEach(m=>{
     const j=m.jabatan||'MEMBER';
@@ -3245,9 +3325,6 @@ window.deleteSetoran=deleteSetoran;
 window.confirmResetSetoran=confirmResetSetoran;
 window.closeResetSetoran=closeResetSetoran;
 window.doResetSetoran=doResetSetoran;
-window.stAcInput=stAcInput;
-window.stAcPick=stAcPick;
-window.closeStAc=closeStAc;
 window.renderSetoran=renderSetoran;
 function stUpdateJumlahHint(){
   const barang=document.getElementById('st-barang').value;
