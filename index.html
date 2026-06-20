@@ -613,6 +613,22 @@ tbody tr:hover td{background:rgba(255,255,255,0.01)}
 /* MEMBER SEARCH AUTOCOMPLETE */
 .ac-wrap .ac-list{border-radius:0}
 
+/* MEMBER LIST — lightweight */
+.mb-row{display:flex;align-items:flex-start;gap:10px;padding:10px 18px;border-bottom:1px solid var(--ln);transition:background 0.1s}
+.mb-row:last-child{border-bottom:none}
+.mb-row:hover{background:rgba(255,255,255,0.018)}
+.mb-row-rehat{background:rgba(255,184,0,0.02)}
+.mb-row-rehat:hover{background:rgba(255,184,0,0.04)}
+.mb-badge{font-family:var(--fm);font-size:0.52rem;letter-spacing:2px;padding:2px 8px;flex-shrink:0;margin-top:2px}
+.mb-badge-aktif{background:rgba(0,255,148,0.07);border:1px solid rgba(0,255,148,0.25);color:var(--em)}
+.mb-badge-rehat{background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.25);color:var(--gd)}
+.mb-btn-edit{padding:4px 8px;background:transparent;border:1px solid var(--cr);color:var(--cr);font-size:0.68rem;cursor:pointer;font-family:var(--fb)}
+.mb-btn-edit:hover{background:rgba(59,130,246,0.15)}
+.mb-btn-del{padding:4px 8px;background:transparent;border:1px solid rgba(255,45,85,0.3);color:rgba(255,45,85,0.6);font-size:0.68rem;cursor:pointer;font-family:var(--fb)}
+.mb-btn-del:hover{background:rgba(255,45,85,0.12);color:var(--cr);border-color:var(--cr)}
+.mb-group{border-bottom:2px solid var(--ln)}
+.mb-group-head{padding:7px 18px;background:var(--s2);display:flex;justify-content:space-between;align-items:center}
+
 /* PEKERJA MULTI-CHIPS */
 .pekerja-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 10px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);font-size:0.75rem;color:var(--t1);font-family:var(--fb)}
 .pekerja-chip-x{cursor:pointer;color:var(--cr);font-size:0.9rem;line-height:1;padding:0 2px}
@@ -3348,48 +3364,30 @@ function updateMemberStats(){
   if(elA)elA.textContent=aktif+' Aktif';
   if(elR)elR.textContent=rehat+' Rehat';
 
-  // Render jabatan stats bar
+  // Ringkasan singkat — hanya total + aktif + rehat dalam satu strip
   const statsEl=document.getElementById('mb-jabatan-stats');
   if(!statsEl)return;
-  const order=['OG','UNDER OG','COMMANDER','PJ BISNIS','HOODPRESS','MEMBER','YB','OUTSIDER'];
-  const grouped={};
-  memberList.forEach(m=>{const j=m.jabatan||'MEMBER';if(!grouped[j])grouped[j]=[];grouped[j].push(m);});
-
+  const pctAktif=total>0?Math.round(aktif/total*100):0;
   statsEl.innerHTML=`
-    <div style="background:var(--s1);border:1px solid var(--ln);padding:18px 20px;margin-bottom:4px">
-      <!-- Total bar -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--ln)">
-        <div>
-          <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:4px">TOTAL ANGGOTA</div>
-          <div style="font-family:var(--fw);font-size:2.4rem;color:#fff;line-height:1;letter-spacing:1px">${total}<span style="font-size:1rem;color:var(--t3);margin-left:6px">member</span></div>
-        </div>
-        <div style="display:flex;gap:20px">
-          <div style="text-align:center">
-            <div style="font-family:var(--fw);font-size:1.5rem;color:var(--em)">${aktif}</div>
-            <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:2px;margin-top:2px">AKTIF</div>
-          </div>
-          <div style="width:1px;background:var(--ln)"></div>
-          <div style="text-align:center">
-            <div style="font-family:var(--fw);font-size:1.5rem;color:var(--gd)">${rehat}</div>
-            <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:2px;margin-top:2px">REHAT</div>
-          </div>
-        </div>
+    <div style="display:flex;align-items:center;gap:0;border:1px solid var(--ln);overflow:hidden;margin-bottom:4px">
+      <div style="padding:16px 28px;border-right:1px solid var(--ln);flex-shrink:0">
+        <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:3px;margin-bottom:5px">TOTAL ANGGOTA</div>
+        <div style="font-family:var(--fw);font-size:2rem;color:#fff;line-height:1;letter-spacing:1px">${total}</div>
       </div>
-      <!-- Per jabatan -->
-      <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:10px">BREAKDOWN PER JABATAN</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
-        ${order.filter(j=>grouped[j]).map(j=>{
-          const col=jabatanColors[j]||'var(--t2)';
-          const cnt=grouped[j].length;
-          const aktifJ=grouped[j].filter(m=>m.status==='AKTIF'||!m.status).length;
-          const pct=total>0?Math.round(cnt/total*100):0;
-          return`<div style="padding:10px 12px;background:var(--s2);border:1px solid var(--ln);border-left:3px solid ${col};position:relative;overflow:hidden">
-            <div style="position:absolute;inset:0;background:${col};opacity:${pct*0.003};pointer-events:none"></div>
-            <div style="font-family:var(--fw);font-size:1.3rem;color:${col};line-height:1">${cnt}</div>
-            <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t2);letter-spacing:1px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${j}</div>
-            <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);margin-top:2px">${aktifJ} aktif · ${pct}%</div>
-          </div>`;
-        }).join('')}
+      <div style="padding:16px 24px;border-right:1px solid var(--ln);flex-shrink:0">
+        <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:3px;margin-bottom:5px">AKTIF</div>
+        <div style="font-family:var(--fw);font-size:2rem;color:var(--em);line-height:1">${aktif}</div>
+      </div>
+      <div style="padding:16px 24px;border-right:1px solid var(--ln);flex-shrink:0">
+        <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:3px;margin-bottom:5px">REHAT</div>
+        <div style="font-family:var(--fw);font-size:2rem;color:var(--gd);line-height:1">${rehat}</div>
+      </div>
+      <div style="flex:1;padding:16px 24px">
+        <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">RASIO AKTIF</div>
+        <div style="height:4px;background:rgba(255,255,255,0.06);width:100%">
+          <div style="height:100%;width:${pctAktif}%;background:var(--em);transition:width 0.4s ease"></div>
+        </div>
+        <div style="font-family:var(--fm);font-size:0.6rem;color:var(--em);margin-top:5px">${pctAktif}%</div>
       </div>
     </div>`;
 }
@@ -3440,38 +3438,29 @@ function renderMember(){
     const rows=grouped[jab].map(m=>{
       const isRehat=(m.status||'AKTIF')==='REHAT';
       const setoranInfo=getMemberSetoranSummary(m.nama);
-      const rehatInfo=isRehat&&(m.rehatReason||m.rehatDurasi)?
-        `<div style="font-family:var(--fm);font-size:0.58rem;color:var(--gd);margin-top:4px;padding:4px 8px;background:rgba(255,184,0,0.07);border-left:2px solid var(--gd)">
-          ${m.rehatReason?'📝 '+m.rehatReason:''}${m.rehatReason&&m.rehatDurasi?' · ':''}${m.rehatDurasi?'⏱ '+m.rehatDurasi+' '+m.rehatUnit:''}
-        </div>`:'';
-      return`<div style="display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--ln);transition:background 0.12s${isRehat?';background:rgba(255,184,0,0.03)':''}" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='${isRehat?'rgba(255,184,0,0.03)':'transparent'}'">
-        <!-- Avatar -->
-        <div style="width:36px;height:36px;background:${color}22;border:1.5px solid ${color}55;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fw);font-size:1rem;color:${color}">
-          ${m.nama.charAt(0).toUpperCase()}
-        </div>
-        <!-- Info -->
+      const rehatLabel=isRehat&&(m.rehatReason||m.rehatDurasi)
+        ?`${m.rehatReason?m.rehatReason:''}${m.rehatReason&&m.rehatDurasi?' · ':''}${m.rehatDurasi?m.rehatDurasi+' '+m.rehatUnit:''}`
+        :'';
+      return`<div class="mb-row${isRehat?' mb-row-rehat':''}">
+        <div style="width:6px;height:6px;border-radius:50%;background:${isRehat?'var(--gd)':'var(--em)'};flex-shrink:0;margin-top:2px"></div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:0.92rem;font-weight:600;color:${isRehat?'var(--t3)':'var(--t1)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-            ${m.nama}${isRehat?' <span style="font-size:0.65rem;color:var(--gd)">😴</span>':''}
+          <div style="font-size:0.88rem;font-weight:600;color:${isRehat?'var(--t3)':'var(--t1)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            ${m.nama}${isRehat?' <span style="font-size:0.6rem;color:var(--gd)">😴</span>':''}
           </div>
-          ${setoranInfo?`<div style="font-family:var(--fm);font-size:0.58rem;color:var(--t3);margin-top:2px">💰 ${setoranInfo}</div>`:''}
-          ${rehatInfo}
+          ${setoranInfo?`<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);margin-top:1px">💰 ${setoranInfo}</div>`:''}
+          ${rehatLabel?`<div style="font-family:var(--fm);font-size:0.55rem;color:rgba(255,184,0,0.7);margin-top:1px">📝 ${rehatLabel}</div>`:''}
         </div>
-        <!-- Status badge -->
-        <span style="font-family:var(--fm);font-size:0.58rem;letter-spacing:2px;padding:3px 10px;flex-shrink:0;${isRehat?'background:rgba(255,184,0,0.08);border:1px solid rgba(255,184,0,0.3);color:var(--gd)':'background:rgba(0,255,148,0.08);border:1px solid rgba(0,255,148,0.3);color:var(--em)'}">
-          ${isRehat?'REHAT':'AKTIF'}
-        </span>
-        <!-- Actions -->
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button onclick="openEditMember('${m.id}')" style="padding:5px 10px;background:rgba(59,130,246,0.08);border:1px solid var(--cr);color:var(--cr);font-size:0.7rem;cursor:pointer;font-family:var(--fb);transition:background 0.12s" onmouseover="this.style.background='rgba(59,130,246,0.2)'" onmouseout="this.style.background='rgba(59,130,246,0.08)'">✎ Edit</button>
-          <button onclick="deleteMemberById('${m.id}')" style="padding:5px 10px;background:rgba(255,45,85,0.06);border:1px solid rgba(255,45,85,0.3);color:rgba(255,45,85,0.7);font-size:0.7rem;cursor:pointer;font-family:var(--fb);transition:background 0.12s" onmouseover="this.style.background='rgba(255,45,85,0.18)';this.style.color='var(--cr)'" onmouseout="this.style.background='rgba(255,45,85,0.06)';this.style.color='rgba(255,45,85,0.7)'">✕</button>
+        <span class="mb-badge${isRehat?' mb-badge-rehat':' mb-badge-aktif'}">${isRehat?'REHAT':'AKTIF'}</span>
+        <div style="display:flex;gap:5px;flex-shrink:0">
+          <button onclick="openEditMember('${m.id}')" class="mb-btn-edit">✎</button>
+          <button onclick="deleteMemberById('${m.id}')" class="mb-btn-del">✕</button>
         </div>
       </div>`;
     }).join('');
-    return`<div style="border-bottom:2px solid var(--ln)">
-      <div style="padding:8px 20px;background:var(--s2);display:flex;justify-content:space-between;align-items:center;border-left:3px solid ${color}">
-        <span style="font-family:var(--fw);font-size:1rem;letter-spacing:1px;color:${color}">${jab}</span>
-        <span style="font-family:var(--fm);font-size:0.6rem;color:var(--t3)">${grouped[jab].length} anggota</span>
+    return`<div class="mb-group">
+      <div class="mb-group-head" style="border-left:3px solid ${color}">
+        <span style="font-family:var(--fw);font-size:0.95rem;letter-spacing:1px;color:${color}">${jab}</span>
+        <span style="font-family:var(--fm);font-size:0.58rem;color:var(--t3)">${grouped[jab].length} anggota</span>
       </div>
       ${rows}
     </div>`;
