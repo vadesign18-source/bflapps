@@ -1093,13 +1093,19 @@ position:relative;z-index:1;}
       <div class="nav-item" onclick="showPage('member')">
         <span class="ni">👥</span> Member
       </div>
+      <div class="nav-item" id="nav-users" style="display:none" onclick="showPage('users')">
+        <span class="ni">🔐</span> Manajemen Operator
+      </div>
+      <div class="nav-item" id="nav-logs" style="display:none" onclick="showPage('logs')">
+        <span class="ni">📜</span> Log Aktivitas
+      </div>
     </div>
     <div class="sb-bot">
       <div class="sb-user-card">
-        <div class="sb-ava">A</div>
+        <div class="sb-ava" id="sb-avatar">A</div>
         <div>
-          <div class="sb-un">Admin BFL</div>
-          <div class="sb-ur">OPERATOR</div>
+          <div class="sb-un" id="sb-username">Admin BFL</div>
+          <div class="sb-ur" id="sb-role">OPERATOR</div>
         </div>
         <div class="sb-pip"></div>
       </div>
@@ -1600,6 +1606,130 @@ position:relative;z-index:1;}
       </div>
     </div>
 
+    <!-- ══ MANAJEMEN OPERATOR ══ -->
+    <div class="page" id="page-users">
+      <div class="pg-hero" data-word="OPERATOR">
+        <div class="ph-left">
+          <div class="ph-eye"><div class="ph-eye-line"></div>AKSES SISTEM</div>
+          <div class="ph-title">Manajemen <em>Operator</em></div>
+          <div class="ph-sub">// hanya admin utama yang bisa menambah & mengelola akun operator</div>
+        </div>
+      </div>
+      <div class="content" style="padding-top:24px">
+
+        <div class="panel" style="margin-bottom:20px" id="operator-form-wrap">
+          <div class="panel-head">
+            <div class="panel-title"><div class="p-pip cr"></div>Tambah Operator Baru</div>
+          </div>
+          <div class="panel-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end">
+              <div>
+                <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">USERNAME OPERATOR</label>
+                <input id="op-username" type="text" autocomplete="off" placeholder="contoh: operator1"
+                  style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+                  onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+              </div>
+              <div>
+                <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">PASSWORD</label>
+                <input id="op-password" type="text" autocomplete="off" placeholder="min. 4 karakter"
+                  style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+                  onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'"
+                  onkeydown="if(event.key==='Enter')addOperator()">
+              </div>
+              <button id="op-add-btn" onclick="addOperator()"
+                style="padding:11px 22px;background:var(--cr);border:none;color:#fff;font-family:var(--fw);font-size:1rem;letter-spacing:2px;cursor:pointer;white-space:nowrap"
+                onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                + TAMBAH OPERATOR
+              </button>
+            </div>
+            <div style="font-family:var(--fm);font-size:0.58rem;color:var(--t3);letter-spacing:1px;margin-top:12px">Operator bisa login dan input data, tapi tidak bisa mengelola akun operator lain atau melihat Log Aktivitas.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><div class="p-pip em"></div>Daftar Operator</div>
+            <div id="op-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <div id="operator-list" style="min-height:80px"></div>
+            <div class="empty-state" id="operator-empty" style="display:none">
+              <div class="empty-state-icon">👤</div>
+              <div class="empty-state-txt">BELUM ADA OPERATOR</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ LOG AKTIVITAS ══ -->
+    <div class="page" id="page-logs">
+      <div class="pg-hero" data-word="LOG">
+        <div class="ph-left">
+          <div class="ph-eye"><div class="ph-eye-line"></div>AUDIT TRAIL</div>
+          <div class="ph-title">Log <em>Aktivitas</em></div>
+          <div class="ph-sub">// hanya terlihat oleh admin utama (teambfl)</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn-excel" onclick="exportLogs()">↓ EXPORT EXCEL</button>
+        </div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><div class="p-pip cr"></div>Riwayat Aktivitas</div>
+          </div>
+          <div class="panel-body" style="padding-bottom:0">
+            <div class="filter-bar">
+              <input type="text" id="lg-filter" placeholder="🔍 Cari username..." oninput="renderLogs()">
+              <select id="lg-filter-action" onchange="renderLogs()">
+                <option value="">Semua Aksi</option>
+                <option value="LOGIN">Login Berhasil</option>
+                <option value="LOGIN_FAILED">Login Gagal</option>
+                <option value="LOGOUT">Logout</option>
+                <option value="ADD_TX">Tambah Transaksi</option>
+                <option value="EDIT_TX">Edit Transaksi</option>
+                <option value="DELETE_TX">Hapus Transaksi</option>
+                <option value="UPDATE_STATUS_TX">Update Status Transaksi</option>
+                <option value="UPDATE_PROGRESS_TX">Update Progress Cuci</option>
+                <option value="RESET_WEEK">Reset Minggu</option>
+                <option value="RESET_ALL">Reset Semua Data</option>
+                <option value="ADD_SETORAN">Tambah Setoran</option>
+                <option value="EDIT_SETORAN">Edit Setoran</option>
+                <option value="DELETE_SETORAN">Hapus Setoran</option>
+                <option value="TOGGLE_LUNAS">Toggle Lunas</option>
+                <option value="RESET_SETORAN">Reset Setoran</option>
+                <option value="ADD_BARANG">Tambah Barang</option>
+                <option value="DELETE_BARANG">Hapus Barang</option>
+                <option value="EDIT_TARGET">Edit Target Barang</option>
+                <option value="ADD_MEMBER">Tambah Member</option>
+                <option value="EDIT_MEMBER">Edit Member</option>
+                <option value="DELETE_MEMBER">Hapus Member</option>
+                <option value="ADD_OPERATOR">Tambah Operator</option>
+                <option value="TOGGLE_OPERATOR">Toggle Status Operator</option>
+                <option value="DELETE_OPERATOR">Hapus Operator</option>
+              </select>
+              <button class="filter-clear" onclick="clearLogFilter()">✕ RESET FILTER</button>
+              <span class="filter-count" id="lg-count"></span>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>Waktu</th><th>Username</th><th>Role</th><th>Aksi</th><th>Detail</th>
+              </tr></thead>
+              <tbody id="logsTbody"></tbody>
+            </table>
+            <div class="empty-state" id="logsEmpty" style="display:none">
+              <div class="empty-state-icon">📜</div>
+              <div class="empty-state-txt">BELUM ADA AKTIVITAS TERCATAT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -2009,6 +2139,8 @@ const db=getFirestore(app);
 // ─── STATE ────────────────────────────────────────────────────────
 let transactions=[];
 let weeklyData={masuk:0,bersih:0,profit:0,pot1:0,pot2:0,pajak:0,count:0,startedAt:Date.now()};
+let currentUser={username:'',role:''}; // role: 'admin' (akun utama) atau 'operator'
+const MASTER_USERNAME='teambfl'; // satu-satunya akun yang boleh melihat Log Aktivitas
 
 // ─── FIRESTORE HELPERS ────────────────────────────────────────────
 async function fbSaveWeekly(){
@@ -2078,21 +2210,56 @@ function _registerAttempt(){
 function _remainingLock(){return Math.ceil((_loginAttempts.lockUntil-Date.now())/1000)}
 
 // SESSION PERSISTENCE
-function saveSession(u){sessionStorage.setItem('bfl_sess',u)}
+function saveSession(u){sessionStorage.setItem('bfl_sess',JSON.stringify(u))}
 function clearSession(){sessionStorage.removeItem('bfl_sess')}
 function checkSession(){
   const s=sessionStorage.getItem('bfl_sess');
-  if(s==='admin'){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('app').style.display='block';
-    initApp();
-    return true;
-  }
+  if(!s)return false;
+  try{
+    const parsed=JSON.parse(s);
+    if(parsed&&parsed.username&&parsed.role){
+      currentUser=parsed;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('app').style.display='block';
+      applyRoleUI();
+      initApp();
+      return true;
+    }
+  }catch(e){/* sesi lama / tidak valid */}
   return false;
 }
 
+// ─── ACTIVITY LOG ─────────────────────────────────────────────────
+function genLogId(){return'LOG-'+Date.now()+'-'+Math.random().toString(36).substr(2,6)}
+async function logActivityRaw(username,role,action,detail){
+  try{
+    const entry={id:genLogId(),username:username||'unknown',role:role||'unknown',
+      action,detail:detail||'',timestamp:Date.now()};
+    await setDoc(doc(db,'activity_log',entry.id),entry);
+  }catch(e){console.error('Gagal mencatat log aktivitas:',e);}
+}
+function logActivity(action,detail){
+  return logActivityRaw(currentUser.username,currentUser.role,action,detail);
+}
+
+// ROLE-BASED UI (nav & sidebar user card)
+function applyRoleUI(){
+  const isAdmin=currentUser.role==='admin';
+  const isMaster=currentUser.username===MASTER_USERNAME;
+  const navUsers=document.getElementById('nav-users');
+  const navLogs=document.getElementById('nav-logs');
+  if(navUsers)navUsers.style.display=isAdmin?'flex':'none';
+  if(navLogs)navLogs.style.display=isMaster?'flex':'none';
+  const unEl=document.getElementById('sb-username');
+  const urEl=document.getElementById('sb-role');
+  const avEl=document.getElementById('sb-avatar');
+  if(unEl)unEl.textContent=currentUser.username||'—';
+  if(urEl)urEl.textContent=isAdmin?'ADMIN UTAMA':'OPERATOR';
+  if(avEl)avEl.textContent=(currentUser.username||'?').charAt(0).toUpperCase();
+}
+
 // LOGIN
-function doLogin(){
+async function doLogin(){
   if(_isLocked()){
     const e=document.getElementById('loginError');
     e.textContent='⏳ TERLALU BANYAK PERCOBAAN — Coba lagi dalam '+_remainingLock()+' detik';
@@ -2111,46 +2278,252 @@ function doLogin(){
   }
   const btn=document.querySelector('.btn-enter');
   btn.textContent='MEMVERIFIKASI...';btn.disabled=true;
-  getDoc(doc(db,'config','auth')).then(snap=>{
-    if(snap.exists()){
-      const data=snap.data();
-      if(u===data.username&&p===data.password){
-        saveSession(u);
-        document.getElementById('loginScreen').style.display='none';
-        document.getElementById('app').style.display='block';
-        initApp();
-      }else{
-        _registerAttempt();
-        const e=document.getElementById('loginError');
-        e.textContent=_isLocked()
-          ?'🔒 AKSES DIBLOKIR — Terlalu banyak percobaan. Tunggu 60 detik.'
-          :'ACCESS DENIED — Kredensial tidak valid';
-        e.style.display='block';
-        setTimeout(()=>e.style.display='none',3000);
-      }
+  try{
+    let matched=null;
+    const authSnap=await getDoc(doc(db,'config','auth'));
+    if(authSnap.exists()){
+      const data=authSnap.data();
+      if(u===data.username&&p===data.password) matched={username:u,role:'admin'};
+    }
+    if(!matched){
+      const opSnap=await getDocs(collection(db,'operators'));
+      opSnap.forEach(d=>{
+        const o=d.data();
+        if(!matched&&o.username===u&&o.password===p&&o.active!==false){
+          matched={username:o.username,role:'operator'};
+        }
+      });
+    }
+    if(matched){
+      currentUser=matched;
+      saveSession(matched);
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('app').style.display='block';
+      applyRoleUI();
+      logActivity('LOGIN','Login berhasil sebagai '+(matched.role==='admin'?'admin utama':'operator'));
+      initApp();
     }else{
+      _registerAttempt();
+      logActivityRaw(u,'unknown','LOGIN_FAILED','Percobaan login gagal');
       const e=document.getElementById('loginError');
-      e.textContent='⚠ Konfigurasi auth tidak ditemukan di server';
+      e.textContent=_isLocked()
+        ?'🔒 AKSES DIBLOKIR — Terlalu banyak percobaan. Tunggu 60 detik.'
+        :'ACCESS DENIED — Kredensial tidak valid';
       e.style.display='block';
       setTimeout(()=>e.style.display='none',3000);
     }
-  }).catch(err=>{
+  }catch(err){
     const e=document.getElementById('loginError');
     e.textContent='⚠ Gagal koneksi ke server: '+err.message;
     e.style.display='block';
     setTimeout(()=>e.style.display='none',3000);
-  }).finally(()=>{
+  }finally{
     btn.textContent='MASUK →';btn.disabled=false;
-  });
+  }
 }
 
 
 function doLogout(){
+  logActivity('LOGOUT','Keluar dari sistem');
   clearSession();
+  currentUser={username:'',role:''};
   document.getElementById('app').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('loginUser').value='';
   document.getElementById('loginPass').value='';
+}
+
+// ─── MANAJEMEN OPERATOR (khusus admin utama) ───────────────────────
+let operatorList=[];
+function genOpId(){return'OP-'+Math.random().toString(36).substr(2,8).toUpperCase()}
+async function fbLoadOperators(){
+  const snap=await getDocs(collection(db,'operators'));
+  operatorList=[];
+  snap.forEach(d=>operatorList.push(d.data()));
+  operatorList.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+}
+async function addOperator(){
+  if(currentUser.role!=='admin'){alert('⚠ Hanya admin utama yang bisa menambah operator!');return}
+  const uEl=document.getElementById('op-username');
+  const pEl=document.getElementById('op-password');
+  const u=uEl.value.trim();
+  const p=pEl.value.trim();
+  if(!u||!p){alert('⚠ Isi username dan password operator!');return}
+  if(p.length<4){alert('⚠ Password minimal 4 karakter!');return}
+  const btn=document.getElementById('op-add-btn');
+  if(btn){btn.disabled=true;btn.textContent='MENYIMPAN...';}
+  try{
+    const authSnap=await getDoc(doc(db,'config','auth'));
+    if(authSnap.exists()&&authSnap.data().username===u){alert('⚠ Username sudah dipakai admin utama!');return}
+    if(operatorList.some(o=>o.username.toLowerCase()===u.toLowerCase())){alert('⚠ Username sudah dipakai operator lain!');return}
+    const item={id:genOpId(),username:u,password:p,active:true,createdAt:Date.now(),createdBy:currentUser.username};
+    await setDoc(doc(db,'operators',item.id),item);
+    await logActivity('ADD_OPERATOR','Menambahkan akun operator baru: '+u);
+    uEl.value='';pEl.value='';
+    await fbLoadOperators();
+    renderOperators();
+  }catch(err){
+    alert('⚠ Gagal menambah operator: '+err.message);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='+ TAMBAH OPERATOR';}
+  }
+}
+async function toggleOperatorActive(id){
+  if(currentUser.role!=='admin')return;
+  const op=operatorList.find(o=>o.id===id);
+  if(!op)return;
+  const newActive=!(op.active!==false);
+  try{
+    await updateDoc(doc(db,'operators',id),{active:newActive});
+    await logActivity('TOGGLE_OPERATOR',(newActive?'Mengaktifkan':'Menonaktifkan')+' operator: '+op.username);
+    await fbLoadOperators();
+    renderOperators();
+  }catch(err){alert('⚠ Gagal mengubah status: '+err.message)}
+}
+async function deleteOperator(id){
+  if(currentUser.role!=='admin')return;
+  const op=operatorList.find(o=>o.id===id);
+  if(!op)return;
+  if(!confirm('Hapus akun operator "'+op.username+'"? Operator ini tidak akan bisa login lagi.'))return;
+  try{
+    await deleteDoc(doc(db,'operators',id));
+    await logActivity('DELETE_OPERATOR','Menghapus akun operator: '+op.username);
+    await fbLoadOperators();
+    renderOperators();
+  }catch(err){alert('⚠ Gagal menghapus: '+err.message)}
+}
+function renderOperators(){
+  const listEl=document.getElementById('operator-list');
+  const emptyEl=document.getElementById('operator-empty');
+  const formWrap=document.getElementById('operator-form-wrap');
+  if(!listEl)return;
+  if(currentUser.role!=='admin'){
+    listEl.innerHTML='';
+    if(formWrap)formWrap.style.display='none';
+    if(emptyEl){
+      emptyEl.style.display='block';
+      emptyEl.querySelector('.empty-state-icon').textContent='🔒';
+      emptyEl.querySelector('.empty-state-txt').textContent='AKSES DITOLAK — HANYA ADMIN UTAMA';
+    }
+    return;
+  }
+  if(formWrap)formWrap.style.display='block';
+  const sumEl=document.getElementById('op-summary');
+  if(sumEl)sumEl.textContent=operatorList.length+' akun operator terdaftar';
+  if(!operatorList.length){
+    listEl.innerHTML='';
+    if(emptyEl){
+      emptyEl.style.display='block';
+      emptyEl.querySelector('.empty-state-icon').textContent='👤';
+      emptyEl.querySelector('.empty-state-txt').textContent='BELUM ADA OPERATOR — TAMBAH DI FORM ATAS';
+    }
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+  listEl.innerHTML=operatorList.map(o=>{
+    const isActive=o.active!==false;
+    return`<div class="mb-row">
+      <div style="width:6px;height:6px;border-radius:50%;background:${isActive?'var(--em)':'var(--t3)'};flex-shrink:0;margin-top:6px"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.88rem;font-weight:600;color:var(--t1)">${o.username}</div>
+        <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);margin-top:2px">Dibuat ${new Date(o.createdAt).toLocaleDateString('id-ID')} oleh ${o.createdBy||'—'}</div>
+      </div>
+      <span class="mb-badge${isActive?' mb-badge-aktif':' mb-badge-rehat'}">${isActive?'AKTIF':'NONAKTIF'}</span>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button onclick="toggleOperatorActive('${o.id}')" class="mb-btn-edit" title="${isActive?'Nonaktifkan':'Aktifkan'}">${isActive?'⏸':'▶'}</button>
+        <button onclick="deleteOperator('${o.id}')" class="mb-btn-del" title="Hapus">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── LOG AKTIVITAS (khusus username teambfl) ───────────────────────
+let activityLogs=[];
+async function fbLoadLogs(){
+  const snap=await getDocs(collection(db,'activity_log'));
+  activityLogs=[];
+  snap.forEach(d=>activityLogs.push(d.data()));
+  activityLogs.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+}
+function logActionLabel(a){
+  const map={
+    LOGIN:'🔓 Login Berhasil',LOGIN_FAILED:'🔒 Login Gagal',LOGOUT:'🚪 Logout',
+    ADD_TX:'➕ Tambah Transaksi',EDIT_TX:'✎ Edit Transaksi',DELETE_TX:'🗑 Hapus Transaksi',
+    UPDATE_STATUS_TX:'🔄 Update Status Transaksi',UPDATE_PROGRESS_TX:'📊 Update Progress Cuci',
+    RESET_WEEK:'⟳ Reset Minggu',RESET_ALL:'🗑 Reset Semua Data',
+    ADD_SETORAN:'➕ Tambah Setoran',EDIT_SETORAN:'✎ Edit Setoran',DELETE_SETORAN:'🗑 Hapus Setoran',
+    TOGGLE_LUNAS:'✅ Toggle Lunas',RESET_SETORAN:'⟳ Reset Setoran',
+    ADD_BARANG:'➕ Tambah Barang',DELETE_BARANG:'🗑 Hapus Barang',EDIT_TARGET:'✎ Edit Target Barang',
+    ADD_MEMBER:'➕ Rekrut Member',EDIT_MEMBER:'✎ Edit Member',DELETE_MEMBER:'🗑 Hapus Member',
+    ADD_OPERATOR:'➕ Tambah Operator',TOGGLE_OPERATOR:'🔁 Toggle Status Operator',DELETE_OPERATOR:'🗑 Hapus Operator'
+  };
+  return map[a]||a;
+}
+function renderLogs(){
+  const tbody=document.getElementById('logsTbody');
+  const emptyEl=document.getElementById('logsEmpty');
+  if(!tbody)return;
+  if(currentUser.username!==MASTER_USERNAME){
+    tbody.innerHTML='';
+    if(emptyEl){
+      emptyEl.style.display='block';
+      emptyEl.querySelector('.empty-state-icon').textContent='🔒';
+      emptyEl.querySelector('.empty-state-txt').textContent='AKSES DITOLAK — HANYA ADMIN UTAMA (TEAMBFL)';
+    }
+    return;
+  }
+  const filterText=(document.getElementById('lg-filter')?.value||'').toLowerCase();
+  const filterAction=document.getElementById('lg-filter-action')?.value||'';
+  const filtered=activityLogs.filter(l=>{
+    const matchText=!filterText||l.username.toLowerCase().includes(filterText);
+    const matchA=!filterAction||l.action===filterAction;
+    return matchText&&matchA;
+  });
+  const cntEl=document.getElementById('lg-count');
+  if(cntEl)cntEl.textContent='Tampil '+filtered.length+' dari '+activityLogs.length+' log';
+  if(!filtered.length){
+    tbody.innerHTML='';
+    if(emptyEl){
+      emptyEl.style.display='block';
+      emptyEl.querySelector('.empty-state-icon').textContent='📜';
+      emptyEl.querySelector('.empty-state-txt').textContent='BELUM ADA AKTIVITAS TERCATAT';
+    }
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+  tbody.innerHTML=filtered.map(l=>{
+    const dt=new Date(l.timestamp);
+    const dtStr=dt.toLocaleDateString('id-ID')+' '+dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const roleBadge=l.role==='admin'?'mb-badge-aktif':l.role==='operator'?'mb-badge-rehat':'';
+    return`<tr>
+      <td style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);white-space:nowrap">${dtStr}</td>
+      <td>${l.username}</td>
+      <td><span class="mb-badge ${roleBadge}">${(l.role||'-').toUpperCase()}</span></td>
+      <td>${logActionLabel(l.action)}</td>
+      <td style="color:var(--t3);font-size:0.75rem">${l.detail||''}</td>
+    </tr>`;
+  }).join('');
+}
+function clearLogFilter(){
+  document.getElementById('lg-filter').value='';
+  document.getElementById('lg-filter-action').value='';
+  renderLogs();
+}
+function exportLogs(){
+  if(currentUser.username!==MASTER_USERNAME)return;
+  if(!activityLogs.length){alert('Belum ada data log!');return}
+  const data=[
+    ['Waktu','Username','Role','Aksi','Detail'],
+    ...activityLogs.map(l=>{
+      const dt=new Date(l.timestamp);
+      return[dt.toLocaleString('id-ID'),l.username,l.role,logActionLabel(l.action),l.detail||''];
+    })
+  ];
+  const ws=XLSX.utils.aoa_to_sheet(data);
+  ws['!cols']=[20,16,12,24,40].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Activity Log');
+  XLSX.writeFile(wb,'BFL-LOG-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
 }
 
 // SIDEBAR
@@ -2162,7 +2535,7 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  const map={dashboard:0,cuci:1,history:2,rekap:3,setoran:4,member:5};
+  const map={dashboard:0,cuci:1,history:2,rekap:3,setoran:4,member:5,users:6,logs:7};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[id]])items[map[id]].classList.add('active');
   if(document.getElementById('sidebar').classList.contains('open'))toggleSidebar();
@@ -2171,6 +2544,8 @@ function showPage(id){
   if(id==='rekap')renderRekap();
   if(id==='setoran'){renderSetoran();updateSetoranTimer();}
   if(id==='member'){renderMember();updateMemberStats();}
+  if(id==='users'){fbLoadOperators().then(renderOperators);}
+  if(id==='logs'){fbLoadLogs().then(renderLogs);}
 }
 
 // TIMER
@@ -2231,6 +2606,7 @@ async function submitForm(){
   try{
     await Promise.all([fbSaveTx(tx),fbSaveWeekly()]);
     showReceipt(tx);resetForm();
+    logActivity('ADD_TX','Kelompok: '+kelompok+', Jumlah: '+fmt(jumlah));
   }catch(err){
     alert('⚠ Gagal menyimpan ke server: '+err.message);
     // rollback weekly
@@ -2261,6 +2637,7 @@ async function updateStatus(txId,val,el){
   el.className='s-sel '+val;
   try{
     await fbUpdateTxStatus(txId,val);
+    logActivity('UPDATE_STATUS_TX','Kelompok: '+tx.kelompok+', Status: '+prev+' → '+val);
   }catch(err){
     tx.status=prev;el.className='s-sel '+prev;el.value=prev;
     alert('⚠ Gagal update status: '+err.message);
@@ -2514,14 +2891,15 @@ function renderHistoryData(data){
 async function deleteTx(txId){
   if(!confirm('Hapus transaksi ini?'))return;
   try{
+    const old=transactions.find(t=>t.id===txId);
     await deleteDoc(doc(db,'transactions',txId));
     // Cari tx lama untuk rollback weeklyData
-    const old=transactions.find(t=>t.id===txId);
     if(old){
       weeklyData.masuk-=old.jumlah;weeklyData.bersih-=old.bersih;
       weeklyData.profit-=(old.profit||old.pot2);weeklyData.pajak-=(old.pajak||0);
       weeklyData.pot1-=old.pot1;weeklyData.pot2-=old.pot2;weeklyData.count=Math.max(0,weeklyData.count-1);
       await fbSaveWeekly();
+      logActivity('DELETE_TX','Kelompok: '+old.kelompok+', Jumlah: '+fmt(old.jumlah));
     }
   }catch(err){alert('⚠ Gagal hapus: '+err.message)}
 }
@@ -2590,6 +2968,7 @@ async function saveEdit(){
       await fbSaveWeekly();
     }
     closeEditModal();
+    logActivity('EDIT_TX','Kelompok: '+kelompok+', Jumlah: '+fmt(jumlah));
   }catch(err){
     alert('⚠ Gagal simpan: '+err.message);
   }finally{
@@ -2641,6 +3020,7 @@ async function doResetAll(){
     await fbSaveWeekly();
     transactions=[];
     closeResetAll();
+    logActivity('RESET_ALL','Menghapus seluruh data transaksi & reset mingguan');
     updateDashboard();renderHistory();
   }catch(err){
     alert('⚠ Gagal reset: '+err.message);
@@ -2654,6 +3034,7 @@ async function resetWeek(){
   if(!confirm('Reset data minggu ini?'))return;
   weeklyData={masuk:0,bersih:0,profit:0,pot1:0,pot2:0,pajak:0,count:0,startedAt:Date.now()};
   await fbSaveWeekly();
+  logActivity('RESET_WEEK','Reset data mingguan dashboard');
   updateDashboard();
 }
 
@@ -2752,6 +3133,7 @@ async function saveProgress(){
     await updateDoc(doc(db,'transactions',txId),{progress:pct});
     tx.progress=pct;
     closeProgModal();
+    logActivity('UPDATE_PROGRESS_TX','Kelompok: '+tx.kelompok+', Progress: '+pct+'%');
     updateDashboard();
     renderHistory();
   }catch(err){
@@ -2829,6 +3211,7 @@ async function addSetoran(){
   const item={id:genStId(),nama,barang,jumlah,target,lunas,createdAt:Date.now()};
   setoranList.push(item);
   await fbSaveSetoranItem(item);
+  logActivity('ADD_SETORAN','Nama: '+nama+', Barang: '+barang+', Jumlah: '+jumlah);
   document.getElementById('st-nama').value='';
   document.getElementById('st-barang').value='';
   document.getElementById('st-jumlah').value='';
@@ -2841,6 +3224,7 @@ async function toggleLunas(id){
   if(!item)return;
   item.lunas=!item.lunas;
   await fbSaveSetoranItem(item);
+  logActivity('TOGGLE_LUNAS','Nama: '+item.nama+', Barang: '+item.barang+', Status: '+(item.lunas?'Lunas':'Belum Lunas'));
   renderSetoran();
 }
 
@@ -2875,14 +3259,17 @@ async function saveEditSetoran(){
   const lunas=target>0?(jumlah>=target):item.lunas;
   item.nama=nama;item.barang=barang;item.jumlah=jumlah;item.target=target;item.lunas=lunas;
   await fbSaveSetoranItem(item);
+  logActivity('EDIT_SETORAN','Nama: '+nama+', Barang: '+barang+', Jumlah: '+jumlah);
   closeEditSetoran();
   renderSetoran();
 }
 
 async function deleteSetoran(id){
   if(!confirm('Hapus data setoran ini?'))return;
+  const item=setoranList.find(s=>s.id===id);
   setoranList=setoranList.filter(s=>s.id!==id);
   await fbDeleteSetoranItem(id);
+  if(item)logActivity('DELETE_SETORAN','Nama: '+item.nama+', Barang: '+item.barang);
   renderSetoran();
 }
 
@@ -2905,6 +3292,7 @@ async function doResetSetoran(mode){
     await batch.commit();
     setoranList=[];
   }
+  logActivity('RESET_SETORAN','Mode: '+(mode==='status'?'Reset status bayar':'Hapus semua data setoran'));
   closeResetSetoran();
   renderSetoran();
 }
@@ -3100,6 +3488,7 @@ async function addMasterBarang(){
   masterBarangList.push(item);
   masterBarangList.sort((a,b)=>a.nama.localeCompare(b.nama));
   await fbSaveBarangItem(item);
+  logActivity('ADD_BARANG','Nama: '+nama+(target?', Target: '+target:''));
   inp.value='';
   document.getElementById('kb-target').value='';
   renderBarangOptions();
@@ -3107,8 +3496,10 @@ async function addMasterBarang(){
 }
 async function deleteMasterBarang(id){
   if(!confirm('Hapus barang ini dari daftar pilihan?'))return;
+  const b=masterBarangList.find(x=>x.id===id);
   masterBarangList=masterBarangList.filter(b=>b.id!==id);
   await fbDeleteBarangItem(id);
+  if(b)logActivity('DELETE_BARANG','Nama: '+b.nama);
   renderBarangOptions();
   renderKelolaBarangList();
 }
@@ -3130,6 +3521,7 @@ async function saveEditTarget(){
   if(!b)return;
   b.target=target;
   await fbSaveBarangItem(b);
+  logActivity('EDIT_TARGET','Barang: '+b.nama+', Target baru: '+target);
   closeEditTarget();
   renderBarangOptions();
   renderKelolaBarangList();
@@ -3281,6 +3673,7 @@ async function saveRekrut(){
   try{
     await fbSaveMember(m);
     closeRekrutModal();
+    logActivity('ADD_MEMBER','Nama: '+nama+', Jabatan: '+jabatan);
     renderMember();
     updateMemberStats();
     populateStNamaSelect();
@@ -3328,6 +3721,7 @@ async function saveEditMember(){
   try{
     await fbSaveMember(updated);
     closeEditMember();
+    logActivity('EDIT_MEMBER','Nama: '+nama+', Jabatan: '+jabatan+', Status: '+status);
     renderMember();
     updateMemberStats();
     populateStNamaSelect();
@@ -3336,9 +3730,11 @@ async function saveEditMember(){
 }
 async function deleteMemberById(id){
   if(!confirm('Hapus member ini dari roster?'))return;
+  const m=memberList.find(x=>x.id===id);
   try{
     await fbDeleteMember(id);
     memberList=memberList.filter(x=>x.id!==id);
+    if(m)logActivity('DELETE_MEMBER','Nama: '+m.nama+', Jabatan: '+m.jabatan);
     renderMember();
     updateMemberStats();
     populateStNamaSelect();
@@ -3500,6 +3896,13 @@ window.confirmResetSetoran=confirmResetSetoran;
 window.closeResetSetoran=closeResetSetoran;
 window.doResetSetoran=doResetSetoran;
 window.renderSetoran=renderSetoran;
+window.addOperator=addOperator;
+window.toggleOperatorActive=toggleOperatorActive;
+window.deleteOperator=deleteOperator;
+window.renderOperators=renderOperators;
+window.renderLogs=renderLogs;
+window.clearLogFilter=clearLogFilter;
+window.exportLogs=exportLogs;
 function stUpdateJumlahHint(){
   const barang=document.getElementById('st-barang').value;
   const m=masterBarangList.find(b=>b.nama===barang);
