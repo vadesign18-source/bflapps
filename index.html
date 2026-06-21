@@ -1673,6 +1673,7 @@ position:relative;z-index:1;}
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <button class="btn-excel" onclick="exportLogs()">↓ EXPORT EXCEL</button>
+          <button class="btn-excel" onclick="confirmResetLogs()" style="background:rgba(255,45,85,0.12);border-color:var(--cr);color:var(--cr)">🗑 HAPUS LOG</button>
         </div>
       </div>
       <div class="content">
@@ -1709,6 +1710,7 @@ position:relative;z-index:1;}
                 <option value="ADD_OPERATOR">Tambah Operator</option>
                 <option value="TOGGLE_OPERATOR">Toggle Status Operator</option>
                 <option value="DELETE_OPERATOR">Hapus Operator</option>
+                <option value="CLEAR_LOGS">Hapus Log Aktivitas</option>
               </select>
               <button class="filter-clear" onclick="clearLogFilter()">✕ RESET FILTER</button>
               <span class="filter-count" id="lg-count"></span>
@@ -1793,6 +1795,27 @@ position:relative;z-index:1;}
         🗑 HAPUS SEMUA DATA SETORAN
       </button>
       <button onclick="closeResetSetoran()" style="padding:12px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-family:var(--fb);letter-spacing:1px;font-size:0.85rem">BATAL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL HAPUS LOG AKTIVITAS ══ -->
+<div id="resetLogsOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:1px solid var(--cr);max-width:360px;width:90%;padding:32px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:12px">🧹</div>
+    <div style="font-family:var(--fb);font-size:1.2rem;color:var(--cr);letter-spacing:2px;margin-bottom:8px">HAPUS LOG AKTIVITAS</div>
+    <div style="color:var(--t3);font-size:0.82rem;line-height:1.6;margin-bottom:20px">
+      Bersihkan riwayat log supaya data tidak menumpuk di Firestore.<br>
+      Pilih opsi penghapusan:
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button id="rl-old-btn" onclick="doResetLogs('old')" style="padding:12px;background:rgba(255,184,0,0.1);border:1px solid var(--gd);color:var(--gd);cursor:pointer;font-family:var(--fb);letter-spacing:1px;font-size:0.85rem">
+        🗓 HAPUS LOG LEBIH DARI 30 HARI
+      </button>
+      <button id="rl-all-btn" onclick="doResetLogs('all')" style="padding:12px;background:rgba(255,45,85,0.1);border:1px solid var(--cr);color:var(--cr);cursor:pointer;font-family:var(--fb);letter-spacing:1px;font-size:0.85rem">
+        🗑 HAPUS SEMUA LOG
+      </button>
+      <button id="rl-cancel-btn" onclick="closeResetLogs()" style="padding:12px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-family:var(--fb);letter-spacing:1px;font-size:0.85rem">BATAL</button>
     </div>
   </div>
 </div>
@@ -2455,7 +2478,8 @@ function logActionLabel(a){
     TOGGLE_LUNAS:'✅ Toggle Lunas',RESET_SETORAN:'⟳ Reset Setoran',
     ADD_BARANG:'➕ Tambah Barang',DELETE_BARANG:'🗑 Hapus Barang',EDIT_TARGET:'✎ Edit Target Barang',
     ADD_MEMBER:'➕ Rekrut Member',EDIT_MEMBER:'✎ Edit Member',DELETE_MEMBER:'🗑 Hapus Member',
-    ADD_OPERATOR:'➕ Tambah Operator',TOGGLE_OPERATOR:'🔁 Toggle Status Operator',DELETE_OPERATOR:'🗑 Hapus Operator'
+    ADD_OPERATOR:'➕ Tambah Operator',TOGGLE_OPERATOR:'🔁 Toggle Status Operator',DELETE_OPERATOR:'🗑 Hapus Operator',
+    CLEAR_LOGS:'🧹 Hapus Log Aktivitas'
   };
   return map[a]||a;
 }
@@ -2524,6 +2548,48 @@ function exportLogs(){
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Activity Log');
   XLSX.writeFile(wb,'BFL-LOG-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
+}
+
+// HAPUS LOG AKTIVITAS (supaya Firestore tidak penuh) — khusus teambfl
+function confirmResetLogs(){
+  if(currentUser.username!==MASTER_USERNAME)return;
+  document.getElementById('resetLogsOverlay').style.display='flex';
+}
+function closeResetLogs(){
+  document.getElementById('resetLogsOverlay').style.display='none';
+}
+async function doResetLogs(mode){
+  if(currentUser.username!==MASTER_USERNAME)return;
+  const btns=[document.getElementById('rl-old-btn'),document.getElementById('rl-all-btn'),document.getElementById('rl-cancel-btn')];
+  btns.forEach(b=>{if(b)b.disabled=true});
+  try{
+    const snap=await getDocs(collection(db,'activity_log'));
+    const targets=[];
+    if(mode==='old'){
+      const cutoff=Date.now()-30*86400000;
+      snap.forEach(d=>{const data=d.data();if((data.timestamp||0)<cutoff)targets.push(d.id);});
+    }else{
+      snap.forEach(d=>targets.push(d.id));
+    }
+    // hapus per-batch (maks 450 operasi per batch, biar aman dari limit Firestore)
+    for(let i=0;i<targets.length;i+=450){
+      const chunk=targets.slice(i,i+450);
+      const batch=writeBatch(db);
+      chunk.forEach(id=>batch.delete(doc(db,'activity_log',id)));
+      await batch.commit();
+    }
+    closeResetLogs();
+    await logActivity('CLEAR_LOGS',mode==='old'
+      ?'Menghapus log lebih dari 30 hari ('+targets.length+' log)'
+      :'Menghapus SEMUA log aktivitas ('+targets.length+' log)');
+    await fbLoadLogs();
+    renderLogs();
+    alert('✅ Berhasil menghapus '+targets.length+' log aktivitas.');
+  }catch(err){
+    alert('⚠ Gagal menghapus log: '+err.message);
+  }finally{
+    btns.forEach(b=>{if(b)b.disabled=false});
+  }
 }
 
 // SIDEBAR
@@ -3903,6 +3969,9 @@ window.renderOperators=renderOperators;
 window.renderLogs=renderLogs;
 window.clearLogFilter=clearLogFilter;
 window.exportLogs=exportLogs;
+window.confirmResetLogs=confirmResetLogs;
+window.closeResetLogs=closeResetLogs;
+window.doResetLogs=doResetLogs;
 function stUpdateJumlahHint(){
   const barang=document.getElementById('st-barang').value;
   const m=masterBarangList.find(b=>b.nama===barang);
