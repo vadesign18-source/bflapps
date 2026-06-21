@@ -1275,16 +1275,28 @@ position:relative;z-index:1;}
                   <span class="ff-hint" id="f-jumlah-hint">// masukkan nominal</span>
                 </div>
                 <div class="form-field">
-                  <label class="ff-lbl">Yang Kerja / Cuci <span id="f-pekerja-count" style="font-size:0.6rem;color:var(--gd);letter-spacing:1px"></span></label>
-                  <div id="f-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;min-height:0"></div>
+                  <label class="ff-lbl">Yang Cuci <span id="f-cuci-pekerja-count" style="font-size:0.6rem;color:var(--gd);letter-spacing:1px"></span></label>
+                  <div id="f-cuci-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;min-height:0"></div>
                   <div style="position:relative">
-                    <input id="f-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari &amp; pilih pekerja (maks 8)..."
+                    <input id="f-cuci-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari &amp; pilih yang cuci (maks 4)..."
                       style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
-                      onfocus="pekerjaAcInput(this,'f');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('f');document.getElementById('f-pekerja-search').style.borderColor='var(--ln)'},200)"
-                      oninput="pekerjaAcInput(this,'f')">
-                    <div id="f-pekerja-ac" class="ac-list"></div>
+                      onfocus="pekerjaAcInput(this,'f-cuci');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('f-cuci');document.getElementById('f-cuci-pekerja-search').style.borderColor='var(--ln)'},200)"
+                      oninput="pekerjaAcInput(this,'f-cuci')">
+                    <div id="f-cuci-pekerja-ac" class="ac-list"></div>
                   </div>
-                  <input type="hidden" id="f-pekerja">
+                  <input type="hidden" id="f-cuci-pekerja">
+                </div>
+                <div class="form-field">
+                  <label class="ff-lbl">Yang Backup <span id="f-backup-pekerja-count" style="font-size:0.6rem;color:var(--gd);letter-spacing:1px"></span></label>
+                  <div id="f-backup-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;min-height:0"></div>
+                  <div style="position:relative">
+                    <input id="f-backup-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari &amp; pilih yang backup (maks 4)..."
+                      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                      onfocus="pekerjaAcInput(this,'f-backup');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('f-backup');document.getElementById('f-backup-pekerja-search').style.borderColor='var(--ln)'},200)"
+                      oninput="pekerjaAcInput(this,'f-backup')">
+                    <div id="f-backup-pekerja-ac" class="ac-list"></div>
+                  </div>
+                  <input type="hidden" id="f-backup-pekerja">
                 </div>
                 <div class="form-field">
                   <label class="ff-lbl">Catatan (Opsional)</label>
@@ -1393,7 +1405,7 @@ position:relative;z-index:1;}
                 <th>#</th><th>Kelompok</th><th>Tanggal</th>
                 <th>Uang Merah</th><th>Pot. 1</th><th>Pot. 2</th>
                 <th>Uang Hijau</th><th>Status</th>
-                <th>Progress Cuci</th><th>Pekerja</th><th>Diinput Oleh</th><th>Aksi</th>
+                <th>Progress Cuci</th><th>Pekerja &amp; Backup</th><th>Diinput Oleh</th><th>Aksi</th>
               </tr></thead>
               <tbody id="historyTbody"></tbody>
             </table>
@@ -1948,16 +1960,28 @@ position:relative;z-index:1;}
           </select>
         </div>
         <div class="edit-field">
-          <label>YANG KERJA / CUCI <span id="edit-pekerja-count" style="font-size:0.55rem;color:var(--gd)"></span></label>
-          <div id="edit-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;min-height:0"></div>
+          <label>YANG CUCI <span id="edit-cuci-pekerja-count" style="font-size:0.55rem;color:var(--gd)"></span></label>
+          <div id="edit-cuci-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;min-height:0"></div>
           <div style="position:relative">
-            <input id="edit-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari pekerja (maks 8)..."
+            <input id="edit-cuci-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari yang cuci (maks 4)..."
               style="width:100%;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.85rem;outline:none;box-sizing:border-box"
-              onfocus="pekerjaAcInput(this,'edit');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('edit');document.getElementById('edit-pekerja-search').style.borderColor='var(--ln)'},200)"
-              oninput="pekerjaAcInput(this,'edit')">
-            <div id="edit-pekerja-ac" class="ac-list"></div>
+              onfocus="pekerjaAcInput(this,'edit-cuci');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('edit-cuci');document.getElementById('edit-cuci-pekerja-search').style.borderColor='var(--ln)'},200)"
+              oninput="pekerjaAcInput(this,'edit-cuci')">
+            <div id="edit-cuci-pekerja-ac" class="ac-list"></div>
           </div>
-          <input type="hidden" id="edit-pekerja">
+          <input type="hidden" id="edit-cuci-pekerja">
+        </div>
+        <div class="edit-field">
+          <label>YANG BACKUP <span id="edit-backup-pekerja-count" style="font-size:0.55rem;color:var(--gd)"></span></label>
+          <div id="edit-backup-pekerja-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;min-height:0"></div>
+          <div style="position:relative">
+            <input id="edit-backup-pekerja-search" type="text" autocomplete="off" placeholder="🔍 Cari yang backup (maks 4)..."
+              style="width:100%;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.85rem;outline:none;box-sizing:border-box"
+              onfocus="pekerjaAcInput(this,'edit-backup');this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{pekerjaAcClose('edit-backup');document.getElementById('edit-backup-pekerja-search').style.borderColor='var(--ln)'},200)"
+              oninput="pekerjaAcInput(this,'edit-backup')">
+            <div id="edit-backup-pekerja-ac" class="ac-list"></div>
+          </div>
+          <input type="hidden" id="edit-backup-pekerja">
         </div>
         <div class="edit-field">
           <label>DIINPUT OLEH</label>
@@ -2646,7 +2670,8 @@ async function submitForm(){
   const kelompok=document.getElementById('f-kelompok').value.trim();
   const tanggal=document.getElementById('f-tanggal').value;
   const jumlah=parseFloat(document.getElementById('f-jumlah').value);
-  const pekerja=document.getElementById('f-pekerja').value;
+  const pekerjaCuci=document.getElementById('f-cuci-pekerja').value;
+  const pekerjaBackup=document.getElementById('f-backup-pekerja').value;
   const inputBy=document.getElementById('f-input-by').value;
   const catatan=document.getElementById('f-catatan').value.trim();
   const status=document.getElementById('f-status').value;
@@ -2659,7 +2684,7 @@ async function submitForm(){
   const c=calcWash(jumlah);
   const id=genId();
   const tx={id,kelompok,tanggal,jumlah,pot1:c.pot1,sisa1:c.sisa1,pot2:c.pot2,
-    bersih:c.bersih,profit:c.profit,pajak:c.pajak,pekerja,inputBy,catatan,status,createdAt:Date.now()};
+    bersih:c.bersih,profit:c.profit,pajak:c.pajak,pekerjaCuci,pekerjaBackup,inputBy,catatan,status,createdAt:Date.now()};
 
   // Update weeklyData
   weeklyData.masuk+=jumlah;weeklyData.bersih+=c.bersih;weeklyData.profit+=c.profit;
@@ -2690,7 +2715,8 @@ function resetForm(){
   document.getElementById('f-status').value='pending';
   document.getElementById('f-input-by').value='';
   document.getElementById('f-input-by-search').value='';
-  pekerjaResetValue('f');
+  pekerjaResetValue('f-cuci');
+  pekerjaResetValue('f-backup');
   updateCalc();
 }
 
@@ -2942,7 +2968,7 @@ function renderHistoryData(data){
         </select>
       </td>
       <td>${buildProgCell(tx)}</td>
-      <td style="min-width:120px;max-width:160px">${tx.pekerja?tx.pekerja.split(',').map(n=>`<div style="color:var(--vi);font-family:var(--fm);font-size:0.7rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6">${n.trim()}</div>`).join(''):'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
+      <td style="min-width:130px;max-width:180px">${buildPekerjaCell(tx)}</td>
       <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem;font-weight:600">${tx.inputBy?tx.inputBy:'<span style="color:var(--t3);font-weight:400">—</span>'}</td>
       <td>
         <div class="row-actions">
@@ -2981,7 +3007,8 @@ function openEditModal(txId){
   document.getElementById('edit-status').value=tx.status;
   document.getElementById('edit-catatan').value=tx.catatan||'';
   populatePekerjaSelects();
-  pekerjaSetValue(tx.pekerja||'','edit');
+  pekerjaSetValue(tx.pekerjaCuci||tx.pekerja||'','edit-cuci');
+  pekerjaSetValue(tx.pekerjaBackup||'','edit-backup');
   document.getElementById('edit-input-by').value=tx.inputBy||'';
   const editInputBySearch=document.getElementById('edit-input-by-search');
   if(editInputBySearch)editInputBySearch.value=tx.inputBy||'';
@@ -3005,7 +3032,8 @@ async function saveEdit(){
   const tanggal=document.getElementById('edit-tanggal').value;
   const jumlah=parseFloat(document.getElementById('edit-jumlah').value);
   const status=document.getElementById('edit-status').value;
-  const pekerja=document.getElementById('edit-pekerja').value;
+  const pekerjaCuci=document.getElementById('edit-cuci-pekerja').value;
+  const pekerjaBackup=document.getElementById('edit-backup-pekerja').value;
   const inputBy=document.getElementById('edit-input-by').value;
   const catatan=document.getElementById('edit-catatan').value.trim();
   if(!kelompok||!tanggal||!jumlah||jumlah<=0){
@@ -3018,7 +3046,8 @@ async function saveEdit(){
   const old=transactions.find(t=>t.id===id);
   const updated={...old,kelompok,tanggal,jumlah,
     pot1:c.pot1,sisa1:c.sisa1,pot2:c.pot2,bersih:c.bersih,profit:c.profit,pajak:c.pajak,
-    status,pekerja,inputBy,catatan};
+    status,pekerjaCuci,pekerjaBackup,inputBy,catatan};
+  delete updated.pekerja; // migrasi dari field lama tunggal ke pekerjaCuci/pekerjaBackup
   const btn=document.getElementById('editSaveBtn');
   btn.disabled=true;btn.textContent='MENYIMPAN...';
   try{
@@ -3046,13 +3075,13 @@ async function saveEdit(){
 function exportExcel(){
   if(transactions.length===0){alert('Belum ada data!');return}
   const data=[
-    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Pekerja','Diinput Oleh','Catatan','Status'],
+    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Yang Cuci','Yang Backup','Diinput Oleh','Catatan','Status'],
     ...transactions.map(tx=>[tx.id,tx.kelompok,tx.tanggal,tx.jumlah,tx.pot1,tx.pot2,tx.bersih,
-      tx.pajak||tx.pot1,tx.pekerja||'',tx.inputBy||'',tx.catatan||'',
+      tx.pajak||tx.pot1,tx.pekerjaCuci||tx.pekerja||'',tx.pekerjaBackup||'',tx.inputBy||'',tx.catatan||'',
       tx.status==='done'?'Berhasil':tx.status==='cancel'?'Cancel':'Dalam Proses'])
   ];
   const ws=XLSX.utils.aoa_to_sheet(data);
-  ws['!cols']=[10,20,12,15,18,18,15,18,18,18,20,12].map(w=>({wch:w}));
+  ws['!cols']=[10,20,12,15,18,18,15,18,16,16,18,20,12].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Transaksi BFL');
   XLSX.writeFile(wb,'BFL-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
@@ -3140,6 +3169,21 @@ async function initApp(){
 }
 
 // ─── PROGRESS CUCI ────────────────────────────────────────────────
+function buildPekerjaCell(tx){
+  const cuci=(tx.pekerjaCuci||tx.pekerja||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const backup=(tx.pekerjaBackup||'').split(',').map(s=>s.trim()).filter(Boolean);
+  if(!cuci.length&&!backup.length)return'<span style="color:var(--t3);font-weight:400">—</span>';
+  let html='';
+  if(cuci.length){
+    html+='<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1.5px;margin-top:2px">CUCI</div>';
+    html+=cuci.map(n=>`<div style="color:var(--vi);font-family:var(--fm);font-size:0.7rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5">${n}</div>`).join('');
+  }
+  if(backup.length){
+    html+='<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1.5px;margin-top:4px">BACKUP</div>';
+    html+=backup.map(n=>`<div style="color:var(--gd);font-family:var(--fm);font-size:0.7rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5">${n}</div>`).join('');
+  }
+  return html;
+}
 function buildProgCell(tx){
   const pct=tx.progress||0;
   const fillClass=pct>=100?'done':pct>=50?'mid':'';
@@ -3415,10 +3459,10 @@ function esNamaAcClose(){
   if(l)l.style.display='none';
 }
 
-// ── MULTI-SELECT PEKERJA (maks 8) ──
-// prefix: 'f' untuk form cuci, 'edit' untuk edit modal
-const _pekerjaSelected={f:[],edit:[]};
-const MAX_PEKERJA=8;
+// ── MULTI-SELECT PEKERJA & BACKUP (maks 4 per kategori) ──
+// prefix: 'f-cuci'/'f-backup' untuk form cuci, 'edit-cuci'/'edit-backup' untuk edit modal
+const _pekerjaSelected={};
+const MAX_PEKERJA=4;
 
 function pekerjaAcInput(inp,prefix){
   const q=inp.value.trim().toLowerCase();
