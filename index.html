@@ -369,7 +369,7 @@ body::before{
 
 /* ─ KPI ROW ─ */
 .kpi-row{
-  display:grid;grid-template-columns:repeat(5,1fr);
+  display:grid;grid-template-columns:repeat(6,1fr);
   border-bottom:1px solid var(--ln);
 }
 .kpi{
@@ -493,6 +493,24 @@ td{
 }
 tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:rgba(255,255,255,0.01)}
+
+/* ─ ORDER GRID ─ */
+#order-categories{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
+.order-cat-panel{flex:0 1 auto;min-width:0;max-width:100%}
+.order-grid{display:flex;flex-wrap:wrap;gap:7px}
+.order-card{background:var(--s2);border:1px solid var(--ln);padding:7px 8px;transition:border-color 0.2s;width:104px;flex:0 0 104px;box-sizing:border-box}
+.order-card:hover{border-color:var(--ln2)}
+.order-card-lbl{
+  font-family:var(--fb);font-size:0.63rem;font-weight:600;color:var(--t1);
+  margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.order-card-inp{
+  width:100%;padding:5px 6px;background:var(--s1);border:1px solid var(--ln);
+  color:var(--t1);font-family:var(--fm);font-size:0.74rem;outline:none;
+  box-sizing:border-box;text-align:center;transition:border-color 0.3s;
+}
+.order-card-meta{font-family:var(--fm);font-size:0.42rem;color:var(--t3);margin-top:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:480px){#order-categories{gap:10px}.order-grid{gap:6px}.order-card{width:88px;flex:0 0 88px}}
 
 /* badges */
 .bdg{
@@ -1087,11 +1105,14 @@ position:relative;z-index:1;}
       <div class="nav-item" onclick="showPage('rekap')">
         <span class="ni">📅</span> Rekap Bulanan
       </div>
-      <div class="nav-item" onclick="showPage('setoran')">
-        <span class="ni">💰</span> Setoran
-      </div>
       <div class="nav-item" onclick="showPage('member')">
         <span class="ni">👥</span> Member
+      </div>
+      <div class="nav-item" onclick="showPage('salary')">
+        <span class="ni">💸</span> Salary
+      </div>
+      <div class="nav-item" onclick="showPage('order')">
+        <span class="ni">📦</span> Order
       </div>
       <div class="nav-item" id="nav-users" style="display:none" onclick="showPage('users')">
         <span class="ni">🔐</span> Manajemen Operator
@@ -1156,9 +1177,15 @@ position:relative;z-index:1;}
         </div>
         <div class="kpi">
           <div class="kpi-line gd"></div>
-          <div class="kpi-tag">Keuntungan BFL</div>
+          <div class="kpi-tag">Keuntungan Kotor</div>
           <div class="kpi-num gd" id="d-profit">$ 0</div>
           <div class="kpi-foot">15% dari sisa tahap 1</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-line" style="background:linear-gradient(90deg,#007a40,#00ff94)"></div>
+          <div class="kpi-tag">Profit Bersih</div>
+          <div class="kpi-num em" id="d-profit-bersih">$ 0</div>
+          <div class="kpi-foot" id="d-profit-bersih-foot">Keuntungan Kotor − Alokasi Gaji</div>
         </div>
         <div class="kpi">
           <div class="kpi-line bl"></div>
@@ -1615,6 +1642,104 @@ position:relative;z-index:1;}
           </div>
         </div>
 
+        <!-- SETORAN PANEL (pindah ke sini dari sidebar) -->
+        <div style="margin-top:28px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <div>
+              <div style="font-family:var(--fw);font-size:2rem;color:#fff;letter-spacing:1px;line-height:1">SETORAN <em style="color:var(--cr);font-style:normal">ANGGOTA</em></div>
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px;margin-top:4px">// klik nama member untuk input setoran · reset otomatis Senin 00:00 WIB</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <div id="mb-setoran-timer-badge" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:2px;text-align:right">
+                <div style="color:var(--gd);font-size:0.75rem" id="mb-setoran-paid-count">0/0 Lunas</div>
+                <div>Reset: <span id="mb-setoran-reset-label">—</span></div>
+              </div>
+              <button onclick="confirmResetSetoran()" style="padding:8px 16px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">⟳ RESET</button>
+            </div>
+          </div>
+
+          <!-- Setoran Filter -->
+          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+            <input id="mb-st-filter" type="text" placeholder="Cari nama / barang..." oninput="renderMemberSetoran()"
+              style="flex:1;min-width:160px;padding:9px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.8rem;outline:none"
+              onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+            <select id="mb-st-filter-status" onchange="renderMemberSetoran()"
+              style="padding:9px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.8rem;outline:none;cursor:pointer">
+              <option value="all">Semua Status</option>
+              <option value="belum">Belum Bayar</option>
+              <option value="lunas">Sudah Lunas</option>
+            </select>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><div class="p-pip em"></div>Daftar Setoran</div>
+              <div id="mb-st-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+            </div>
+            <div class="panel-body" style="padding:0">
+              <div id="mb-setoran-list" style="min-height:80px"></div>
+              <div id="mb-setoran-empty" style="display:none;padding:48px;text-align:center">
+                <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">◈</div>
+                <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA SETORAN — KLIK NAMA MEMBER UNTUK INPUT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ ORDER ══ -->
+    <div class="page" id="page-order">
+      <div class="pg-hero" data-word="ORDER">
+        <div class="ph-left">
+          <div class="ph-eye"><div class="ph-eye-line"></div>MANAJEMEN ORDER</div>
+          <div class="ph-title">Daftar <em>Order</em></div>
+          <div class="ph-sub">// input manual seminggu sekali · reset otomatis Senin 00:00 WIB</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:2px;text-align:right">
+            <div style="color:var(--gd);font-size:0.75rem" id="order-fill-count">0/0 Terisi</div>
+            <div>Reset: <span id="order-reset-label">—</span></div>
+          </div>
+          <button onclick="openKelolaOrder()" title="Edit / Tambah Kategori & Barang"
+            style="padding:8px 16px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer;white-space:nowrap"
+            onmouseover="this.style.borderColor='var(--em)';this.style.color='var(--em)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">⚙ KELOLA</button>
+          <button onclick="openOrderWebhookModal()" title="Atur Webhook Discord"
+            style="padding:8px 12px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.85rem;cursor:pointer"
+            onmouseover="this.style.borderColor='var(--vi)';this.style.color='var(--vi)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">🔗</button>
+          <button onclick="confirmResetOrder()"
+            style="padding:8px 16px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
+            onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">⟳ RESET</button>
+          <button id="order-share-btn" onclick="shareOrderToDiscord()"
+            style="padding:8px 18px;background:#5865F2;border:none;color:#fff;font-family:var(--fw);font-size:0.95rem;letter-spacing:1px;cursor:pointer;white-space:nowrap"
+            onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">📤 SHARE KE DISCORD</button>
+        </div>
+      </div>
+      <div class="content" style="padding-top:24px">
+        <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:18px;line-height:1.6">
+          ⓘ Isi total kebutuhan tiap item minggu ini, lalu klik <strong style="color:var(--t1)">SHARE KE DISCORD</strong> untuk mengirim rekap ke channel order. Kolom kosong / "-" berarti tidak dipesan.
+        </div>
+        <div id="order-categories"></div>
+
+        <div class="panel" id="order-history-panel" style="margin-top:18px">
+          <div class="panel-head" style="cursor:pointer" onclick="toggleOrderHistoryPanel()">
+            <div class="panel-title"><div class="p-pip vi"></div>🗓 History Order Mingguan</div>
+            <div id="order-history-toggle-lbl" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:2px">▾ LIHAT</div>
+          </div>
+          <div class="panel-body" id="order-history-body" style="display:none">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+              <select id="order-history-select"
+                style="flex:1;min-width:200px;padding:10px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.75rem;outline:none">
+                <option value="">— Memuat daftar minggu —</option>
+              </select>
+              <button onclick="viewOrderHistoryWeek()"
+                style="padding:10px 18px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.65rem;letter-spacing:2px;cursor:pointer;white-space:nowrap"
+                onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">LIHAT</button>
+            </div>
+            <div id="order-history-result" style="font-family:var(--fm);font-size:0.7rem;color:var(--t3)">Pilih minggu untuk melihat rekap order.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1744,7 +1869,317 @@ position:relative;z-index:1;}
       </div>
     </div>
 
+    <!-- ══ SALARY ══ -->
+    <div class="page" id="page-salary">
+      <div class="pg-hero" data-word="SALARY">
+        <div class="ph-left">
+          <div class="ph-eye"><div class="ph-eye-line"></div>ALOKASI GAJI</div>
+          <div class="ph-title">Salary <em>Management</em></div>
+          <div class="ph-sub">// kalkulasi otomatis dari data setoran & cuci</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button onclick="renderSalaryPage()" style="padding:8px 16px;background:transparent;border:1px solid var(--em3);color:var(--em);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.background='var(--em2)'" onmouseout="this.style.background='transparent'">⟳ REFRESH</button>
+        </div>
+      </div>
+      <div class="content" style="padding-top:24px">
+
+        <!-- Tab Salary -->
+        <div style="display:flex;gap:0;margin-bottom:24px;border:1px solid var(--ln)">
+          <button id="sal-tab-jualan" onclick="switchSalaryTab('jualan')" style="flex:1;padding:12px;background:var(--cr3);border:none;border-right:1px solid var(--ln);color:var(--cr);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">🔴 JUALAN</button>
+          <button id="sal-tab-nanam" onclick="switchSalaryTab('nanam')" style="flex:1;padding:12px;background:transparent;border:none;border-right:1px solid var(--ln);color:var(--t3);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">🌿 NANAM & OLAH</button>
+          <button id="sal-tab-cumer" onclick="switchSalaryTab('cumer')" style="flex:1;padding:12px;background:transparent;border:none;color:var(--t3);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">🧺 CUMER</button>
+        </div>
+
+        <!-- ── TAB JUALAN ── -->
+        <div id="sal-panel-jualan">
+          <div style="display:grid;grid-template-columns:3fr 2fr;gap:20px;margin-bottom:20px">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><div class="p-pip cr"></div>Input Setoran Jualan</div>
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">Gaji = 20% dari uang merah</div>
+              </div>
+              <div class="panel-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">JENIS BARANG</label>
+                    <select id="sal-j-barang" style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;cursor:pointer" onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                      <option value="">— Pilih Jenis —</option>
+                      <option value="🟢 Weed">🟢 Weed</option>
+                      <option value="🔴 Opium">🔴 Opium</option>
+                      <option value="🔵 Meth">🔵 Meth</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">MEMBER PENYETOR</label>
+                    <div style="position:relative">
+                      <input id="sal-j-member-search" type="text" autocomplete="off" placeholder="🔍 Cari member..."
+                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                        onfocus="salJMemberAcShow();this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{salJMemberAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salJMemberAcShow()">
+                      <div id="sal-j-member-ac" class="ac-list"></div>
+                    </div>
+                    <input type="hidden" id="sal-j-member">
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">JUMLAH UANG MERAH ($)</label>
+                    <input id="sal-j-jumlah" type="number" min="0" placeholder="350000" oninput="salJPreview()"
+                      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
+                      onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                  </div>
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">DITERIMA OLEH</label>
+                    <div style="position:relative">
+                      <input id="sal-j-penerima-search" type="text" autocomplete="off" placeholder="🔍 Cari member penerima..."
+                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                        onfocus="salJPenerimaAcShow();this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{salJPenerimaAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salJPenerimaAcShow()">
+                      <div id="sal-j-penerima-ac" class="ac-list"></div>
+                    </div>
+                    <input type="hidden" id="sal-j-penerima">
+                  </div>
+                </div>
+                <div id="sal-j-preview" style="display:none;background:var(--s2);border:1px solid var(--em3);padding:14px;margin-bottom:12px;font-family:var(--fm);font-size:0.8rem">
+                  <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln)">
+                    <span style="color:var(--t3)">Uang Merah Disetor</span>
+                    <span id="sal-j-prev-masuk" style="color:var(--cr)">$ 0</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;padding:4px 0">
+                    <span style="color:var(--t3)">Alokasi Gaji (20%)</span>
+                    <span id="sal-j-prev-gaji" style="color:var(--em);font-weight:700;font-size:0.95rem">$ 0</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button onclick="salJSave()" style="flex:1;padding:12px;background:var(--cr);border:none;color:#fff;font-family:var(--fw);font-size:1rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">+ SIMPAN ALOKASI GAJI</button>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><div class="p-pip gd"></div>Kalkulasi Cepat</div>
+              </div>
+              <div class="panel-body">
+                <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:16px">20% dari setiap uang merah yang disetor menjadi gaji penjual.</div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:16px;margin-bottom:12px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">CONTOH KALKULASI</div>
+                  <div style="font-size:0.8rem;color:var(--t2);line-height:2">
+                    <div>Setor: <span style="color:var(--cr)">$350.000</span></div>
+                    <div>Gaji (20%): <span style="color:var(--em)">$70.000</span></div>
+                  </div>
+                </div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:12px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">TOTAL PENDING GAJI HARI INI</div>
+                  <div id="sal-j-total-pending" style="font-family:var(--fw);font-size:1.8rem;color:var(--gd)">$ 0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- List Alokasi Gaji Jualan -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><div class="p-pip cr"></div>Daftar Alokasi Gaji Jualan</div>
+              <div id="sal-j-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr>
+                  <th>#</th><th>Member</th><th>Jenis Barang</th><th>Uang Merah</th><th>Gaji (20%)</th><th>Diterima Oleh</th><th>Status Gaji</th><th>Waktu</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="sal-j-tbody"></tbody>
+              </table>
+              <div id="sal-j-empty" style="display:none;padding:48px;text-align:center">
+                <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">💸</div>
+                <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA ALOKASI GAJI JUALAN</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB NANAM & OLAH ── -->
+        <div id="sal-panel-nanam" style="display:none">
+          <div style="display:grid;grid-template-columns:3fr 2fr;gap:20px;margin-bottom:20px">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><div class="p-pip em"></div>Input Produksi</div>
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">Gaji = Jumlah Pcs × <span style="color:var(--em)">$200</span></div>
+              </div>
+              <div class="panel-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">JENIS PEKERJAAN</label>
+                    <select id="sal-n-jenis" style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;cursor:pointer" onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'" onchange="salNPreview()">
+                      <option value="">— Pilih —</option>
+                      <option value="🌱 Nanam">🌱 Nanam</option>
+                      <option value="⚗️ Olah Meth">⚗️ Olah Meth</option>
+                      <option value="💊 Olah Morphine">💊 Olah Morphine</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">MEMBER PEKERJA</label>
+                    <div style="position:relative">
+                      <input id="sal-n-member-search" type="text" autocomplete="off" placeholder="🔍 Cari member..."
+                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                        onfocus="salNMemberAcShow();this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{salNMemberAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salNMemberAcShow()">
+                      <div id="sal-n-member-ac" class="ac-list"></div>
+                    </div>
+                    <input type="hidden" id="sal-n-member">
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">JUMLAH PCS</label>
+                    <input id="sal-n-pcs" type="number" min="1" placeholder="100" oninput="salNPreview()"
+                      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
+                      onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                    <span style="font-family:var(--fm);font-size:0.55rem;color:var(--t3)">@ <span style="color:var(--em)">$200</span> / pcs</span>
+                  </div>
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">PEMBERI GAJI</label>
+                    <div style="position:relative">
+                      <input id="sal-n-penerima-search" type="text" autocomplete="off" placeholder="🔍 Cari member..."
+                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                        onfocus="salNPenerimaAcShow();this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{salNPenerimaAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salNPenerimaAcShow()">
+                      <div id="sal-n-penerima-ac" class="ac-list"></div>
+                    </div>
+                    <input type="hidden" id="sal-n-penerima">
+                  </div>
+                </div>
+                <div id="sal-n-preview" style="display:none;background:var(--s2);border:1px solid var(--em3);padding:14px;margin-bottom:12px;font-family:var(--fm);font-size:0.8rem">
+                  <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln)">
+                    <span style="color:var(--t3)">Jumlah Pcs</span>
+                    <span id="sal-n-prev-pcs" style="color:var(--t1)">0 pcs</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;padding:4px 0">
+                    <span style="color:var(--t3)">Total Gaji (pcs × <span style="color:var(--em)">$200</span>)</span>
+                    <span id="sal-n-prev-gaji" style="color:var(--em);font-weight:700;font-size:0.95rem">$ 0</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button onclick="salNSave()" style="flex:1;padding:12px;background:var(--em);border:none;color:#000;font-family:var(--fw);font-size:1rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">+ SIMPAN GAJI PRODUKSI</button>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><div class="p-pip em"></div>Tarif Produksi</div>
+              </div>
+              <div class="panel-body">
+                <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:16px">Setiap 1 pcs produk = <span style="color:var(--em)">$200</span> gaji pekerja.</div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:16px;margin-bottom:12px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">CONTOH</div>
+                  <div style="font-size:0.8rem;color:var(--t2);line-height:2">
+                    <div>100 Meth: <span style="color:var(--em)">$20.000</span></div>
+                    <div>50 Morphine: <span style="color:var(--em)">$10.000</span></div>
+                  </div>
+                </div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:12px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">TOTAL PENDING GAJI</div>
+                  <div id="sal-n-total-pending" style="font-family:var(--fw);font-size:1.8rem;color:var(--gd)">$ 0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><div class="p-pip em"></div>Daftar Alokasi Gaji Produksi</div>
+              <div id="sal-n-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr>
+                  <th>#</th><th>Member</th><th>Jenis Pekerjaan</th><th>Pcs</th><th>Gaji (×$2K)</th><th>Pemberi Gaji</th><th>Status</th><th>Waktu</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="sal-n-tbody"></tbody>
+              </table>
+              <div id="sal-n-empty" style="display:none;padding:48px;text-align:center">
+                <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">🌿</div>
+                <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA GAJI PRODUKSI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB CUMER ── -->
+        <div id="sal-panel-cumer" style="display:none">
+          <div class="panel" style="margin-bottom:20px">
+            <div class="panel-head">
+              <div class="panel-title"><div class="p-pip vi"></div>Alokasi Gaji Cumer (Cuci Uang)</div>
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">33% keuntungan tiap transaksi ÷ jumlah pekerja cuci</div>
+            </div>
+            <div class="panel-body">
+              <div style="font-family:var(--fm);font-size:0.65rem;color:var(--t3);margin-bottom:16px;line-height:1.8">
+                ⓘ Data berikut berasal otomatis dari transaksi cuci uang yang memiliki pekerja cuci. Gaji dihitung: <span style="color:var(--vi)">33% dari keuntungan</span> dibagi rata antar pekerja yang cuci.
+              </div>
+              <div id="sal-c-list">
+                <div style="padding:40px;text-align:center;color:var(--t3);font-family:var(--fm);font-size:0.7rem;letter-spacing:2px">Memuat data...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary per pekerja cumer -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><div class="p-pip vi"></div>Rekapitulasi Gaji Per Pekerja Cumer</div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr>
+                  <th>Nama Pekerja</th><th>Jumlah Transaksi</th><th>Total Gaji Cumer</th><th>Status Pembayaran</th>
+                </tr></thead>
+                <tbody id="sal-c-summary-tbody"></tbody>
+              </table>
+              <div id="sal-c-empty" style="display:none;padding:48px;text-align:center">
+                <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">🧺</div>
+                <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA TRANSAKSI DENGAN PEKERJA CUCI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
+
+<!-- ══ MODAL INPUT SETORAN MEMBER (klik nama) ══ -->
+<div id="memberSetoranOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:1px solid var(--cr);width:92%;max-width:480px">
+    <div style="padding:18px 20px;border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-family:var(--fb);font-size:1rem;color:var(--cr);letter-spacing:2px">💰 INPUT SETORAN</div>
+        <div id="ms-member-name" style="font-family:var(--fw);font-size:1.4rem;color:#fff;letter-spacing:1px;margin-top:4px">—</div>
+      </div>
+      <button onclick="closeMemberSetoranModal()" style="background:transparent;border:none;color:var(--t3);font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:24px">
+      <input type="hidden" id="ms-member-val">
+      <div style="margin-bottom:14px">
+        <label style="display:flex;justify-content:space-between;align-items:center;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">
+          <span>NAMA BARANG / ITEM</span>
+          <span onclick="openKelolaBarang()" style="color:var(--cr);cursor:pointer;letter-spacing:1px">⚙ KELOLA</span>
+        </label>
+        <select id="ms-barang" onchange="msUpdateHint()"
+          style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;cursor:pointer"
+          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+          <option value="">— Pilih Barang —</option>
+        </select>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">
+          JUMLAH DISETOR <span id="ms-hint" style="color:var(--gd);font-size:0.5rem;letter-spacing:1px"></span>
+        </label>
+        <input id="ms-jumlah" type="number" min="0" placeholder="0"
+          style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'"
+          onkeydown="if(event.key==='Enter')saveMemberSetoran()">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="closeMemberSetoranModal()" style="flex:0 0 auto;padding:11px 18px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-family:var(--fb);font-size:0.85rem">BATAL</button>
+        <button onclick="saveMemberSetoran()" style="flex:1;padding:11px;background:var(--cr);border:none;color:#fff;cursor:pointer;font-family:var(--fb);font-size:0.85rem;letter-spacing:1px">+ TAMBAH SETORAN →</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ══ MODAL EDIT SETORAN ══ -->
@@ -1870,6 +2305,73 @@ position:relative;z-index:1;}
       <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px">ⓘ Kolom "Target" = jumlah total yg harus disetor per anggota. Otomatis lunas jika jumlah ≥ target.</div>
     </div>
     <div id="kb-list" style="overflow-y:auto;flex:1"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL ATUR WEBHOOK DISCORD (ORDER) ══ -->
+<div id="orderWebhookOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:1px solid var(--vi);width:92%;max-width:420px;padding:28px">
+    <div style="font-family:var(--fb);font-size:1rem;color:var(--vi);letter-spacing:2px;margin-bottom:6px">⚙ ATUR WEBHOOK DISCORD</div>
+    <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:16px;line-height:1.6">
+      Buat di Discord: Server Settings → Integrations → Webhooks → New Webhook → Copy URL, lalu tempel di bawah ini.
+    </div>
+    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">WEBHOOK URL</label>
+    <input id="ow-input" type="text" autocomplete="off" placeholder="https://discord.com/api/webhooks/..."
+      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.78rem;outline:none;box-sizing:border-box;margin-bottom:18px"
+      onfocus="this.style.borderColor='var(--vi)'" onblur="this.style.borderColor='var(--ln)'"
+      onkeydown="if(event.key==='Enter')saveOrderWebhook()">
+    <div style="display:flex;gap:10px">
+      <button onclick="closeOrderWebhookModal()" style="flex:0 0 auto;padding:11px 16px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-family:var(--fb);font-size:0.85rem">BATAL</button>
+      <button onclick="saveOrderWebhook()" style="flex:1;padding:11px;background:var(--vi);border:none;color:#fff;cursor:pointer;font-family:var(--fb);font-size:0.85rem;letter-spacing:1px;font-weight:700">SIMPAN →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL RESET DATA ORDER ══ -->
+<div id="resetOrderOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:1px solid var(--cr);max-width:360px;width:90%;padding:32px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
+    <div style="font-family:var(--fb);font-size:1.2rem;color:var(--cr);letter-spacing:2px;margin-bottom:8px">RESET DATA ORDER</div>
+    <div style="color:var(--t3);font-size:0.82rem;line-height:1.6;margin-bottom:20px">
+      Ini akan menghapus <strong style="color:var(--t1)">semua data order minggu ini</strong>.<br>
+      Lanjutkan reset?
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="doResetOrder()" style="padding:12px;background:rgba(255,45,85,0.1);border:1px solid var(--cr);color:var(--cr);cursor:pointer;font-family:var(--fb);letter-spacing:1px;font-size:0.85rem">
+        🗑 HAPUS SEMUA DATA ORDER
+      </button>
+      <button onclick="closeResetOrder()" style="padding:12px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-family:var(--fb);letter-spacing:1px;font-size:0.85rem">BATAL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL KELOLA KATEGORI & BARANG ORDER ══ -->
+<div id="kelolaOrderOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center">
+  <div style="background:var(--s1);border:1px solid var(--em);width:94%;max-width:560px;max-height:85vh;display:flex;flex-direction:column">
+    <div style="padding:18px 20px;border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div style="font-family:var(--fb);font-size:1rem;color:var(--em);letter-spacing:2px">⚙ KELOLA KATEGORI &amp; BARANG ORDER</div>
+      <button onclick="closeKelolaOrder()" style="background:transparent;border:none;color:var(--t3);font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px 20px;border-bottom:1px solid var(--ln);flex-shrink:0">
+      <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:10px">
+        Tambahkan kategori (barang) baru, lalu isi sub barangnya di dalam tiap kategori. Klik nama kategori / sub barang untuk mengedit langsung — perubahan tersimpan otomatis saat klik di luar kolom.
+      </div>
+      <div style="display:flex;gap:10px">
+        <select id="okb-cat-color"
+          style="background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.7rem;padding:11px 8px;cursor:pointer">
+          <option value="cr">● Merah</option>
+          <option value="em">● Hijau</option>
+          <option value="gd">● Emas</option>
+          <option value="vi">● Ungu</option>
+        </select>
+        <input id="okb-cat-name" type="text" placeholder="Nama kategori / barang baru..."
+          style="flex:1;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none"
+          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'"
+          onkeydown="if(event.key==='Enter')addOrderCategory()">
+        <button onclick="addOrderCategory()" style="padding:11px 18px;background:var(--cr);border:none;color:#fff;font-family:var(--fw);font-size:0.95rem;letter-spacing:1px;cursor:pointer;white-space:nowrap">+ TAMBAH BARANG</button>
+      </div>
+    </div>
+    <div id="okb-list" style="overflow-y:auto;flex:1;padding:18px 20px"></div>
   </div>
 </div>
 
@@ -2168,7 +2670,7 @@ position:relative;z-index:1;}
 <script type="module">
 // ─── FIREBASE SETUP ───────────────────────────────────────────────
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getFirestore,doc,getDoc,setDoc,updateDoc,onSnapshot,collection,getDocs,deleteDoc,writeBatch}
+import{getFirestore,doc,getDoc,setDoc,updateDoc,onSnapshot,collection,getDocs,deleteDoc,writeBatch,arrayUnion}
   from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig={
@@ -2185,9 +2687,74 @@ const db=getFirestore(app);
 
 // ─── STATE ────────────────────────────────────────────────────────
 let transactions=[];
+let cumerPayStatus={}; // { namaPerkerja: 'lunas'|'belum' }
 let weeklyData={masuk:0,bersih:0,profit:0,pot1:0,pot2:0,pajak:0,count:0,startedAt:Date.now()};
 let currentUser={username:'',role:''}; // role: 'admin' (akun utama) atau 'operator'
 const MASTER_USERNAME='teambfl'; // satu-satunya akun yang boleh melihat Log Aktivitas
+
+// ─── ORDER (sidebar baru) ─────────────────────────────────────────
+let orderWeekKey='';
+let orderData={}; // key: catKey__itemKey -> {id,catKey,itemKey,catTitle,itemLabel,qty,updatedAt,updatedBy}
+let orderWebhookUrl='';
+let orderWeeksIndex=[]; // daftar week-key (Senin) yang pernah punya data, untuk fitur History Mingguan
+let orderHistoryLoaded=false;
+let orderCategories=[]; // struktur kategori & barang yang aktif (bisa diedit admin, tersimpan di Firestore)
+const DEFAULT_ORDER_CATEGORIES=[
+  {key:'ht',title:'HT',color:'cr',items:[
+    {key:'cocaine',label:'Cocaine'},
+  ]},
+  {key:'allstar',title:'All Star',color:'gd',items:[
+    {key:'sethmeth',label:'Seth Meth'},
+    {key:'morphine',label:'Morphine'},
+  ]},
+  {key:'weed',title:'Weed',color:'em',items:[
+    {key:'pentagon',label:'PENTAGON'},
+    {key:'5star',label:'5STAR'},
+    {key:'rdmc',label:'RDMC'},
+  ]},
+  {key:'ammo',title:'AMMO',color:'vi',items:[
+    {key:'ammo45',label:'Ammo 45'},
+    {key:'ammo44',label:'Ammo 44'},
+    {key:'ammoriffle_virtus',label:'Ammo Riffle Virtus'},
+    {key:'ammoriffle_ak',label:'Ammo Riffle AK'},
+  ]},
+  {key:'weapon',title:'WEAPON',color:'cr',items:[
+    {key:'virtus',label:'Virtus'},
+    {key:'ak',label:'AK'},
+    {key:'carbine',label:'Carbine'},
+    {key:'kvr',label:'KVR'},
+    {key:'micro',label:'Micro'},
+    {key:'navy',label:'Navy'},
+    {key:'shotgun',label:'Shotgun'},
+    {key:'x17',label:'X17'},
+    {key:'br',label:'BR'},
+  ]},
+  {key:'attachment',title:'Attachment',color:'gd',items:[
+    {key:'extsmg',label:'Ext SMG'},
+    {key:'grip',label:'Grip'},
+    {key:'macroscope',label:'Macro Scope'},
+    {key:'mediumscope',label:'Medium Scope'},
+    {key:'tacticalflashlight',label:'Tactical Flashlight'},
+    {key:'tacticalsuppressor',label:'Tactical Suppressor'},
+    {key:'extrifleclip',label:'Ext Rifle Clip'},
+    {key:'smgdrum',label:'SMG Drum'},
+    {key:'rifledrum',label:'Rifle Drum'},
+    {key:'suppressor',label:'Suppressor'},
+    {key:'modernextendeddrum',label:'Modern Extended Drum'},
+    {key:'modernsuppressorshort',label:'Modern Suppressor Short'},
+    {key:'holoscope',label:'Holo Scope'},
+  ]},
+  {key:'vest',title:'VEST',color:'em',items:[
+    {key:'boa',label:'BOA'},
+    {key:'ht',label:'HT'},
+  ]},
+  {key:'specialpaper',title:'Special Paper',color:'vi',items:[
+    {key:'specialpaper',label:'Special Paper'},
+  ]},
+  {key:'rustyminismg',title:'RustyminiSMG',color:'cr',items:[
+    {key:'rustyminismg',label:'RustyminiSMG'},
+  ]},
+];
 
 // ─── FIRESTORE HELPERS ────────────────────────────────────────────
 async function fbSaveWeekly(){
@@ -2211,6 +2778,9 @@ async function fbLoadAll(){
   transactions=[];
   snap.forEach(d=>transactions.push(d.data()));
   transactions.sort((a,b)=>b.createdAt-a.createdAt);
+
+  // Load cumer payment status
+  await fbLoadCumerPayStatus();
 
   updateDashboard();
   renderHistory();
@@ -2503,7 +3073,11 @@ function logActionLabel(a){
     ADD_BARANG:'➕ Tambah Barang',DELETE_BARANG:'🗑 Hapus Barang',EDIT_TARGET:'✎ Edit Target Barang',
     ADD_MEMBER:'➕ Rekrut Member',EDIT_MEMBER:'✎ Edit Member',DELETE_MEMBER:'🗑 Hapus Member',
     ADD_OPERATOR:'➕ Tambah Operator',TOGGLE_OPERATOR:'🔁 Toggle Status Operator',DELETE_OPERATOR:'🗑 Hapus Operator',
-    CLEAR_LOGS:'🧹 Hapus Log Aktivitas'
+    CLEAR_LOGS:'🧹 Hapus Log Aktivitas',
+    UPDATE_ORDER:'✎ Update Order',RESET_ORDER:'⟳ Reset Order',
+    ADD_ORDER_KATEGORI:'➕ Tambah Kategori Order',DELETE_ORDER_KATEGORI:'🗑 Hapus Kategori Order',EDIT_ORDER_KATEGORI:'✎ Edit Kategori Order',
+    ADD_ORDER_BARANG:'➕ Tambah Sub Barang Order',DELETE_ORDER_BARANG:'🗑 Hapus Sub Barang Order',EDIT_ORDER_BARANG:'✎ Edit Sub Barang Order',
+    SET_ORDER_WEBHOOK:'🔗 Atur Webhook Discord',SHARE_ORDER_DISCORD:'📤 Share Order ke Discord'
   };
   return map[a]||a;
 }
@@ -2625,7 +3199,7 @@ function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  const map={dashboard:0,cuci:1,history:2,rekap:3,setoran:4,member:5,users:6,logs:7};
+  const map={dashboard:0,cuci:1,history:2,rekap:3,member:4,salary:5,order:6,users:7,logs:8};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[id]])items[map[id]].classList.add('active');
   if(document.getElementById('sidebar').classList.contains('open'))toggleSidebar();
@@ -2633,7 +3207,9 @@ function showPage(id){
   if(id==='history')renderHistory();
   if(id==='rekap')renderRekap();
   if(id==='setoran'){renderSetoran();updateSetoranTimer();}
-  if(id==='member'){renderMember();updateMemberStats();}
+  if(id==='member'){renderMember();updateMemberStats();renderMemberSetoran();}
+  if(id==='salary'){renderSalaryPage();}
+  if(id==='order'){renderOrderTable();updateOrderTimer();}
   if(id==='users'){fbLoadOperators().then(renderOperators);}
   if(id==='logs'){fbLoadLogs().then(renderLogs);}
 }
@@ -2768,6 +3344,23 @@ function updateDashboard(){
   document.getElementById('d-pajak').textContent=fmt(weeklyData.pajak||0);
   document.getElementById('d-profit').textContent=fmt(weeklyData.pot2||0);
   document.getElementById('d-tx-count').textContent=weeklyData.count;
+
+  // Hitung Profit Bersih: Keuntungan Kotor per transaksi dikurang alokasi gaji
+  // - Normal: alokasi gaji = 33% dari profit kotor per transaksi
+  // - Khusus kelompok "BFL": alokasi gaji = 44.4445% dari profit kotor per transaksi
+  let totalAlokasi=0;
+  transactions.forEach(tx=>{
+    const profitKotor=tx.profit||tx.pot2||0;
+    const isBFL=(tx.kelompok||'').trim().toUpperCase()==='BFL';
+    const pct=isBFL?0.444445:0.33;
+    totalAlokasi+=Math.round(profitKotor*pct);
+  });
+  const profitKotorTotal=weeklyData.pot2||0;
+  const profitBersih=profitKotorTotal-totalAlokasi;
+  const elPB=document.getElementById('d-profit-bersih');
+  const elPBF=document.getElementById('d-profit-bersih-foot');
+  if(elPB)elPB.textContent=fmt(profitBersih);
+  if(elPBF)elPBF.textContent='Alokasi gaji: '+fmt(totalAlokasi);
 
   const done=transactions.filter(t=>t.status==='done').length;
   const pending=transactions.filter(t=>t.status==='pending').length;
@@ -3157,15 +3750,23 @@ async function initApp(){
   await fbLoadSetoran();
   await fbLoadMasterBarang();
   await fbLoadMember();
+  await fbLoadSalary();
+  await fbLoadOrderStructure();
+  await fbLoadOrder();
+  await fbLoadOrderWebhook();
   startRealtimeSync();
   checkAutoReset();
   checkAutoResetSetoran();
+  checkAutoResetOrder();
   setInterval(updateResetTimer,1000);
   setInterval(updateSetoranTimer,60000);
+  setInterval(updateOrderTimer,60000);
   setInterval(checkAutoReset,60000);
   setInterval(checkAutoResetSetoran,60000);
+  setInterval(checkAutoResetOrder,60000);
   updateResetTimer();
   updateSetoranTimer();
+  updateOrderTimer();
 }
 
 // ─── PROGRESS CUCI ────────────────────────────────────────────────
@@ -3291,8 +3892,11 @@ function updateSetoranTimer(){
   const d=Math.floor(diff/86400000);
   const h=Math.floor((diff%86400000)/3600000);
   const m=Math.floor((diff%3600000)/60000);
+  const timeStr=(d>0?d+'h ':'')+h+'j '+m+'m';
   const lbl=document.getElementById('setoran-reset-label');
-  if(lbl)lbl.textContent=(d>0?d+'h ':'')+h+'j '+m+'m';
+  if(lbl)lbl.textContent=timeStr;
+  const lbl2=document.getElementById('mb-setoran-reset-label');
+  if(lbl2)lbl2.textContent=timeStr;
 }
 
 async function checkAutoResetSetoran(){
@@ -3940,9 +4544,10 @@ function renderMember(){
         :'';
       return`<div class="mb-row${isRehat?' mb-row-rehat':''}">
         <div style="width:6px;height:6px;border-radius:50%;background:${isRehat?'var(--gd)':'var(--em)'};flex-shrink:0;margin-top:2px"></div>
-        <div style="flex:1;min-width:0">
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="openMemberSetoranModal('${m.nama.replace(/'/g,"\\'")}')">
           <div style="font-size:0.88rem;font-weight:600;color:${isRehat?'var(--t3)':'var(--t1)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
             ${m.nama}${isRehat?' <span style="font-size:0.6rem;color:var(--gd)">😴</span>':''}
+            <span style="font-family:var(--fm);font-size:0.5rem;color:var(--cr);margin-left:6px;letter-spacing:1px">+ SETOR</span>
           </div>
           ${setoranInfo?`<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);margin-top:1px">💰 ${setoranInfo}</div>`:''}
           ${rehatLabel?`<div style="font-family:var(--fm);font-size:0.55rem;color:rgba(255,184,0,0.7);margin-top:1px">📝 ${rehatLabel}</div>`:''}
@@ -3964,7 +4569,1026 @@ function renderMember(){
   }).join('');
 }
 
-// ─── EXPOSE FUNCTIONS KE GLOBAL (karena pakai type=module) ────────
+// ─── ORDER (sidebar baru) ──────────────────────────────────────────
+function getOrderWeekKey(){
+  const wib=new Date(Date.now()+7*3600000);
+  const day=wib.getDay();
+  const diff=wib.getDate()-(day===0?6:day-1);
+  const mon=new Date(wib);mon.setDate(diff);
+  return mon.toISOString().split('T')[0];
+}
+function genOrderRowId(catKey,itemKey){return catKey+'__'+itemKey}
+
+// ─── STRUKTUR KATEGORI & BARANG (bisa diedit admin) ───────────────
+function slugify(s){
+  const base=(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'');
+  return base||'item';
+}
+function genCatKey(name){
+  const base=slugify(name);
+  let key=base,i=1;
+  while(orderCategories.some(c=>c.key===key)){key=base+(i++);}
+  return key;
+}
+function genItemKey(cat,name){
+  const base=slugify(name);
+  let key=base,i=1;
+  while(cat.items.some(it=>it.key===key)){key=base+(i++);}
+  return key;
+}
+async function fbLoadOrderStructure(){
+  try{
+    const snap=await getDoc(doc(db,'config','order_structure'));
+    if(snap.exists()&&Array.isArray(snap.data().categories)&&snap.data().categories.length){
+      orderCategories=snap.data().categories;
+    }else{
+      orderCategories=JSON.parse(JSON.stringify(DEFAULT_ORDER_CATEGORIES));
+      await saveOrderStructure();
+    }
+  }catch(e){
+    console.error('Gagal memuat struktur order:',e);
+    orderCategories=JSON.parse(JSON.stringify(DEFAULT_ORDER_CATEGORIES));
+  }
+}
+async function saveOrderStructure(){
+  await setDoc(doc(db,'config','order_structure'),{
+    categories:orderCategories,updatedAt:Date.now(),updatedBy:currentUser.username||'—'
+  });
+}
+
+function openKelolaOrder(){
+  document.getElementById('kelolaOrderOverlay').style.display='flex';
+  renderKelolaOrderList();
+}
+function closeKelolaOrder(){
+  document.getElementById('kelolaOrderOverlay').style.display='none';
+}
+
+async function addOrderCategory(){
+  const inp=document.getElementById('okb-cat-name');
+  const name=inp.value.trim();
+  if(!name){alert('⚠ Isi nama kategori/barang baru!');return}
+  if(orderCategories.some(c=>c.title.toLowerCase()===name.toLowerCase())){alert('⚠ Kategori ini sudah ada!');return}
+  const colorSel=document.getElementById('okb-cat-color');
+  const color=colorSel?colorSel.value:'cr';
+  const cat={key:genCatKey(name),title:name,color,items:[]};
+  orderCategories.push(cat);
+  inp.value='';
+  try{
+    await saveOrderStructure();
+    logActivity('ADD_ORDER_KATEGORI','Kategori: '+name);
+  }catch(err){alert('⚠ Gagal menyimpan: '+err.message);}
+  renderKelolaOrderList();
+  renderOrderTable();
+}
+
+async function deleteOrderCategory(catKey){
+  const cat=orderCategories.find(c=>c.key===catKey);
+  if(!cat)return;
+  if(!confirm('Hapus kategori "'+cat.title+'" beserta seluruh barang di dalamnya?'))return;
+  orderCategories=orderCategories.filter(c=>c.key!==catKey);
+  try{
+    await saveOrderStructure();
+    logActivity('DELETE_ORDER_KATEGORI','Kategori: '+cat.title);
+  }catch(err){alert('⚠ Gagal menghapus: '+err.message);}
+  renderKelolaOrderList();
+  renderOrderTable();
+}
+
+async function saveOrderCategoryTitle(catKey,value){
+  const cat=orderCategories.find(c=>c.key===catKey);
+  if(!cat)return;
+  const v=value.trim();
+  if(!v){alert('⚠ Nama kategori tidak boleh kosong!');renderKelolaOrderList();return}
+  if(v===cat.title)return;
+  cat.title=v;
+  try{
+    await saveOrderStructure();
+    logActivity('EDIT_ORDER_KATEGORI','Kategori diubah jadi: '+v);
+  }catch(err){alert('⚠ Gagal menyimpan: '+err.message);}
+  renderOrderTable();
+}
+
+async function saveOrderCategoryColor(catKey,value){
+  const cat=orderCategories.find(c=>c.key===catKey);
+  if(!cat)return;
+  cat.color=value;
+  try{await saveOrderStructure();}catch(err){alert('⚠ Gagal menyimpan: '+err.message);}
+  renderOrderTable();
+}
+
+async function addOrderItem(catKey){
+  const inp=document.getElementById('okb-item-input-'+catKey);
+  if(!inp)return;
+  const name=inp.value.trim();
+  if(!name){alert('⚠ Isi nama sub barang!');return}
+  const cat=orderCategories.find(c=>c.key===catKey);
+  if(!cat)return;
+  if(cat.items.some(it=>it.label.toLowerCase()===name.toLowerCase())){alert('⚠ Barang ini sudah ada di kategori ini!');return}
+  cat.items.push({key:genItemKey(cat,name),label:name});
+  inp.value='';
+  try{
+    await saveOrderStructure();
+    logActivity('ADD_ORDER_BARANG',cat.title+' / '+name);
+  }catch(err){alert('⚠ Gagal menyimpan: '+err.message);}
+  renderKelolaOrderList();
+  renderOrderTable();
+}
+
+async function deleteOrderItem(catKey,itemKey){
+  const cat=orderCategories.find(c=>c.key===catKey);
+  if(!cat)return;
+  const item=cat.items.find(it=>it.key===itemKey);
+  if(!item)return;
+  if(!confirm('Hapus barang "'+item.label+'" dari kategori "'+cat.title+'"?'))return;
+  cat.items=cat.items.filter(it=>it.key!==itemKey);
+  try{
+    await saveOrderStructure();
+    logActivity('DELETE_ORDER_BARANG',cat.title+' / '+item.label);
+  }catch(err){alert('⚠ Gagal menghapus: '+err.message);}
+  renderKelolaOrderList();
+  renderOrderTable();
+}
+
+async function saveOrderItemLabel(catKey,itemKey,value){
+  const cat=orderCategories.find(c=>c.key===catKey);
+  if(!cat)return;
+  const item=cat.items.find(it=>it.key===itemKey);
+  if(!item)return;
+  const v=value.trim();
+  if(!v){alert('⚠ Nama barang tidak boleh kosong!');renderKelolaOrderList();return}
+  if(v===item.label)return;
+  item.label=v;
+  try{
+    await saveOrderStructure();
+    logActivity('EDIT_ORDER_BARANG',cat.title+' / barang diubah jadi: '+v);
+  }catch(err){alert('⚠ Gagal menyimpan: '+err.message);}
+  renderOrderTable();
+}
+
+const ORDER_COLOR_LABEL={cr:'● Merah',em:'● Hijau',gd:'● Emas',vi:'● Ungu'};
+function renderKelolaOrderList(){
+  const wrap=document.getElementById('okb-list');
+  if(!wrap)return;
+  if(!orderCategories.length){
+    wrap.innerHTML='<div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);padding:16px 0;text-align:center">Belum ada kategori. Tambahkan kategori baru di atas.</div>';
+    return;
+  }
+  wrap.innerHTML=orderCategories.map(cat=>{
+    const itemRows=cat.items.map(it=>`
+      <div style="display:flex;gap:8px;align-items:center;padding:5px 0">
+        <input type="text" value="${it.label}" data-cat="${cat.key}" data-item="${it.key}"
+          style="flex:1;padding:7px 10px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.78rem;outline:none"
+          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)';saveOrderItemLabel(this.dataset.cat,this.dataset.item,this.value)">
+        <button onclick="deleteOrderItem('${cat.key}','${it.key}')" style="flex-shrink:0;background:transparent;border:1px solid var(--cr5);color:var(--cr);width:30px;height:30px;cursor:pointer;font-size:0.8rem">✕</button>
+      </div>`).join('') || '<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);padding:6px 0">Belum ada sub barang.</div>';
+    return`<div style="border:1px solid var(--ln);margin-bottom:14px">
+      <div style="padding:10px 14px;background:var(--s2);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select onchange="saveOrderCategoryColor('${cat.key}',this.value)"
+          style="background:var(--s3);border:1px solid var(--ln);color:var(--t2);font-family:var(--fm);font-size:0.6rem;padding:6px;cursor:pointer">
+          ${Object.keys(ORDER_COLOR_LABEL).map(c=>`<option value="${c}" ${cat.color===c?'selected':''}>${ORDER_COLOR_LABEL[c]}</option>`).join('')}
+        </select>
+        <input type="text" value="${cat.title}" data-cat="${cat.key}"
+          style="flex:1;min-width:120px;padding:7px 10px;background:var(--s1);border:1px solid var(--ln);color:var(--t1);font-family:var(--fw);font-size:0.95rem;letter-spacing:1px;outline:none"
+          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)';saveOrderCategoryTitle(this.dataset.cat,this.value)">
+        <button onclick="deleteOrderCategory('${cat.key}')"
+          style="flex-shrink:0;background:rgba(255,45,85,.1);border:1px solid var(--cr);color:var(--cr);padding:7px 10px;cursor:pointer;font-family:var(--fm);font-size:0.55rem;letter-spacing:1px;white-space:nowrap">HAPUS KATEGORI</button>
+      </div>
+      <div style="padding:10px 14px">
+        ${itemRows}
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input type="text" id="okb-item-input-${cat.key}" placeholder="+ nama sub barang baru..."
+            style="flex:1;padding:8px 10px;background:var(--s2);border:1px dashed var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.78rem;outline:none"
+            onfocus="this.style.borderColor='var(--em)'" onblur="this.style.borderColor='var(--ln)'"
+            onkeydown="if(event.key==='Enter')addOrderItem('${cat.key}')">
+          <button onclick="addOrderItem('${cat.key}')"
+            style="flex-shrink:0;padding:8px 14px;background:var(--em2);border:1px solid var(--em3);color:var(--em);cursor:pointer;font-family:var(--fm);font-size:0.6rem;letter-spacing:1px;white-space:nowrap">+ SUB BARANG</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function fbLoadOrder(){
+  orderWeekKey=getOrderWeekKey();
+  orderData={};
+  try{
+    const snap=await getDocs(collection(db,'order_'+orderWeekKey));
+    snap.forEach(d=>{const v=d.data();orderData[v.id]=v;});
+  }catch(e){console.error('Gagal memuat data order:',e);}
+  renderOrderTable();
+}
+
+async function checkAutoResetOrder(){
+  const key=getOrderWeekKey();
+  if(key!==orderWeekKey){
+    orderWeekKey=key;
+    orderData={};
+    renderOrderTable();
+  }
+}
+
+function updateOrderTimer(){
+  const wib=new Date(Date.now()+7*3600000);
+  const day=wib.getDay();
+  const dtm=day===1?7:(8-day)%7||7;
+  const nm=new Date(wib);nm.setDate(wib.getDate()+dtm);nm.setHours(0,0,0,0);
+  const diff=nm-wib;
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const lbl=document.getElementById('order-reset-label');
+  if(lbl)lbl.textContent=(d>0?d+'h ':'')+h+'j '+m+'m';
+}
+
+function updateOrderFillBadge(){
+  let total=0,filled=0;
+  orderCategories.forEach(cat=>cat.items.forEach(it=>{
+    total++;
+    const rec=orderData[genOrderRowId(cat.key,it.key)];
+    if(rec&&rec.qty>0)filled++;
+  }));
+  const badge=document.getElementById('order-fill-count');
+  if(badge)badge.textContent=filled+'/'+total+' Terisi';
+}
+
+function renderOrderTable(){
+  const wrap=document.getElementById('order-categories');
+  if(!wrap)return;
+  if(!orderCategories.length){
+    wrap.innerHTML='<div style="padding:48px;text-align:center"><div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">◈</div><div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA KATEGORI — KLIK KELOLA UNTUK TAMBAH</div></div>';
+    updateOrderFillBadge();
+    return;
+  }
+  wrap.innerHTML=orderCategories.map(cat=>{
+    const cards=cat.items.map(it=>{
+      const id=genOrderRowId(cat.key,it.key);
+      const rec=orderData[id];
+      const qty=rec&&rec.qty?rec.qty:'';
+      const meta=rec&&rec.updatedBy&&rec.qty>0?'oleh '+rec.updatedBy:'—';
+      return`<div class="order-card">
+        <div class="order-card-lbl" title="${it.label}">${it.label}</div>
+        <input type="number" min="0" value="${qty}" placeholder="-" class="order-card-inp"
+          data-cat="${cat.key}" data-item="${it.key}" data-cattitle="${cat.title}" data-itemlabel="${it.label}"
+          onfocus="this.style.borderColor='var(--cr)'"
+          onblur="saveOrderQty(this)"
+          onkeydown="if(event.key==='Enter')this.blur()">
+        <div class="order-card-meta">${meta}</div>
+      </div>`;
+    }).join('') || '<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);padding:8px 0">Belum ada barang di kategori ini.</div>';
+    return`<div class="panel order-cat-panel">
+      <div class="panel-head">
+        <div class="panel-title"><div class="p-pip ${cat.color}"></div>${cat.title}</div>
+        <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3)">${cat.items.length} item</div>
+      </div>
+      <div class="panel-body">
+        <div class="order-grid">${cards}</div>
+      </div>
+    </div>`;
+  }).join('');
+  updateOrderFillBadge();
+}
+
+async function saveOrderQty(el){
+  const catKey=el.dataset.cat,itemKey=el.dataset.item,catTitle=el.dataset.cattitle,itemLabel=el.dataset.itemlabel;
+  const raw=el.value.trim();
+  const qty=raw===''?0:(parseFloat(raw)||0);
+  const id=genOrderRowId(catKey,itemKey);
+  const item={id,catKey,itemKey,catTitle,itemLabel,qty,updatedAt:Date.now(),updatedBy:currentUser.username||'—'};
+  orderData[id]=item;
+  el.style.borderColor='var(--ln)';
+  try{
+    await setDoc(doc(db,'order_'+orderWeekKey,id),item);
+    el.style.borderColor='var(--em)';
+    setTimeout(()=>{if(el)el.style.borderColor='var(--ln)'},500);
+    logActivity('UPDATE_ORDER',catTitle+' / '+itemLabel+': '+qty);
+    addWeekToOrderIndex(orderWeekKey);
+  }catch(err){
+    alert('⚠ Gagal menyimpan: '+err.message);
+  }
+  updateOrderFillBadge();
+}
+
+function confirmResetOrder(){
+  document.getElementById('resetOrderOverlay').style.display='flex';
+}
+function closeResetOrder(){
+  document.getElementById('resetOrderOverlay').style.display='none';
+}
+async function doResetOrder(){
+  try{
+    const snap=await getDocs(collection(db,'order_'+orderWeekKey));
+    const batch=writeBatch(db);
+    snap.forEach(d=>batch.delete(doc(db,'order_'+orderWeekKey,d.id)));
+    await batch.commit();
+    orderData={};
+    renderOrderTable();
+    logActivity('RESET_ORDER','Reset data order minggu '+orderWeekKey);
+    closeResetOrder();
+  }catch(err){
+    alert('⚠ Gagal reset: '+err.message);
+  }
+}
+
+async function fbLoadOrderWebhook(){
+  try{
+    const snap=await getDoc(doc(db,'config','order_webhook'));
+    orderWebhookUrl=snap.exists()?(snap.data().url||''):'';
+  }catch(e){orderWebhookUrl='';}
+}
+function openOrderWebhookModal(){
+  document.getElementById('ow-input').value=orderWebhookUrl||'';
+  document.getElementById('orderWebhookOverlay').style.display='flex';
+}
+function closeOrderWebhookModal(){
+  document.getElementById('orderWebhookOverlay').style.display='none';
+}
+async function saveOrderWebhook(){
+  const url=document.getElementById('ow-input').value.trim();
+  if(url&&!/^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//.test(url)){
+    if(!confirm('URL ini sepertinya bukan webhook Discord yang valid. Tetap simpan?'))return;
+  }
+  try{
+    await setDoc(doc(db,'config','order_webhook'),{url,updatedAt:Date.now(),updatedBy:currentUser.username||'—'});
+    orderWebhookUrl=url;
+    logActivity('SET_ORDER_WEBHOOK','Webhook order diperbarui');
+    closeOrderWebhookModal();
+    alert('✅ Webhook tersimpan!');
+  }catch(err){
+    alert('⚠ Gagal menyimpan: '+err.message);
+  }
+}
+
+// ─── HISTORY ORDER MINGGUAN (terintegrasi di menu Order) ──────────
+async function addWeekToOrderIndex(weekKey){
+  try{
+    await setDoc(doc(db,'config','order_weeks_index'),{weeks:arrayUnion(weekKey)},{merge:true});
+  }catch(e){console.error('Gagal mencatat index minggu order:',e);}
+}
+async function fbLoadOrderWeeksIndex(){
+  try{
+    const snap=await getDoc(doc(db,'config','order_weeks_index'));
+    orderWeeksIndex=snap.exists()&&Array.isArray(snap.data().weeks)?snap.data().weeks:[];
+  }catch(e){orderWeeksIndex=[];}
+  orderHistoryLoaded=true;
+  renderOrderHistorySelect();
+}
+function renderOrderHistorySelect(){
+  const sel=document.getElementById('order-history-select');
+  if(!sel)return;
+  const weeks=orderWeeksIndex.filter(w=>w!==orderWeekKey).sort((a,b)=>b.localeCompare(a));
+  sel.innerHTML='<option value="">— '+(weeks.length?'Pilih minggu ('+weeks.length+' tersimpan)':'Belum ada history')+' —</option>'+
+    weeks.map(w=>`<option value="${w}">Minggu ${w}</option>`).join('');
+}
+function toggleOrderHistoryPanel(){
+  const body=document.getElementById('order-history-body');
+  const lbl=document.getElementById('order-history-toggle-lbl');
+  if(!body)return;
+  const willOpen=body.style.display==='none';
+  body.style.display=willOpen?'block':'none';
+  if(lbl)lbl.textContent=willOpen?'▴ TUTUP':'▾ LIHAT';
+  if(willOpen&&!orderHistoryLoaded)fbLoadOrderWeeksIndex();
+}
+async function viewOrderHistoryWeek(){
+  const sel=document.getElementById('order-history-select');
+  const wk=sel?sel.value:'';
+  const out=document.getElementById('order-history-result');
+  if(!out)return;
+  if(!wk){out.innerHTML='<div style="padding:8px 0;color:var(--t3)">Pilih minggu untuk melihat rekap order.</div>';return;}
+  out.innerHTML='<div style="padding:8px 0;color:var(--t3)">Memuat data minggu '+wk+'...</div>';
+  try{
+    const snap=await getDocs(collection(db,'order_'+wk));
+    const data={};
+    snap.forEach(d=>{const v=d.data();data[v.id]=v;});
+    out.innerHTML=renderOrderHistoryHTML(wk,data);
+  }catch(e){
+    out.innerHTML='<div style="padding:8px 0;color:var(--cr)">⚠ Gagal memuat data minggu ini.</div>';
+  }
+}
+function renderOrderHistoryHTML(weekKey,data){
+  let any=false;
+  const blocks=orderCategories.map(cat=>{
+    const cards=cat.items.map(it=>{
+      const rec=data[genOrderRowId(cat.key,it.key)];
+      if(!rec||!rec.qty)return '';
+      any=true;
+      return `<div class="order-card" style="opacity:.88">
+        <div class="order-card-lbl" title="${it.label}">${it.label}</div>
+        <div style="text-align:center;font-family:var(--fm);font-size:0.74rem;color:var(--t1);padding:5px 0">${rec.qty} 🟢️</div>
+        <div class="order-card-meta">oleh ${rec.updatedBy||'—'}</div>
+      </div>`;
+    }).join('');
+    if(!cards)return '';
+    return `<div style="margin-bottom:14px">
+      <div style="font-family:var(--fb);font-size:0.68rem;color:var(--t2);letter-spacing:1px;margin-bottom:8px">『 ${cat.title} 』</div>
+      <div class="order-grid">${cards}</div>
+    </div>`;
+  }).join('');
+  if(!any)return '<div style="padding:20px 0;text-align:center;color:var(--t3)">Tidak ada item yang dipesan minggu ini.</div>';
+  return `<div style="font-family:var(--fm);font-size:0.58rem;color:var(--gd);letter-spacing:2px;margin-bottom:12px">📅 MINGGU ${weekKey}</div>${blocks}`;
+}
+
+function buildOrderDiscordPayload(){
+  const fields=orderCategories.map(cat=>{
+    const lines=cat.items.map(it=>{
+      const rec=orderData[genOrderRowId(cat.key,it.key)];
+      const filled=!!(rec&&rec.qty);
+      const val=filled?String(rec.qty)+' 🟢️':'-';
+      const label=it.label.length>22?it.label.slice(0,22):it.label;
+      return label.padEnd(23,'.')+' '+val;
+    }).join('\n');
+    return{name:'『 '+cat.title+' 』',value:'```\n'+lines+'\n```',inline:cat.items.length<=4};
+  });
+  const wib=new Date(Date.now()+7*3600000);
+  const tgl=wib.toISOString().split('T')[0]+' '+String(wib.getHours()).padStart(2,'0')+':'+String(wib.getMinutes()).padStart(2,'0')+' WIB';
+  return{
+    username:'BFL Ops Center',
+    avatar_url:'https://i.ibb.co/XrhVzJ5S/LOGO-BFL-transparaent-05-2-1.png',
+    embeds:[{
+      title:'📦 LAPORAN ORDER MINGGUAN — BFL',
+      description:'Minggu: **'+orderWeekKey+'**\nDiperbarui: '+tgl+'\nDikirim oleh: **'+(currentUser.username||'—')+'**',
+      color:0xFF2D55,
+      fields,
+      footer:{text:'BFL Operations Center'},
+      timestamp:new Date().toISOString()
+    }]
+  };
+}
+
+async function shareOrderToDiscord(){
+  if(!orderWebhookUrl){
+    alert('⚠ Webhook Discord belum diatur! Klik tombol ⚙ untuk mengatur URL webhook terlebih dahulu.');
+    openOrderWebhookModal();
+    return;
+  }
+  const btn=document.getElementById('order-share-btn');
+  const origLabel=btn?btn.textContent:'';
+  if(btn){btn.disabled=true;btn.style.opacity='.6';btn.textContent='Mengirim...';}
+  try{
+    const payload=buildOrderDiscordPayload();
+    const res=await fetch(orderWebhookUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    logActivity('SHARE_ORDER_DISCORD','Order minggu '+orderWeekKey+' dikirim ke Discord');
+    alert('✅ Berhasil dikirim ke Discord!');
+  }catch(err){
+    alert('⚠ Gagal mengirim ke Discord: '+err.message);
+  }finally{
+    if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=origLabel||'📤 SHARE KE DISCORD';}
+  }
+}
+
+// ─── MEMBER SETORAN MODAL (klik nama member) ─────────────────────
+function openMemberSetoranModal(nama){
+  document.getElementById('ms-member-val').value=nama;
+  document.getElementById('ms-member-name').textContent=nama;
+  document.getElementById('ms-jumlah').value='';
+  document.getElementById('ms-hint').textContent='';
+  // populate barang
+  const sel=document.getElementById('ms-barang');
+  sel.innerHTML='<option value="">— Pilih Barang —</option>';
+  masterBarangList.forEach(b=>{
+    const o=document.createElement('option');o.value=b.nama;o.textContent=b.nama+(b.logo?' '+b.logo:'');sel.appendChild(o);
+  });
+  document.getElementById('memberSetoranOverlay').style.display='flex';
+  setTimeout(()=>document.getElementById('ms-barang').focus(),100);
+}
+function closeMemberSetoranModal(){
+  document.getElementById('memberSetoranOverlay').style.display='none';
+}
+function msUpdateHint(){
+  const barang=document.getElementById('ms-barang').value;
+  const m=masterBarangList.find(b=>b.nama===barang);
+  const hint=document.getElementById('ms-hint');
+  if(hint)hint.textContent=m&&m.target?'(target: '+m.target+')':'';
+}
+async function saveMemberSetoran(){
+  const nama=document.getElementById('ms-member-val').value;
+  const barang=document.getElementById('ms-barang').value;
+  const jumlah=parseInt(document.getElementById('ms-jumlah').value)||0;
+  if(!nama||!barang||!jumlah){alert('⚠ Isi semua field!');return}
+  const masterItem=masterBarangList.find(b=>b.nama===barang);
+  const target=masterItem?.target||0;
+  const lunas=target>0&&jumlah>=target;
+  const item={id:genStId(),nama,barang,jumlah,target,lunas,createdAt:Date.now()};
+  setoranList.push(item);
+  try{
+    await fbSaveSetoranItem(item);
+    closeMemberSetoranModal();
+    logActivity('ADD_SETORAN','Nama: '+nama+', Barang: '+barang+', Jumlah: '+jumlah);
+    renderMember();
+    renderMemberSetoran();
+    renderSetoran();
+  }catch(err){
+    setoranList=setoranList.filter(x=>x.id!==item.id);
+    alert('⚠ Gagal simpan: '+err.message);
+  }
+}
+
+// ─── RENDER SETORAN DI MEMBER PAGE ────────────────────────────────
+function renderMemberSetoran(){
+  const filterText=(document.getElementById('mb-st-filter')?.value||'').toLowerCase();
+  const filterStatus=document.getElementById('mb-st-filter-status')?.value||'all';
+  let data=[...setoranList];
+  if(filterText)data=data.filter(s=>s.nama.toLowerCase().includes(filterText)||s.barang.toLowerCase().includes(filterText));
+  if(filterStatus==='belum')data=data.filter(s=>!s.lunas);
+  if(filterStatus==='lunas')data=data.filter(s=>s.lunas);
+
+  const totalAll=setoranList.length;
+  const lunasAll=setoranList.filter(s=>s.lunas).length;
+  const paidEl=document.getElementById('mb-setoran-paid-count');
+  if(paidEl)paidEl.textContent=lunasAll+'/'+totalAll+' Lunas';
+  const sumEl=document.getElementById('mb-st-summary');
+  if(sumEl)sumEl.textContent='Tampil '+data.length+' dari '+totalAll+' setoran';
+
+  const listEl=document.getElementById('mb-setoran-list');
+  const emptyEl=document.getElementById('mb-setoran-empty');
+  if(!listEl)return;
+  if(!data.length){listEl.innerHTML='';if(emptyEl)emptyEl.style.display='block';return}
+  if(emptyEl)emptyEl.style.display='none';
+
+  // Group by member name
+  const grouped={};
+  data.forEach(s=>{if(!grouped[s.nama])grouped[s.nama]=[];grouped[s.nama].push(s);});
+
+  listEl.innerHTML=Object.keys(grouped).sort().map(nama=>{
+    const items=grouped[nama];
+    const allLunas=items.every(s=>s.lunas);
+    const rows=items.map(s=>{
+      const m=masterBarangList.find(b=>b.nama===s.barang);
+      const target=m&&m.target?parseFloat(m.target):0;
+      const jumlah=parseFloat(s.jumlah)||0;
+      const pct=target>0?Math.min(100,Math.round((jumlah/target)*100)):0;
+      const barColor=s.lunas?'var(--em)':(pct>=50?'var(--gd)':'var(--cr)');
+      const progressHtml=target>0?`
+        <div style="margin-top:5px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <span style="font-family:var(--fm);font-size:0.55rem;color:${barColor}">${jumlah} / ${target}</span>
+            <span style="font-family:var(--fm);font-size:0.5rem;color:${barColor}">${pct}%</span>
+          </div>
+          <div style="height:3px;background:var(--ln);width:100%">
+            <div style="height:100%;width:${pct}%;background:${barColor};transition:width 0.3s"></div>
+          </div>
+        </div>`:`<div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);margin-top:3px">Disetor: <span style="color:var(--t1)">${jumlah}</span></div>`;
+      return`<div class="st-row${s.lunas?' lunas':''}">
+        <div class="st-check${s.lunas?' checked':''}" onclick="toggleLunas('${s.id}')">${s.lunas?'✓':''}</div>
+        <div class="st-info" style="flex:1;min-width:0">
+          <div class="st-nama-txt">${s.nama}</div>
+          <div class="st-barang-txt">📦 ${s.barang}</div>
+          ${progressHtml}
+        </div>
+        <span class="st-badge ${s.lunas?'lunas':'belum'}">${s.lunas?'LUNAS':'BELUM'}</span>
+        <div class="st-actions">
+          <button class="st-btn-edit" onclick="openEditSetoran('${s.id}')">✎ Edit</button>
+          <button class="st-btn-del" onclick="deleteSetoran('${s.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+    return`<div style="border-bottom:2px solid var(--ln)">
+      <div style="padding:8px 20px;background:var(--s2);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--fw);font-size:1rem;letter-spacing:1px;color:${allLunas?'var(--em)':'var(--t1)'}">${nama}</span>
+        <span style="font-family:var(--fm);font-size:0.6rem;color:${allLunas?'var(--em)':'var(--t3)'}">${items.filter(s=>s.lunas).length}/${items.length} item lunas</span>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
+  updateSetoranTimer();
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  SALARY SYSTEM
+// ─────────────────────────────────────────────────────────────────
+let salaryJualanList=[];
+let salaryNanamList=[];
+let activeSalaryTab='jualan';
+
+function genSalaryId(){return'SAL-'+Math.random().toString(36).substr(2,8).toUpperCase();}
+
+async function fbLoadSalary(){
+  try{
+    const snapJ=await getDocs(collection(db,'salary_jualan'));
+    salaryJualanList=[];
+    snapJ.forEach(d=>salaryJualanList.push(d.data()));
+    const snapN=await getDocs(collection(db,'salary_nanam'));
+    salaryNanamList=[];
+    snapN.forEach(d=>salaryNanamList.push(d.data()));
+  }catch(e){console.error('fbLoadSalary:',e);}
+}
+async function fbSaveSalaryItem(col,item){
+  await setDoc(doc(db,col,item.id),item);
+}
+async function fbDeleteSalaryItem(col,id){
+  await deleteDoc(doc(db,col,id));
+}
+
+function switchSalaryTab(tab){
+  activeSalaryTab=tab;
+  ['jualan','nanam','cumer'].forEach(t=>{
+    const panel=document.getElementById('sal-panel-'+t);
+    const btn=document.getElementById('sal-tab-'+t);
+    if(panel)panel.style.display=t===tab?'block':'none';
+    if(btn){
+      if(t===tab){btn.style.background='var(--cr3)';btn.style.color='var(--cr)';}
+      else{btn.style.background='transparent';btn.style.color='var(--t3)';}
+    }
+  });
+  if(tab==='cumer')renderSalaryCumer();
+}
+
+function renderSalaryPage(){
+  fbLoadSalary().then(()=>{
+    renderSalaryJualan();
+    renderSalaryNanam();
+    switchSalaryTab(activeSalaryTab||'jualan');
+  });
+}
+
+// ── JUALAN ──
+function salJMemberAcShow(){
+  const inp=document.getElementById('sal-j-member-search');
+  const listEl=document.getElementById('sal-j-member-ac');
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>`<div class="ac-item" onmousedown="salJMemberPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span><span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${m.jabatan||''}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function salJMemberPick(v){
+  document.getElementById('sal-j-member-search').value=v;
+  document.getElementById('sal-j-member').value=v;
+  document.getElementById('sal-j-member-ac').style.display='none';
+}
+function salJMemberAcClose(){document.getElementById('sal-j-member-ac').style.display='none';}
+function salJPenerimaAcShow(){
+  const inp=document.getElementById('sal-j-penerima-search');
+  const listEl=document.getElementById('sal-j-penerima-ac');
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>`<div class="ac-item" onmousedown="salJPenerimaPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function salJPenerimaPick(v){
+  document.getElementById('sal-j-penerima-search').value=v;
+  document.getElementById('sal-j-penerima').value=v;
+  document.getElementById('sal-j-penerima-ac').style.display='none';
+}
+function salJPenerimaAcClose(){document.getElementById('sal-j-penerima-ac').style.display='none';}
+function salJPreview(){
+  const j=parseFloat(document.getElementById('sal-j-jumlah').value)||0;
+  const gaji=j*0.2;
+  const prev=document.getElementById('sal-j-preview');
+  if(j>0){
+    prev.style.display='block';
+    document.getElementById('sal-j-prev-masuk').textContent=fmt(j);
+    document.getElementById('sal-j-prev-gaji').textContent=fmt(gaji);
+  }else{prev.style.display='none';}
+}
+async function salJSave(){
+  const member=document.getElementById('sal-j-member').value;
+  const barang=document.getElementById('sal-j-barang').value;
+  const jumlah=parseFloat(document.getElementById('sal-j-jumlah').value)||0;
+  const penerima=document.getElementById('sal-j-penerima').value;
+  if(!member||!barang||!jumlah){alert('⚠ Isi semua field (member, barang, jumlah)!');return}
+  const gaji=Math.round(jumlah*0.2);
+  const item={id:genSalaryId(),member,barang,jumlah,gaji,penerima,statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
+  salaryJualanList.push(item);
+  try{
+    await fbSaveSalaryItem('salary_jualan',item);
+    logActivity('ADD_SALARY','[JUALAN] '+member+' - '+barang+' - Gaji: '+fmt(gaji));
+    // reset form
+    document.getElementById('sal-j-member-search').value='';document.getElementById('sal-j-member').value='';
+    document.getElementById('sal-j-barang').value='';document.getElementById('sal-j-jumlah').value='';
+    document.getElementById('sal-j-penerima-search').value='';document.getElementById('sal-j-penerima').value='';
+    document.getElementById('sal-j-preview').style.display='none';
+    renderSalaryJualan();
+  }catch(err){salaryJualanList=salaryJualanList.filter(x=>x.id!==item.id);alert('⚠ Gagal: '+err.message);}
+}
+async function salJToggleStatus(id){
+  const item=salaryJualanList.find(x=>x.id===id);
+  if(!item)return;
+  item.statusGaji=item.statusGaji==='lunas'?'belum':'lunas';
+  await fbSaveSalaryItem('salary_jualan',item);
+  renderSalaryJualan();
+}
+async function salJDelete(id){
+  if(!confirm('Hapus data gaji ini?'))return;
+  salaryJualanList=salaryJualanList.filter(x=>x.id!==id);
+  await fbDeleteSalaryItem('salary_jualan',id);
+  renderSalaryJualan();
+}
+function renderSalaryJualan(){
+  const tbody=document.getElementById('sal-j-tbody');
+  const emptyEl=document.getElementById('sal-j-empty');
+  const sumEl=document.getElementById('sal-j-summary');
+  const pendingEl=document.getElementById('sal-j-total-pending');
+  if(!tbody)return;
+  const totalPending=salaryJualanList.filter(x=>x.statusGaji!=='lunas').reduce((a,x)=>a+x.gaji,0);
+  if(pendingEl)pendingEl.textContent=fmt(totalPending);
+  const lunas=salaryJualanList.filter(x=>x.statusGaji==='lunas').length;
+  if(sumEl)sumEl.textContent=lunas+'/'+salaryJualanList.length+' gaji sudah dibayar';
+  if(!salaryJualanList.length){
+    tbody.innerHTML='';
+    if(emptyEl)emptyEl.style.display='block';
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+  const sorted=[...salaryJualanList].sort((a,b)=>b.ts-a.ts);
+  tbody.innerHTML=sorted.map((x,i)=>{
+    const dt=new Date(x.ts);
+    const dtStr=dt.toLocaleDateString('id-ID')+' '+dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const isLunas=x.statusGaji==='lunas';
+    return`<tr>
+      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem">${i+1}</td>
+      <td style="font-weight:600">${x.member}</td>
+      <td><span style="font-family:var(--fm);font-size:0.72rem;color:var(--t2)">${x.barang}</span></td>
+      <td style="color:var(--cr);font-family:var(--fm);font-size:0.75rem">${fmt(x.jumlah)}</td>
+      <td style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(x.gaji)}</td>
+      <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem">${x.penerima||'—'}</td>
+      <td>
+        <span onclick="salJToggleStatus('${x.id}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};color:${isLunas?'var(--em)':'var(--cr)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'};letter-spacing:1px">
+          ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+        </span>
+      </td>
+      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem;white-space:nowrap">${dtStr}</td>
+      <td><button onclick="salJDelete('${x.id}')" class="btn-row-del">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── NANAM & OLAH ──
+function salNMemberAcShow(){
+  const inp=document.getElementById('sal-n-member-search');
+  const listEl=document.getElementById('sal-n-member-ac');
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>`<div class="ac-item" onmousedown="salNMemberPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function salNMemberPick(v){
+  document.getElementById('sal-n-member-search').value=v;
+  document.getElementById('sal-n-member').value=v;
+  document.getElementById('sal-n-member-ac').style.display='none';
+}
+function salNMemberAcClose(){document.getElementById('sal-n-member-ac').style.display='none';}
+function salNPenerimaAcShow(){
+  const inp=document.getElementById('sal-n-penerima-search');
+  const listEl=document.getElementById('sal-n-penerima-ac');
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>`<div class="ac-item" onmousedown="salNPenerimaPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function salNPenerimaPick(v){
+  document.getElementById('sal-n-penerima-search').value=v;
+  document.getElementById('sal-n-penerima').value=v;
+  document.getElementById('sal-n-penerima-ac').style.display='none';
+}
+function salNPenerimaAcClose(){document.getElementById('sal-n-penerima-ac').style.display='none';}
+function salNPreview(){
+  const pcs=parseFloat(document.getElementById('sal-n-pcs').value)||0;
+  const gaji=pcs*200;
+  const prev=document.getElementById('sal-n-preview');
+  if(pcs>0){
+    prev.style.display='block';
+    document.getElementById('sal-n-prev-pcs').textContent=pcs+' pcs';
+    document.getElementById('sal-n-prev-gaji').textContent=fmt(gaji);
+  }else{prev.style.display='none';}
+}
+async function salNSave(){
+  const member=document.getElementById('sal-n-member').value;
+  const jenis=document.getElementById('sal-n-jenis').value;
+  const pcs=parseFloat(document.getElementById('sal-n-pcs').value)||0;
+  const penerima=document.getElementById('sal-n-penerima').value;
+  if(!member||!jenis||!pcs){alert('⚠ Isi semua field!');return}
+  const gaji=pcs*200;
+  const item={id:genSalaryId(),member,jenis,pcs,gaji,penerima,statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
+  salaryNanamList.push(item);
+  try{
+    await fbSaveSalaryItem('salary_nanam',item);
+    logActivity('ADD_SALARY','[NANAM] '+member+' - '+jenis+' - '+pcs+'pcs - Gaji: '+fmt(gaji));
+    document.getElementById('sal-n-member-search').value='';document.getElementById('sal-n-member').value='';
+    document.getElementById('sal-n-jenis').value='';document.getElementById('sal-n-pcs').value='';
+    document.getElementById('sal-n-penerima-search').value='';document.getElementById('sal-n-penerima').value='';
+    document.getElementById('sal-n-preview').style.display='none';
+    renderSalaryNanam();
+  }catch(err){salaryNanamList=salaryNanamList.filter(x=>x.id!==item.id);alert('⚠ Gagal: '+err.message);}
+}
+async function salNToggleStatus(id){
+  const item=salaryNanamList.find(x=>x.id===id);
+  if(!item)return;
+  item.statusGaji=item.statusGaji==='lunas'?'belum':'lunas';
+  await fbSaveSalaryItem('salary_nanam',item);
+  renderSalaryNanam();
+}
+async function salNDelete(id){
+  if(!confirm('Hapus data gaji ini?'))return;
+  salaryNanamList=salaryNanamList.filter(x=>x.id!==id);
+  await fbDeleteSalaryItem('salary_nanam',id);
+  renderSalaryNanam();
+}
+function renderSalaryNanam(){
+  const tbody=document.getElementById('sal-n-tbody');
+  const emptyEl=document.getElementById('sal-n-empty');
+  const sumEl=document.getElementById('sal-n-summary');
+  const pendingEl=document.getElementById('sal-n-total-pending');
+  if(!tbody)return;
+  const totalPending=salaryNanamList.filter(x=>x.statusGaji!=='lunas').reduce((a,x)=>a+x.gaji,0);
+  if(pendingEl)pendingEl.textContent=fmt(totalPending);
+  const lunas=salaryNanamList.filter(x=>x.statusGaji==='lunas').length;
+  if(sumEl)sumEl.textContent=lunas+'/'+salaryNanamList.length+' gaji sudah dibayar';
+  if(!salaryNanamList.length){
+    tbody.innerHTML='';
+    if(emptyEl)emptyEl.style.display='block';
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+  const sorted=[...salaryNanamList].sort((a,b)=>b.ts-a.ts);
+  tbody.innerHTML=sorted.map((x,i)=>{
+    const dt=new Date(x.ts);
+    const dtStr=dt.toLocaleDateString('id-ID')+' '+dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const isLunas=x.statusGaji==='lunas';
+    return`<tr>
+      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem">${i+1}</td>
+      <td style="font-weight:600">${x.member}</td>
+      <td><span style="font-family:var(--fm);font-size:0.72rem;color:var(--em)">${x.jenis}</span></td>
+      <td style="color:var(--t1);font-family:var(--fm)">${x.pcs} pcs</td>
+      <td style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(x.gaji)}</td>
+      <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem">${x.penerima||'—'}</td>
+      <td>
+        <span onclick="salNToggleStatus('${x.id}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};color:${isLunas?'var(--em)':'var(--cr)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'};letter-spacing:1px">
+          ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+        </span>
+      </td>
+      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem;white-space:nowrap">${dtStr}</td>
+      <td><button onclick="salNDelete('${x.id}')" class="btn-row-del">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CUMER (dari data transaksi) ──
+function renderSalaryCumer(){
+  const listEl=document.getElementById('sal-c-list');
+  const summaryTbody=document.getElementById('sal-c-summary-tbody');
+  const emptyEl=document.getElementById('sal-c-empty');
+  if(!listEl)return;
+
+  // Filter transaksi yang punya pekerja cuci & status done
+  const txWithPekerja=transactions.filter(tx=>(tx.pekerjaCuci||tx.pekerja||'').trim().length>0);
+  if(!txWithPekerja.length){
+    listEl.innerHTML='<div style="padding:40px;text-align:center;color:var(--t3);font-family:var(--fm);font-size:0.7rem;letter-spacing:2px">BELUM ADA TRANSAKSI DENGAN PEKERJA CUCI</div>';
+    if(emptyEl)emptyEl.style.display='block';
+    if(summaryTbody)summaryTbody.innerHTML='';
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+
+  // Hitung per transaksi
+  const perPekerja={};
+  const txRows=txWithPekerja.map(tx=>{
+    const pekerjaArr=(tx.pekerjaCuci||tx.pekerja||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const profit=tx.profit||tx.pot2||0;
+    const isBFL=(tx.kelompok||'').trim().toUpperCase()==='BFL';
+    const gajiPct=isBFL?0.444445:0.33;
+    const totalGajiPool=Math.round(profit*gajiPct);
+    const profitBersih=profit-totalGajiPool;
+    const gajiPerOrang=pekerjaArr.length>0?Math.round(totalGajiPool/pekerjaArr.length):0;
+    // akumulasi per pekerja
+    pekerjaArr.forEach(p=>{
+      if(!perPekerja[p])perPekerja[p]={total:0,count:0};
+      perPekerja[p].total+=gajiPerOrang;
+      perPekerja[p].count++;
+    });
+    return{tx,pekerjaArr,profit,totalGajiPool,gajiPerOrang,profitBersih,isBFL};
+  });
+
+  listEl.innerHTML=txRows.map(({tx,pekerjaArr,profit,totalGajiPool,gajiPerOrang,profitBersih,isBFL})=>{
+    const dt=new Date((tx.ts||0));
+    const dtStr=tx.tanggal||(tx.ts?dt.toLocaleDateString('id-ID'):'—');
+    const gajiLabel=isBFL?'ALOKASI GAJI (44.44%)':'ALOKASI GAJI (33%)';
+    return`<div style="border:1px solid var(--ln);margin-bottom:12px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;background:var(--s2);padding:10px 16px;gap:8px;border-bottom:1px solid var(--ln)">
+        <div>
+          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">KELOMPOK</div>
+          <div style="font-size:0.85rem;font-weight:600;margin-top:2px">${tx.kelompok}${isBFL?'<span style="font-family:var(--fm);font-size:0.45rem;color:var(--cr);margin-left:6px;letter-spacing:1px">BFL RATE</span>':''}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">TANGGAL</div>
+          <div style="font-family:var(--fm);font-size:0.72rem;color:var(--t2);margin-top:2px">${dtStr}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">KEUNTUNGAN KOTOR</div>
+          <div style="font-family:var(--fw);font-size:0.9rem;color:var(--gd);margin-top:2px">${fmt(profit)}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">${gajiLabel}</div>
+          <div style="font-family:var(--fw);font-size:0.9rem;color:var(--vi);margin-top:2px">${fmt(totalGajiPool)}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">PROFIT BERSIH</div>
+          <div style="font-family:var(--fw);font-size:0.9rem;color:var(--em);margin-top:2px">${fmt(profitBersih)}</div>
+        </div>
+      </div>
+      <div style="padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">PEKERJA CUCI:</span>
+        ${pekerjaArr.map(p=>`
+          <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3)">
+            <span style="font-size:0.82rem;font-weight:600">${p}</span>
+            <span style="font-family:var(--fw);font-size:0.82rem;color:var(--vi)">${fmt(gajiPerOrang)}</span>
+          </div>`).join('')}
+        ${pekerjaArr.length>1?`<span style="font-family:var(--fm);font-size:0.55rem;color:var(--t3)">÷ ${pekerjaArr.length} orang = ${fmt(gajiPerOrang)}/orang</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Summary per pekerja
+  if(summaryTbody){
+    const entries=Object.entries(perPekerja).sort((a,b)=>b[1].total-a[1].total);
+    summaryTbody.innerHTML=entries.map(([nama,data])=>{
+      const isPaid=cumerPayStatus[nama]==='lunas';
+      const safeNama=nama.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return`<tr>
+        <td style="font-weight:600">${nama}</td>
+        <td style="font-family:var(--fm);color:var(--t3)">${data.count} transaksi</td>
+        <td style="font-family:var(--fw);font-size:1rem;color:var(--vi)">${fmt(data.total)}</td>
+        <td>
+          <span onclick="toggleCumerPayStatus('${safeNama}')"
+            style="cursor:pointer;font-family:var(--fm);font-size:0.62rem;padding:6px 14px;
+            border:1px solid ${isPaid?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};
+            color:${isPaid?'var(--em)':'var(--cr)'};
+            background:${isPaid?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'};
+            letter-spacing:1px;display:inline-block;user-select:none">
+            ${isPaid?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+          </span>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  CUMER PAYMENT STATUS
+// ─────────────────────────────────────────────────────────────────
+
+async function fbLoadCumerPayStatus(){
+  try{
+    const snap=await getDoc(doc(db,'bfl','cumerPayStatus'));
+    if(snap.exists()) cumerPayStatus=snap.data()||{};
+    else cumerPayStatus={};
+  }catch(e){ cumerPayStatus={}; }
+}
+
+async function fbSaveCumerPayStatus(){
+  try{
+    await setDoc(doc(db,'bfl','cumerPayStatus'),cumerPayStatus);
+  }catch(e){ console.error('Gagal simpan cumerPayStatus:',e); }
+}
+
+async function toggleCumerPayStatus(nama){
+  const prev=cumerPayStatus[nama]||'belum';
+  cumerPayStatus[nama]=prev==='lunas'?'belum':'lunas';
+  await fbSaveCumerPayStatus();
+  logActivity('CUMER_PAY_STATUS','Pekerja: '+nama+' → '+(cumerPayStatus[nama]==='lunas'?'SUDAH DIBAYAR':'BELUM DIBAYAR'));
+  renderSalaryCumer();
+}
+
+// ─────────────────────────────────────────────────────────────────
+//  END SALARY
+// ─────────────────────────────────────────────────────────────────
+
+window.openMemberSetoranModal=openMemberSetoranModal;
+window.closeMemberSetoranModal=closeMemberSetoranModal;
+window.msUpdateHint=msUpdateHint;
+window.saveMemberSetoran=saveMemberSetoran;
+window.renderMemberSetoran=renderMemberSetoran;
+window.switchSalaryTab=switchSalaryTab;
+window.renderSalaryPage=renderSalaryPage;
+window.toggleCumerPayStatus=toggleCumerPayStatus;
+window.salJMemberAcShow=salJMemberAcShow;
+window.salJMemberPick=salJMemberPick;
+window.salJMemberAcClose=salJMemberAcClose;
+window.salJPenerimaAcShow=salJPenerimaAcShow;
+window.salJPenerimaPick=salJPenerimaPick;
+window.salJPenerimaAcClose=salJPenerimaAcClose;
+window.salJPreview=salJPreview;
+window.salJSave=salJSave;
+window.salJToggleStatus=salJToggleStatus;
+window.salJDelete=salJDelete;
+window.salNMemberAcShow=salNMemberAcShow;
+window.salNMemberPick=salNMemberPick;
+window.salNMemberAcClose=salNMemberAcClose;
+window.salNPenerimaAcShow=salNPenerimaAcShow;
+window.salNPenerimaPick=salNPenerimaPick;
+window.salNPenerimaAcClose=salNPenerimaAcClose;
+window.salNPreview=salNPreview;
+window.salNSave=salNSave;
+window.salNToggleStatus=salNToggleStatus;
+window.salNDelete=salNDelete;
 window.openProgModal=openProgModal;
 window.closeProgModal=closeProgModal;
 window.onProgDoneInput=onProgDoneInput;
@@ -4063,6 +5687,27 @@ window.toggleRehatFields=toggleRehatFields;
 window.saveEditMember=saveEditMember;
 window.deleteMemberById=deleteMemberById;
 window.renderMember=renderMember;
+
+window.saveOrderQty=saveOrderQty;
+window.confirmResetOrder=confirmResetOrder;
+window.closeResetOrder=closeResetOrder;
+window.doResetOrder=doResetOrder;
+window.openOrderWebhookModal=openOrderWebhookModal;
+window.closeOrderWebhookModal=closeOrderWebhookModal;
+window.saveOrderWebhook=saveOrderWebhook;
+window.shareOrderToDiscord=shareOrderToDiscord;
+window.toggleOrderHistoryPanel=toggleOrderHistoryPanel;
+window.viewOrderHistoryWeek=viewOrderHistoryWeek;
+window.renderOrderTable=renderOrderTable;
+window.openKelolaOrder=openKelolaOrder;
+window.closeKelolaOrder=closeKelolaOrder;
+window.addOrderCategory=addOrderCategory;
+window.deleteOrderCategory=deleteOrderCategory;
+window.saveOrderCategoryTitle=saveOrderCategoryTitle;
+window.saveOrderCategoryColor=saveOrderCategoryColor;
+window.addOrderItem=addOrderItem;
+window.deleteOrderItem=deleteOrderItem;
+window.saveOrderItemLabel=saveOrderItemLabel;
 
 // ─── EVENT LISTENERS ──────────────────────────────────────────────
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
