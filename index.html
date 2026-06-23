@@ -4190,11 +4190,19 @@ async function addSetoran(){
 
 async function toggleLunas(id){
   const item=setoranList.find(s=>s.id===id);
-  if(!item)return;
+  if(!item){console.warn('toggleLunas: item tidak ditemukan',id);return;}
+  const prev=item.lunas;
   item.lunas=!item.lunas;
-  await fbSaveSetoranItem(item);
-  logActivity('TOGGLE_LUNAS','Nama: '+item.nama+', Barang: '+item.barang+', Status: '+(item.lunas?'Lunas':'Belum Lunas'));
+  try{
+    await fbSaveSetoranItem(item);
+    logActivity('TOGGLE_LUNAS','Nama: '+item.nama+', Barang: '+item.barang+', Status: '+(item.lunas?'Lunas':'Belum Lunas'));
+  }catch(err){
+    item.lunas=prev;
+    alert('⚠ Gagal menyimpan: '+err.message);
+  }
   renderSetoran();
+  renderMemberSetoran();
+  renderMember();
 }
 
 function openEditSetoran(id){
