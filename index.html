@@ -1797,6 +1797,61 @@ position:relative;z-index:1;}
           </div>
         </div>
 
+        <!-- ══ DISCORD WEBHOOK SETTING ══ -->
+        <div class="panel" id="discord-setting-panel" style="margin-top:20px">
+          <div class="panel-head">
+            <div class="panel-title"><div class="p-pip" style="background:#5865F2;box-shadow:0 0 8px rgba(88,101,242,0.6)"></div>Discord Webhook Config</div>
+            <div style="font-family:var(--fm);font-size:0.58rem;color:#5865F2;letter-spacing:1px">🔗 DISCORD INTEGRATION</div>
+          </div>
+          <div class="panel-body">
+            <!-- Channel 1: Dev Update (readonly display) -->
+            <div style="margin-bottom:20px;padding:14px;background:rgba(88,101,242,0.06);border:1px solid rgba(88,101,242,0.2)">
+              <div style="font-family:var(--fm);font-size:0.55rem;color:#5865F2;letter-spacing:3px;margin-bottom:8px">📢 CHANNEL 1 — SYSTEM UPDATE (DEVELOPER)</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="flex:1;padding:10px 14px;background:var(--s2);border:1px solid var(--ln);font-family:var(--fm);font-size:0.65rem;color:var(--t3);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                  🔒 Hardcoded oleh developer — tidak bisa diubah dari panel ini
+                </div>
+                <div id="discord-dev-status" style="font-family:var(--fm);font-size:0.6rem;color:var(--em);letter-spacing:1px;white-space:nowrap">● AKTIF</div>
+              </div>
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px;margin-top:8px">Notifikasi otomatis dikirim ketika developer push update fitur baru ke sistem.</div>
+            </div>
+            <!-- Channel 2: Activity Log Webhook -->
+            <div style="margin-bottom:16px">
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--gd);letter-spacing:3px;margin-bottom:8px">📋 CHANNEL 2 — LOG AKTIVITAS USER</div>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end">
+                <div>
+                  <label style="display:block;font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px;margin-bottom:6px">DISCORD WEBHOOK URL (untuk log aktivitas semua user)</label>
+                  <input id="discord-log-webhook-input" type="text" placeholder="https://discord.com/api/webhooks/..."
+                    style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.72rem;outline:none;box-sizing:border-box;letter-spacing:0.5px"
+                    onfocus="this.style.borderColor='#5865F2'" onblur="this.style.borderColor='var(--ln)'">
+                </div>
+                <button onclick="saveDiscordLogWebhook()"
+                  style="padding:11px 20px;background:#5865F2;border:none;color:#fff;font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer;white-space:nowrap"
+                  onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                  SIMPAN
+                </button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px">Semua aksi operator & admin akan dikirim ke channel ini secara real-time.</div>
+                <div id="discord-log-status" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px">● BELUM DISET</div>
+              </div>
+            </div>
+            <!-- Test button -->
+            <div style="border-top:1px solid var(--ln);padding-top:14px;display:flex;gap:10px">
+              <button onclick="testDiscordLog()"
+                style="padding:9px 18px;background:transparent;border:1px solid rgba(88,101,242,0.4);color:#5865F2;font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
+                onmouseover="this.style.background='rgba(88,101,242,0.08)'" onmouseout="this.style.background='transparent'">
+                🧪 TEST LOG WEBHOOK
+              </button>
+              <button onclick="testDiscordDev()"
+                style="padding:9px 18px;background:transparent;border:1px solid rgba(88,101,242,0.4);color:#5865F2;font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
+                onmouseover="this.style.background='rgba(88,101,242,0.08)'" onmouseout="this.style.background='transparent'">
+                🔧 TEST DEV WEBHOOK
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -2696,6 +2751,84 @@ let weeklyData={masuk:0,bersih:0,profit:0,pot1:0,pot2:0,pajak:0,count:0,startedA
 let currentUser={username:'',role:''}; // role: 'admin' (akun utama) atau 'operator'
 const MASTER_USERNAME='teambfl'; // satu-satunya akun yang boleh melihat Log Aktivitas
 
+// ─── DISCORD WEBHOOK CONFIG ───────────────────────────────────────
+// Channel 1: Update sistem dari developer (hardcoded)
+const DISCORD_DEV_WEBHOOK='https://discord.com/api/webhooks/1518772241293250721/llm8-hZf2ZRHZFsbfz07lB_IjPq0U_2SKVMnDLzpyyRFUDR9u8-sHUY_4pFhcNy2QymY';
+// Channel 2: Log aktivitas user (disimpan di Firestore, bisa diset lewat panel setting)
+let DISCORD_LOG_WEBHOOK=''; // diload dari Firestore config
+
+// Kirim ke Discord webhook dengan embed rapi
+async function sendDiscordEmbed(webhookUrl, embed){
+  if(!webhookUrl) return;
+  try{
+    await fetch(webhookUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({embeds:[embed]})
+    });
+  }catch(e){console.warn('Discord webhook gagal:',e);}
+}
+
+// ── Notifikasi UPDATE SISTEM (dari developer) ──
+async function notifyDevUpdate(judul, perubahan=[]){
+  const embed={
+    title:'🔧  BFL SYSTEM UPDATE',
+    description:'**'+judul+'**',
+    color:0xff2d55,
+    fields: perubahan.map((p,i)=>({name:(i===0?'📋 Perubahan':''), value:'• '+p, inline:false})),
+    footer:{text:'BFL Management System • '+new Date().toLocaleString('id-ID')},
+    timestamp: new Date().toISOString()
+  };
+  await sendDiscordEmbed(DISCORD_DEV_WEBHOOK, embed);
+}
+
+// ── Notifikasi LOG AKTIVITAS USER ──
+const LOG_COLOR_MAP={
+  LOGIN:0x00ff94, LOGOUT:0x6b6b85,
+  ADD_TX:0x00ff94, EDIT_TX:0xffb800, DELETE_TX:0xff2d55,
+  STATUS_TX:0xffb800, RESET_WEEK:0xff2d55, RESET_ALL:0xff2d55,
+  ADD_MEMBER:0x00ff94, EDIT_MEMBER:0xffb800, DELETE_MEMBER:0xff2d55,
+  ADD_OPERATOR:0x00ff94, TOGGLE_OPERATOR:0xffb800, DELETE_OPERATOR:0xff2d55,
+  SALARY:0xa855f7, NANAM:0xa855f7, JUALAN:0xa855f7,
+  ORDER:0xffb800, EXPORT:0x4488ff
+};
+function getLogColor(action){
+  for(const [key,col] of Object.entries(LOG_COLOR_MAP)){
+    if(action.toUpperCase().includes(key)) return col;
+  }
+  return 0x10101c;
+}
+async function sendLogToDiscord(username, role, action, detail){
+  if(!DISCORD_LOG_WEBHOOK) return;
+  const roleLabel = role==='admin'?'👑 ADMIN':'🔧 OPERATOR';
+  const embed={
+    title:'📋  BFL ACTIVITY LOG',
+    color: getLogColor(action),
+    fields:[
+      {name:'👤 User', value:'`'+username+'` — '+roleLabel, inline:true},
+      {name:'⚡ Aksi', value:'`'+action+'`', inline:true},
+      {name:'📝 Detail', value: detail||'—', inline:false},
+    ],
+    footer:{text:'BFL System • '+new Date().toLocaleString('id-ID')},
+    timestamp: new Date().toISOString()
+  };
+  await sendDiscordEmbed(DISCORD_LOG_WEBHOOK, embed);
+}
+
+// Load webhook log dari Firestore
+async function fbLoadDiscordConfig(){
+  try{
+    const snap=await getDoc(doc(db,'config','discord'));
+    if(snap.exists()&&snap.data().logWebhook){
+      DISCORD_LOG_WEBHOOK=snap.data().logWebhook;
+    }
+  }catch(e){}
+}
+async function fbSaveDiscordConfig(logWebhook){
+  await setDoc(doc(db,'config','discord'),{logWebhook});
+  DISCORD_LOG_WEBHOOK=logWebhook;
+}
+
 // ─── ORDER (sidebar baru) ─────────────────────────────────────────
 let orderWeekKey='';
 let orderData={}; // key: catKey__itemKey -> {id,catKey,itemKey,catTitle,itemLabel,qty,updatedAt,updatedBy}
@@ -2860,6 +2993,8 @@ async function logActivityRaw(username,role,action,detail){
     const entry={id:genLogId(),username:username||'unknown',role:role||'unknown',
       action,detail:detail||'',timestamp:Date.now()};
     await setDoc(doc(db,'activity_log',entry.id),entry);
+    // Kirim ke Discord log channel (async, tidak blocking)
+    sendLogToDiscord(username||'unknown', role||'unknown', action, detail||'').catch(()=>{});
   }catch(e){console.error('Gagal mencatat log aktivitas:',e);}
 }
 function logActivity(action,detail){
@@ -3217,7 +3352,7 @@ function showPage(id){
   if(id==='member'){renderMember();updateMemberStats();renderMemberSetoran();}
   if(id==='salary'){renderSalaryPage();}
   if(id==='order'){renderOrderTable();updateOrderTimer();}
-  if(id==='users'){fbLoadOperators().then(renderOperators);}
+  if(id==='users'){fbLoadOperators().then(renderOperators);renderDiscordStatus();}
   if(id==='logs'){fbLoadLogs().then(renderLogs);}
 }
 
@@ -3765,6 +3900,7 @@ async function initApp(){
   await fbLoadOrderStructure();
   await fbLoadOrder();
   await fbLoadOrderWebhook();
+  await fbLoadDiscordConfig();
   startRealtimeSync();
   checkAutoReset();
   checkAutoResetSetoran();
@@ -5940,6 +6076,51 @@ window.saveEditMember=saveEditMember;
 window.deleteMemberById=deleteMemberById;
 window.renderMember=renderMember;
 
+// ─── DISCORD SETTING UI FUNCTIONS ────────────────────────────────
+function renderDiscordStatus(){
+  const logStatus=document.getElementById('discord-log-status');
+  const logInput=document.getElementById('discord-log-webhook-input');
+  if(logStatus){
+    if(DISCORD_LOG_WEBHOOK){
+      logStatus.textContent='● AKTIF';
+      logStatus.style.color='var(--em)';
+    }else{
+      logStatus.textContent='● BELUM DISET';
+      logStatus.style.color='var(--t3)';
+    }
+  }
+  if(logInput&&DISCORD_LOG_WEBHOOK) logInput.value=DISCORD_LOG_WEBHOOK;
+}
+async function saveDiscordLogWebhook(){
+  const input=document.getElementById('discord-log-webhook-input');
+  const val=(input?input.value.trim():'');
+  if(!val){alert('⚠ Masukkan URL webhook Discord!');return;}
+  if(!val.startsWith('https://discord.com/api/webhooks/')){alert('⚠ URL webhook tidak valid! Harus diawali https://discord.com/api/webhooks/');return;}
+  try{
+    await fbSaveDiscordConfig(val);
+    renderDiscordStatus();
+    await logActivity('SET_DISCORD_WEBHOOK','Mengatur Discord log webhook');
+    alert('✅ Webhook berhasil disimpan! Semua log aktivitas akan dikirim ke channel Discord tersebut.');
+  }catch(e){alert('⚠ Gagal menyimpan: '+e.message);}
+}
+async function testDiscordLog(){
+  if(!DISCORD_LOG_WEBHOOK){alert('⚠ Webhook belum diset! Isi dulu webhook URL-nya.');return;}
+  await sendLogToDiscord(currentUser.username, currentUser.role, 'TEST_WEBHOOK', '🧪 Ini adalah pesan test dari BFL System. Webhook log aktivitas sudah terhubung!');
+  alert('✅ Pesan test dikirim! Cek channel Discord kamu.');
+}
+async function testDiscordDev(){
+  await notifyDevUpdate('🧪 Test Notifikasi Developer',[
+    'Ini adalah test koneksi webhook developer',
+    'Jika muncul di Discord, berarti webhook aktif dan siap digunakan',
+    'Update fitur baru akan otomatis muncul di channel ini'
+  ]);
+  alert('✅ Pesan test dikirim ke channel dev! Cek channel Discord kamu.');
+}
+
+window.saveDiscordLogWebhook=saveDiscordLogWebhook;
+window.testDiscordLog=testDiscordLog;
+window.testDiscordDev=testDiscordDev;
+window.notifyDevUpdate=notifyDevUpdate;
 window.saveOrderQty=saveOrderQty;
 window.confirmResetOrder=confirmResetOrder;
 window.closeResetOrder=closeResetOrder;
