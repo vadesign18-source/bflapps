@@ -1596,7 +1596,20 @@ position:relative;z-index:1;}
         </div>
       </div>
 
-      <div class="content" style="padding-top:24px">
+      <!-- ── TAB BAR ── -->
+      <div style="display:flex;border-bottom:1px solid var(--ln);background:var(--s1);position:sticky;top:0;z-index:50">
+        <button id="mb-tab-member" onclick="switchMemberTab('member')"
+          style="padding:14px 32px;background:transparent;border:none;border-bottom:2px solid var(--cr);color:#fff;font-family:var(--fw);font-size:1.05rem;letter-spacing:2px;cursor:pointer;transition:all 0.15s">
+          👥 MEMBER
+        </button>
+        <button id="mb-tab-setoran" onclick="switchMemberTab('setoran')"
+          style="padding:14px 32px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--t2);font-family:var(--fw);font-size:1.05rem;letter-spacing:2px;cursor:pointer;transition:all 0.15s">
+          💰 SETORAN
+        </button>
+      </div>
+
+      <!-- ── TAB: MEMBER ── -->
+      <div id="mb-panel-member" class="content" style="padding-top:24px">
 
         <!-- Statistik Jabatan -->
         <div id="mb-jabatan-stats" style="margin-bottom:20px"></div>
@@ -1642,46 +1655,48 @@ position:relative;z-index:1;}
           </div>
         </div>
 
-        <!-- SETORAN PANEL (pindah ke sini dari sidebar) -->
-        <div style="margin-top:28px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-            <div>
-              <div style="font-family:var(--fw);font-size:2rem;color:#fff;letter-spacing:1px;line-height:1">SETORAN <em style="color:var(--cr);font-style:normal">ANGGOTA</em></div>
-              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px;margin-top:4px">// klik nama member untuk input setoran · reset otomatis Senin 00:00 WIB</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-              <div id="mb-setoran-timer-badge" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:2px;text-align:right">
-                <div style="color:var(--gd);font-size:0.75rem" id="mb-setoran-paid-count">0/0 Lunas</div>
-                <div>Reset: <span id="mb-setoran-reset-label">—</span></div>
-              </div>
-              <button onclick="confirmResetSetoran()" style="padding:8px 16px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">⟳ RESET</button>
-            </div>
-          </div>
+      </div>
 
-          <!-- Setoran Filter -->
-          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-            <input id="mb-st-filter" type="text" placeholder="Cari nama / barang..." oninput="renderMemberSetoran()"
-              style="flex:1;min-width:160px;padding:9px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.8rem;outline:none"
-              onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
-            <select id="mb-st-filter-status" onchange="renderMemberSetoran()"
-              style="padding:9px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.8rem;outline:none;cursor:pointer">
-              <option value="all">Semua Status</option>
-              <option value="belum">Belum Bayar</option>
-              <option value="lunas">Sudah Lunas</option>
-            </select>
-          </div>
+      <!-- ── TAB: SETORAN ── -->
+      <div id="mb-panel-setoran" class="content" style="padding-top:24px;display:none">
 
-          <div class="panel">
-            <div class="panel-head">
-              <div class="panel-title"><div class="p-pip em"></div>Daftar Setoran</div>
-              <div id="mb-st-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-family:var(--fw);font-size:2rem;color:#fff;letter-spacing:1px;line-height:1">SETORAN <em style="color:var(--cr);font-style:normal">ANGGOTA</em></div>
+            <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px;margin-top:4px">// klik nama member untuk input setoran · reset otomatis Senin 00:00 WIB</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <div id="mb-setoran-timer-badge" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:2px;text-align:right">
+              <div style="color:var(--gd);font-size:0.75rem" id="mb-setoran-paid-count">0/0 Lunas</div>
+              <div>Reset: <span id="mb-setoran-reset-label">—</span></div>
             </div>
-            <div class="panel-body" style="padding:0">
-              <div id="mb-setoran-list" style="min-height:80px"></div>
-              <div id="mb-setoran-empty" style="display:none;padding:48px;text-align:center">
-                <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">◈</div>
-                <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA SETORAN — KLIK NAMA MEMBER UNTUK INPUT</div>
-              </div>
+            <button onclick="confirmResetSetoran()" style="padding:8px 16px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">⟳ RESET</button>
+          </div>
+        </div>
+
+        <!-- Setoran Filter -->
+        <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+          <input id="mb-st-filter" type="text" placeholder="Cari nama / barang..." oninput="renderMemberSetoran()"
+            style="flex:1;min-width:160px;padding:9px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.8rem;outline:none"
+            onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+          <select id="mb-st-filter-status" onchange="renderMemberSetoran()"
+            style="padding:9px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.8rem;outline:none;cursor:pointer">
+            <option value="all">Semua Status</option>
+            <option value="belum">Belum Bayar</option>
+            <option value="lunas">Sudah Lunas</option>
+          </select>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><div class="p-pip em"></div>Daftar Setoran</div>
+            <div id="mb-st-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <div id="mb-setoran-list" style="min-height:80px"></div>
+            <div id="mb-setoran-empty" style="display:none;padding:48px;text-align:center">
+              <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">◈</div>
+              <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA SETORAN — KLIK NAMA MEMBER UNTUK INPUT</div>
             </div>
           </div>
         </div>
@@ -2770,13 +2785,17 @@ async function sendDiscordEmbed(webhookUrl, embed){
 }
 
 // ── Notifikasi UPDATE SISTEM (dari developer) ──
+const BFL_LOGO_URL='https://i.ibb.co/XrhVzJ5S/LOGO-BFL-transparaent-05-2-1.png';
+
 async function notifyDevUpdate(judul, perubahan=[]){
   const embed={
-    title:'🔧  BFL SYSTEM UPDATE',
+    author:{name:'BFL MANAGEMENT SYSTEM',icon_url:BFL_LOGO_URL},
+    title:'🔧  SYSTEM UPDATE',
     description:'**'+judul+'**',
     color:0xff2d55,
-    fields: perubahan.map((p,i)=>({name:(i===0?'📋 Perubahan':''), value:'• '+p, inline:false})),
-    footer:{text:'BFL Management System • '+new Date().toLocaleString('id-ID')},
+    thumbnail:{url:BFL_LOGO_URL},
+    fields: perubahan.map((p,i)=>({name:(i===0?'📋 Perubahan':'⠀'), value:'• '+p, inline:false})),
+    footer:{text:'BFL Dev Notification • '+new Date().toLocaleString('id-ID'),icon_url:BFL_LOGO_URL},
     timestamp: new Date().toISOString()
   };
   await sendDiscordEmbed(DISCORD_DEV_WEBHOOK, embed);
@@ -2800,19 +2819,16 @@ function getLogColor(action){
 }
 async function sendLogToDiscord(username, role, action, detail){
   if(!DISCORD_LOG_WEBHOOK) return;
-  const roleLabel = role==='admin'?'👑 ADMIN':'🔧 OPERATOR';
-  const embed={
-    title:'📋  BFL ACTIVITY LOG',
-    color: getLogColor(action),
-    fields:[
-      {name:'👤 User', value:'`'+username+'` — '+roleLabel, inline:true},
-      {name:'⚡ Aksi', value:'`'+action+'`', inline:true},
-      {name:'📝 Detail', value: detail||'—', inline:false},
-    ],
-    footer:{text:'BFL System • '+new Date().toLocaleString('id-ID')},
-    timestamp: new Date().toISOString()
-  };
-  await sendDiscordEmbed(DISCORD_LOG_WEBHOOK, embed);
+  const roleLabel = role==='admin'?'[ADMIN]':'[OPERATOR]';
+  const time = new Date().toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const text = roleLabel+' **'+username+'** — '+action+(detail?' · '+detail:'');
+  try{
+    await fetch(DISCORD_LOG_WEBHOOK,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({content:text})
+    });
+  }catch(e){console.warn('Discord log gagal:',e);}
 }
 
 // Load webhook log dari Firestore
@@ -3349,7 +3365,7 @@ function showPage(id){
   if(id==='history')renderHistory();
   if(id==='rekap')renderRekap();
   if(id==='setoran'){renderSetoran();updateSetoranTimer();}
-  if(id==='member'){renderMember();updateMemberStats();renderMemberSetoran();}
+  if(id==='member'){renderMember();updateMemberStats();renderMemberSetoran();switchMemberTab('member');}
   if(id==='salary'){renderSalaryPage();}
   if(id==='order'){renderOrderTable();updateOrderTimer();}
   if(id==='users'){fbLoadOperators().then(renderOperators);renderDiscordStatus();}
@@ -6117,6 +6133,33 @@ async function testDiscordDev(){
   alert('✅ Pesan test dikirim ke channel dev! Cek channel Discord kamu.');
 }
 
+// ─── MEMBER TAB SWITCHER ─────────────────────────────────────────
+function switchMemberTab(tab){
+  const panelMember=document.getElementById('mb-panel-member');
+  const panelSetoran=document.getElementById('mb-panel-setoran');
+  const tabMember=document.getElementById('mb-tab-member');
+  const tabSetoran=document.getElementById('mb-tab-setoran');
+  if(!panelMember||!panelSetoran)return;
+  if(tab==='member'){
+    panelMember.style.display='block';
+    panelSetoran.style.display='none';
+    tabMember.style.borderBottomColor='var(--cr)';
+    tabMember.style.color='#fff';
+    tabSetoran.style.borderBottomColor='transparent';
+    tabSetoran.style.color='var(--t2)';
+  }else{
+    panelMember.style.display='none';
+    panelSetoran.style.display='block';
+    tabMember.style.borderBottomColor='transparent';
+    tabMember.style.color='var(--t2)';
+    tabSetoran.style.borderBottomColor='var(--cr)';
+    tabSetoran.style.color='#fff';
+    renderMemberSetoran();
+    updateSetoranTimer();
+  }
+}
+
+window.switchMemberTab=switchMemberTab;
 window.saveDiscordLogWebhook=saveDiscordLogWebhook;
 window.testDiscordLog=testDiscordLog;
 window.testDiscordDev=testDiscordDev;
