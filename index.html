@@ -1067,6 +1067,16 @@ position:relative;z-index:1;}
       </div>
       <button class="btn-enter" onclick="doLogin()">MASUK →</button>
       <div class="ls-err" id="loginError">ACCESS DENIED — Kredensial tidak valid</div>
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--ln);text-align:center">
+        <div style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px;margin-bottom:8px">APPLICATION MADE BY</div>
+        <div style="font-family:var(--fw);font-size:1.1rem;color:var(--cr);letter-spacing:3px;margin-bottom:6px">@elvanprmn</div>
+        <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:2px;margin-bottom:10px">FOR BROTHER FOR LIFE</div>
+        <a href="https://bagibagi.co/elvanprmn" target="_blank" rel="noopener"
+          style="display:inline-block;padding:7px 18px;background:transparent;border:1px solid var(--cr5);color:var(--cr);font-family:var(--fm);font-size:0.58rem;letter-spacing:2px;text-decoration:none;transition:all 0.15s"
+          onmouseover="this.style.background='var(--cr3)';this.style.borderColor='var(--cr)'" onmouseout="this.style.background='transparent';this.style.borderColor='var(--cr5)'">
+          ☕ SUPPORT
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -1131,6 +1141,14 @@ position:relative;z-index:1;}
         <div class="sb-pip"></div>
       </div>
       <button class="btn-logout" onclick="doLogout()">KELUAR SISTEM</button>
+      <div style="padding:10px 10px 2px;text-align:center;border-top:1px solid var(--ln);margin-top:8px">
+        <div style="font-family:var(--fm);font-size:0.45rem;color:var(--t3);letter-spacing:1px;margin-bottom:2px">Made by <span style="color:var(--cr)">@elvanprmn</span> · For Brother For Life</div>
+        <a href="https://bagibagi.co/elvanprmn" target="_blank" rel="noopener"
+          style="display:inline-block;padding:4px 10px;background:transparent;border:1px solid var(--cr5);color:var(--cr);font-family:var(--fm);font-size:0.45rem;letter-spacing:1px;text-decoration:none;margin-top:4px;transition:all 0.15s"
+          onmouseover="this.style.background='var(--cr3)'" onmouseout="this.style.background='transparent'">
+          ☕ Support
+        </a>
+      </div>
     </div>
   </nav>
 
@@ -1510,7 +1528,7 @@ position:relative;z-index:1;}
                 <div class="ac-wrap" style="position:relative">
                   <input id="st-nama" type="text" autocomplete="off" placeholder="🔍 Cari nama member..."
                     style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
-                    onfocus="stNamaAcInput(this);this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{stNamaAcClose();document.getElementById('st-nama').style.borderColor='var(--ln)'},200)"
+                    onfocus="this.style.borderColor='var(--cr)';stNamaAcInput(this)" onblur="setTimeout(()=>{stNamaAcClose();document.getElementById('st-nama').style.borderColor='var(--ln)'},250)"
                     oninput="stNamaAcInput(this)">
                   <div id="stNamaAcList" class="ac-list"></div>
                 </div>
@@ -1813,57 +1831,107 @@ position:relative;z-index:1;}
         </div>
 
         <!-- ══ DISCORD WEBHOOK SETTING ══ -->
-        <div class="panel" id="discord-setting-panel" style="margin-top:20px">
+        <div class="panel" id="discord-setting-panel" style="margin-top:20px;display:none">
           <div class="panel-head">
             <div class="panel-title"><div class="p-pip" style="background:#5865F2;box-shadow:0 0 8px rgba(88,101,242,0.6)"></div>Discord Webhook Config</div>
             <div style="font-family:var(--fm);font-size:0.58rem;color:#5865F2;letter-spacing:1px">🔗 DISCORD INTEGRATION</div>
           </div>
           <div class="panel-body">
-            <!-- Channel 1: Dev Update (readonly display) -->
-            <div style="margin-bottom:20px;padding:14px;background:rgba(88,101,242,0.06);border:1px solid rgba(88,101,242,0.2)">
-              <div style="font-family:var(--fm);font-size:0.55rem;color:#5865F2;letter-spacing:3px;margin-bottom:8px">📢 CHANNEL 1 — SYSTEM UPDATE (DEVELOPER)</div>
-              <div style="display:flex;align-items:center;gap:10px">
-                <div style="flex:1;padding:10px 14px;background:var(--s2);border:1px solid var(--ln);font-family:var(--fm);font-size:0.65rem;color:var(--t3);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                  🔒 Hardcoded oleh developer — tidak bisa diubah dari panel ini
-                </div>
-                <div id="discord-dev-status" style="font-family:var(--fm);font-size:0.6rem;color:var(--em);letter-spacing:1px;white-space:nowrap">● AKTIF</div>
-              </div>
-              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px;margin-top:8px">Notifikasi otomatis dikirim ketika developer push update fitur baru ke sistem.</div>
-            </div>
-            <!-- Channel 2: Activity Log Webhook -->
-            <div style="margin-bottom:16px">
-              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--gd);letter-spacing:3px;margin-bottom:8px">📋 CHANNEL 2 — LOG AKTIVITAS USER</div>
+
+            <!-- Channel 1: Dev Webhook -->
+            <div style="margin-bottom:20px;padding:14px;background:rgba(255,45,85,0.05);border:1px solid rgba(255,45,85,0.2)">
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--cr);letter-spacing:3px;margin-bottom:10px">📢 CHANNEL 1 — SYSTEM UPDATE (DEVELOPER)</div>
               <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end">
                 <div>
-                  <label style="display:block;font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px;margin-bottom:6px">DISCORD WEBHOOK URL (untuk log aktivitas semua user)</label>
+                  <label style="display:block;font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px;margin-bottom:6px">WEBHOOK URL</label>
+                  <input id="discord-dev-webhook-input" type="text" placeholder="https://discord.com/api/webhooks/..."
+                    style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.72rem;outline:none;box-sizing:border-box"
+                    onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                </div>
+                <button onclick="saveDiscordDevWebhook()"
+                  style="padding:11px 20px;background:var(--cr);border:none;color:#fff;font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer;white-space:nowrap"
+                  onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">SIMPAN</button>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px">Notifikasi update fitur dikirim ke channel ini.</div>
+                <div id="discord-dev-status" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px">● BELUM DISET</div>
+              </div>
+            </div>
+
+            <!-- Channel 2: Log Webhook -->
+            <div style="margin-bottom:20px;padding:14px;background:rgba(88,101,242,0.05);border:1px solid rgba(88,101,242,0.2)">
+              <div style="font-family:var(--fm);font-size:0.55rem;color:#5865F2;letter-spacing:3px;margin-bottom:10px">📋 CHANNEL 2 — LOG AKTIVITAS USER</div>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end">
+                <div>
+                  <label style="display:block;font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px;margin-bottom:6px">WEBHOOK URL</label>
                   <input id="discord-log-webhook-input" type="text" placeholder="https://discord.com/api/webhooks/..."
-                    style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.72rem;outline:none;box-sizing:border-box;letter-spacing:0.5px"
+                    style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fm);font-size:0.72rem;outline:none;box-sizing:border-box"
                     onfocus="this.style.borderColor='#5865F2'" onblur="this.style.borderColor='var(--ln)'">
                 </div>
                 <button onclick="saveDiscordLogWebhook()"
                   style="padding:11px 20px;background:#5865F2;border:none;color:#fff;font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer;white-space:nowrap"
-                  onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-                  SIMPAN
-                </button>
+                  onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">SIMPAN</button>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px">Semua aksi operator & admin akan dikirim ke channel ini secara real-time.</div>
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:1px">Semua aksi operator & admin dikirim ke channel ini.</div>
                 <div id="discord-log-status" style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px">● BELUM DISET</div>
               </div>
             </div>
-            <!-- Test button -->
-            <div style="border-top:1px solid var(--ln);padding-top:14px;display:flex;gap:10px">
+
+            <!-- Test buttons -->
+            <div style="display:flex;gap:10px;margin-bottom:20px">
               <button onclick="testDiscordLog()"
-                style="padding:9px 18px;background:transparent;border:1px solid rgba(88,101,242,0.4);color:#5865F2;font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
+                style="padding:9px 16px;background:transparent;border:1px solid rgba(88,101,242,0.4);color:#5865F2;font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
                 onmouseover="this.style.background='rgba(88,101,242,0.08)'" onmouseout="this.style.background='transparent'">
-                🧪 TEST LOG WEBHOOK
+                🧪 TEST LOG
               </button>
               <button onclick="testDiscordDev()"
-                style="padding:9px 18px;background:transparent;border:1px solid rgba(88,101,242,0.4);color:#5865F2;font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
-                onmouseover="this.style.background='rgba(88,101,242,0.08)'" onmouseout="this.style.background='transparent'">
-                🔧 TEST DEV WEBHOOK
+                style="padding:9px 16px;background:transparent;border:1px solid rgba(255,45,85,0.4);color:var(--cr);font-family:var(--fm);font-size:0.6rem;letter-spacing:2px;cursor:pointer"
+                onmouseover="this.style.background='rgba(255,45,85,0.08)'" onmouseout="this.style.background='transparent'">
+                🧪 TEST DEV
               </button>
             </div>
+
+            <!-- ── FORM KIRIM UPDATE FITUR ── -->
+            <div style="border-top:1px solid var(--ln);padding-top:20px">
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--cr);letter-spacing:3px;margin-bottom:14px">🚀 KIRIM NOTIFIKASI UPDATE FITUR</div>
+
+              <div style="margin-bottom:12px">
+                <label style="display:block;font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px;margin-bottom:6px">JUDUL UPDATE</label>
+                <input id="dev-update-title" type="text" placeholder="Contoh: Update Tab Member & Discord Integration"
+                  style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;box-sizing:border-box"
+                  onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+              </div>
+
+              <div style="margin-bottom:14px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                  <label style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:2px">LIST PERUBAHAN</label>
+                  <button onclick="addDevUpdateItem()"
+                    style="padding:4px 10px;background:transparent;border:1px solid var(--ln);color:var(--t3);font-family:var(--fm);font-size:0.55rem;letter-spacing:1px;cursor:pointer"
+                    onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">
+                    + TAMBAH BARIS
+                  </button>
+                </div>
+                <div id="dev-update-items">
+                  <div class="dev-update-item" style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+                    <div style="font-family:var(--fm);font-size:0.7rem;color:var(--cr);flex-shrink:0">•</div>
+                    <input type="text" placeholder="Deskripsi perubahan..."
+                      style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.82rem;outline:none"
+                      onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                    <button onclick="removeDevUpdateItem(this)"
+                      style="padding:9px 10px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-size:0.75rem;flex-shrink:0"
+                      onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="sendDevUpdate()"
+                style="width:100%;padding:14px;background:var(--cr);border:none;color:#fff;font-family:var(--fw);font-size:1.2rem;letter-spacing:3px;cursor:pointer;transition:all 0.15s"
+                onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                📤 KIRIM KE DISCORD
+              </button>
+            </div>
+
           </div>
         </div>
 
@@ -2764,13 +2832,13 @@ let transactions=[];
 let cumerPayStatus={}; // { namaPerkerja: 'lunas'|'belum' }
 let weeklyData={masuk:0,bersih:0,profit:0,pot1:0,pot2:0,pajak:0,count:0,startedAt:Date.now()};
 let currentUser={username:'',role:''}; // role: 'admin' (akun utama) atau 'operator'
-const MASTER_USERNAME='teambfl'; // satu-satunya akun yang boleh melihat Log Aktivitas
+const MASTER_USERNAME='teambfl'; // akses: Log Aktivitas
+const DEVELOPER_USERNAME='developer'; // akses: Log Aktivitas + Discord Config + Kirim Update
 
 // ─── DISCORD WEBHOOK CONFIG ───────────────────────────────────────
-// Channel 1: Update sistem dari developer (hardcoded)
-const DISCORD_DEV_WEBHOOK='https://discord.com/api/webhooks/1518772241293250721/llm8-hZf2ZRHZFsbfz07lB_IjPq0U_2SKVMnDLzpyyRFUDR9u8-sHUY_4pFhcNy2QymY';
-// Channel 2: Log aktivitas user (disimpan di Firestore, bisa diset lewat panel setting)
-let DISCORD_LOG_WEBHOOK=''; // diload dari Firestore config
+// Kedua webhook disimpan di Firestore — tidak ada yang hardcoded di kode
+let DISCORD_DEV_WEBHOOK='';  // Channel developer update (diload dari Firestore)
+let DISCORD_LOG_WEBHOOK='';  // Channel log aktivitas user (diload dari Firestore)
 
 // Kirim ke Discord webhook dengan embed rapi
 async function sendDiscordEmbed(webhookUrl, embed){
@@ -2819,7 +2887,7 @@ function getLogColor(action){
 }
 async function sendLogToDiscord(username, role, action, detail){
   if(!DISCORD_LOG_WEBHOOK) return;
-  const roleLabel = role==='admin'?'[ADMIN]':'[OPERATOR]';
+  const roleLabel = role==='admin'?'[ADMIN]':role==='developer'?'[DEVELOPER]':'[OPERATOR]';
   const time = new Date().toLocaleString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const text = roleLabel+' **'+username+'** — '+action+(detail?' · '+detail:'');
   try{
@@ -2831,18 +2899,23 @@ async function sendLogToDiscord(username, role, action, detail){
   }catch(e){console.warn('Discord log gagal:',e);}
 }
 
-// Load webhook log dari Firestore
+// Load webhook dari Firestore
 async function fbLoadDiscordConfig(){
   try{
     const snap=await getDoc(doc(db,'config','discord'));
-    if(snap.exists()&&snap.data().logWebhook){
-      DISCORD_LOG_WEBHOOK=snap.data().logWebhook;
+    if(snap.exists()){
+      const d=snap.data();
+      if(d.logWebhook) DISCORD_LOG_WEBHOOK=d.logWebhook;
+      if(d.devWebhook) DISCORD_DEV_WEBHOOK=d.devWebhook;
     }
   }catch(e){}
 }
-async function fbSaveDiscordConfig(logWebhook){
-  await setDoc(doc(db,'config','discord'),{logWebhook});
-  DISCORD_LOG_WEBHOOK=logWebhook;
+async function fbSaveDiscordConfig(data){
+  const snap=await getDoc(doc(db,'config','discord'));
+  const existing=snap.exists()?snap.data():{};
+  await setDoc(doc(db,'config','discord'),{...existing,...data});
+  if(data.logWebhook!==undefined) DISCORD_LOG_WEBHOOK=data.logWebhook;
+  if(data.devWebhook!==undefined) DISCORD_DEV_WEBHOOK=data.devWebhook;
 }
 
 // ─── ORDER (sidebar baru) ─────────────────────────────────────────
@@ -3020,17 +3093,24 @@ function logActivity(action,detail){
 // ROLE-BASED UI (nav & sidebar user card)
 function applyRoleUI(){
   const isAdmin=currentUser.role==='admin';
+  const isDev=currentUser.role==='developer';
   const isMaster=currentUser.username===MASTER_USERNAME;
+  const isTopLevel=isAdmin||isDev; // keduanya punya akses tertinggi
   const navUsers=document.getElementById('nav-users');
   const navLogs=document.getElementById('nav-logs');
-  if(navUsers)navUsers.style.display=isAdmin?'flex':'none';
-  if(navLogs)navLogs.style.display=isMaster?'flex':'none';
+  // nav-users: admin & developer bisa lihat
+  if(navUsers)navUsers.style.display=isTopLevel?'flex':'none';
+  // nav-logs: teambfl & developer bisa lihat
+  if(navLogs)navLogs.style.display=(isMaster||isDev)?'flex':'none';
   const unEl=document.getElementById('sb-username');
   const urEl=document.getElementById('sb-role');
   const avEl=document.getElementById('sb-avatar');
   if(unEl)unEl.textContent=currentUser.username||'—';
-  if(urEl)urEl.textContent=isAdmin?'ADMIN UTAMA':'OPERATOR';
+  if(urEl)urEl.textContent=isDev?'DEVELOPER':isAdmin?'ADMIN UTAMA':'OPERATOR';
   if(avEl)avEl.textContent=(currentUser.username||'?').charAt(0).toUpperCase();
+  // Discord panel: hanya developer yang bisa lihat
+  const discordPanel=document.getElementById('discord-setting-panel');
+  if(discordPanel)discordPanel.style.display=isDev?'block':'none';
 }
 
 // LOGIN
@@ -3055,11 +3135,21 @@ async function doLogin(){
   btn.textContent='MEMVERIFIKASI...';btn.disabled=true;
   try{
     let matched=null;
+    // Cek admin utama (config/auth)
     const authSnap=await getDoc(doc(db,'config','auth'));
     if(authSnap.exists()){
       const data=authSnap.data();
       if(u===data.username&&p===data.password) matched={username:u,role:'admin'};
     }
+    // Cek developer (config/developer)
+    if(!matched){
+      const devSnap=await getDoc(doc(db,'config','developer'));
+      if(devSnap.exists()){
+        const d=devSnap.data();
+        if(u===d.username&&p===d.password) matched={username:u,role:'developer'};
+      }
+    }
+    // Cek operator
     if(!matched){
       const opSnap=await getDocs(collection(db,'operators'));
       opSnap.forEach(d=>{
@@ -3075,7 +3165,7 @@ async function doLogin(){
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('app').style.display='block';
       applyRoleUI();
-      logActivity('LOGIN','Login berhasil sebagai '+(matched.role==='admin'?'admin utama':'operator'));
+      logActivity('LOGIN','Login berhasil sebagai '+(matched.role==='admin'?'admin utama':matched.role==='developer'?'developer':'operator'));
       initApp();
     }else{
       _registerAttempt();
@@ -3118,7 +3208,7 @@ async function fbLoadOperators(){
   operatorList.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
 }
 async function addOperator(){
-  if(currentUser.role!=='admin'){alert('⚠ Hanya admin utama yang bisa menambah operator!');return}
+  if(currentUser.role!=='admin'&&currentUser.role!=='developer'){alert('⚠ Hanya admin utama yang bisa menambah operator!');return}
   const uEl=document.getElementById('op-username');
   const pEl=document.getElementById('op-password');
   const u=uEl.value.trim();
@@ -4345,8 +4435,10 @@ function renderBarangOptions(){
   const opts='<option value="">— Pilih Barang —</option>'+masterBarangList.map(b=>`<option value="${b.nama}">${b.nama}</option>`).join('');
   const stSel=document.getElementById('st-barang');
   const esSel=document.getElementById('es-barang');
+  const msSel=document.getElementById('ms-barang');
   if(stSel){const cur=stSel.value;stSel.innerHTML=opts;if([...stSel.options].some(o=>o.value===cur))stSel.value=cur;}
   if(esSel){const cur=esSel.value;esSel.innerHTML=opts;if([...esSel.options].some(o=>o.value===cur))esSel.value=cur;}
+  if(msSel){const cur=msSel.value;msSel.innerHTML=opts;if([...msSel.options].some(o=>o.value===cur))msSel.value=cur;}
 }
 function openKelolaBarang(){
   document.getElementById('kelolaBarangOverlay').style.display='flex';
@@ -6094,43 +6186,110 @@ window.renderMember=renderMember;
 
 // ─── DISCORD SETTING UI FUNCTIONS ────────────────────────────────
 function renderDiscordStatus(){
+  const devStatus=document.getElementById('discord-dev-status');
+  const devInput=document.getElementById('discord-dev-webhook-input');
   const logStatus=document.getElementById('discord-log-status');
   const logInput=document.getElementById('discord-log-webhook-input');
+  if(devStatus){
+    devStatus.textContent=DISCORD_DEV_WEBHOOK?'● AKTIF':'● BELUM DISET';
+    devStatus.style.color=DISCORD_DEV_WEBHOOK?'var(--em)':'var(--t3)';
+  }
+  if(devInput&&DISCORD_DEV_WEBHOOK) devInput.value=DISCORD_DEV_WEBHOOK;
   if(logStatus){
-    if(DISCORD_LOG_WEBHOOK){
-      logStatus.textContent='● AKTIF';
-      logStatus.style.color='var(--em)';
-    }else{
-      logStatus.textContent='● BELUM DISET';
-      logStatus.style.color='var(--t3)';
-    }
+    logStatus.textContent=DISCORD_LOG_WEBHOOK?'● AKTIF':'● BELUM DISET';
+    logStatus.style.color=DISCORD_LOG_WEBHOOK?'var(--em)':'var(--t3)';
   }
   if(logInput&&DISCORD_LOG_WEBHOOK) logInput.value=DISCORD_LOG_WEBHOOK;
 }
-async function saveDiscordLogWebhook(){
-  const input=document.getElementById('discord-log-webhook-input');
-  const val=(input?input.value.trim():'');
-  if(!val){alert('⚠ Masukkan URL webhook Discord!');return;}
-  if(!val.startsWith('https://discord.com/api/webhooks/')){alert('⚠ URL webhook tidak valid! Harus diawali https://discord.com/api/webhooks/');return;}
+async function saveDiscordDevWebhook(){
+  const val=(document.getElementById('discord-dev-webhook-input')?.value||'').trim();
+  if(!val){alert('⚠ Masukkan URL webhook!');return;}
+  if(!val.startsWith('https://discord.com/api/webhooks/')){alert('⚠ URL tidak valid!');return;}
   try{
-    await fbSaveDiscordConfig(val);
+    await fbSaveDiscordConfig({devWebhook:val});
+    renderDiscordStatus();
+    await logActivity('SET_DISCORD_WEBHOOK','Mengatur Discord dev webhook');
+    alert('✅ Dev webhook berhasil disimpan!');
+  }catch(e){alert('⚠ Gagal: '+e.message);}
+}
+async function saveDiscordLogWebhook(){
+  const val=(document.getElementById('discord-log-webhook-input')?.value||'').trim();
+  if(!val){alert('⚠ Masukkan URL webhook!');return;}
+  if(!val.startsWith('https://discord.com/api/webhooks/')){alert('⚠ URL tidak valid!');return;}
+  try{
+    await fbSaveDiscordConfig({logWebhook:val});
     renderDiscordStatus();
     await logActivity('SET_DISCORD_WEBHOOK','Mengatur Discord log webhook');
-    alert('✅ Webhook berhasil disimpan! Semua log aktivitas akan dikirim ke channel Discord tersebut.');
-  }catch(e){alert('⚠ Gagal menyimpan: '+e.message);}
+    alert('✅ Log webhook berhasil disimpan!');
+  }catch(e){alert('⚠ Gagal: '+e.message);}
 }
 async function testDiscordLog(){
-  if(!DISCORD_LOG_WEBHOOK){alert('⚠ Webhook belum diset! Isi dulu webhook URL-nya.');return;}
-  await sendLogToDiscord(currentUser.username, currentUser.role, 'TEST_WEBHOOK', '🧪 Ini adalah pesan test dari BFL System. Webhook log aktivitas sudah terhubung!');
-  alert('✅ Pesan test dikirim! Cek channel Discord kamu.');
+  if(!DISCORD_LOG_WEBHOOK){alert('⚠ Log webhook belum diset!');return;}
+  await sendLogToDiscord(currentUser.username,currentUser.role,'TEST_WEBHOOK','🧪 Test koneksi log webhook — BFL System aktif');
+  alert('✅ Pesan test dikirim! Cek channel Discord.');
 }
 async function testDiscordDev(){
+  if(!DISCORD_DEV_WEBHOOK){alert('⚠ Dev webhook belum diset!');return;}
   await notifyDevUpdate('🧪 Test Notifikasi Developer',[
     'Ini adalah test koneksi webhook developer',
-    'Jika muncul di Discord, berarti webhook aktif dan siap digunakan',
-    'Update fitur baru akan otomatis muncul di channel ini'
+    'Jika muncul di Discord, berarti webhook aktif',
   ]);
-  alert('✅ Pesan test dikirim ke channel dev! Cek channel Discord kamu.');
+  alert('✅ Pesan test dikirim! Cek channel Discord.');
+}
+// ── Form kirim update fitur ──
+function addDevUpdateItem(){
+  const wrap=document.getElementById('dev-update-items');
+  if(!wrap)return;
+  const div=document.createElement('div');
+  div.className='dev-update-item';
+  div.style.cssText='display:flex;gap:8px;margin-bottom:8px;align-items:center';
+  div.innerHTML=`
+    <div style="font-family:var(--fm);font-size:0.7rem;color:var(--cr);flex-shrink:0">•</div>
+    <input type="text" placeholder="Deskripsi perubahan..."
+      style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.82rem;outline:none"
+      onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+    <button onclick="removeDevUpdateItem(this)"
+      style="padding:9px 10px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-size:0.75rem;flex-shrink:0"
+      onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">✕</button>
+  `;
+  wrap.appendChild(div);
+}
+function removeDevUpdateItem(btn){
+  const items=document.querySelectorAll('#dev-update-items .dev-update-item');
+  if(items.length<=1){alert('⚠ Minimal 1 perubahan!');return;}
+  btn.closest('.dev-update-item').remove();
+}
+async function sendDevUpdate(){
+  if(!DISCORD_DEV_WEBHOOK){alert('⚠ Dev webhook belum diset! Isi dulu di atas.');return;}
+  const judul=(document.getElementById('dev-update-title')?.value||'').trim();
+  if(!judul){alert('⚠ Isi judul update dulu!');return;}
+  const inputs=document.querySelectorAll('#dev-update-items .dev-update-item input');
+  const perubahan=[...inputs].map(i=>i.value.trim()).filter(Boolean);
+  if(!perubahan.length){alert('⚠ Isi minimal 1 perubahan!');return;}
+  const btn=event.target;
+  btn.textContent='MENGIRIM...';btn.disabled=true;
+  try{
+    await notifyDevUpdate(judul,perubahan);
+    await logActivity('DISCORD_UPDATE','Kirim notif update: '+judul);
+    alert('✅ Update berhasil dikirim ke Discord!');
+    // Reset form
+    document.getElementById('dev-update-title').value='';
+    const wrap=document.getElementById('dev-update-items');
+    wrap.innerHTML=`
+      <div class="dev-update-item" style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+        <div style="font-family:var(--fm);font-size:0.7rem;color:var(--cr);flex-shrink:0">•</div>
+        <input type="text" placeholder="Deskripsi perubahan..."
+          style="flex:1;padding:9px 12px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.82rem;outline:none"
+          onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+        <button onclick="removeDevUpdateItem(this)"
+          style="padding:9px 10px;background:transparent;border:1px solid var(--ln);color:var(--t3);cursor:pointer;font-size:0.75rem;flex-shrink:0"
+          onmouseover="this.style.borderColor='var(--cr)';this.style.color='var(--cr)'" onmouseout="this.style.borderColor='var(--ln)';this.style.color='var(--t3)'">✕</button>
+      </div>`;
+  }catch(e){
+    alert('⚠ Gagal mengirim: '+e.message);
+  }finally{
+    btn.textContent='📤 KIRIM KE DISCORD';btn.disabled=false;
+  }
 }
 
 // ─── MEMBER TAB SWITCHER ─────────────────────────────────────────
@@ -6160,9 +6319,13 @@ function switchMemberTab(tab){
 }
 
 window.switchMemberTab=switchMemberTab;
+window.saveDiscordDevWebhook=saveDiscordDevWebhook;
 window.saveDiscordLogWebhook=saveDiscordLogWebhook;
 window.testDiscordLog=testDiscordLog;
 window.testDiscordDev=testDiscordDev;
+window.addDevUpdateItem=addDevUpdateItem;
+window.removeDevUpdateItem=removeDevUpdateItem;
+window.sendDevUpdate=sendDevUpdate;
 window.notifyDevUpdate=notifyDevUpdate;
 window.saveOrderQty=saveOrderQty;
 window.confirmResetOrder=confirmResetOrder;
