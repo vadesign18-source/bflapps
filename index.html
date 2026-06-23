@@ -3234,7 +3234,7 @@ async function addOperator(){
   }
 }
 async function toggleOperatorActive(id){
-  if(currentUser.role!=='admin')return;
+  if(currentUser.role!=='admin'&&currentUser.role!=='developer')return;
   const op=operatorList.find(o=>o.id===id);
   if(!op)return;
   const newActive=!(op.active!==false);
@@ -3246,7 +3246,7 @@ async function toggleOperatorActive(id){
   }catch(err){alert('⚠ Gagal mengubah status: '+err.message)}
 }
 async function deleteOperator(id){
-  if(currentUser.role!=='admin')return;
+  if(currentUser.role!=='admin'&&currentUser.role!=='developer')return;
   const op=operatorList.find(o=>o.id===id);
   if(!op)return;
   if(!confirm('Hapus akun operator "'+op.username+'"? Operator ini tidak akan bisa login lagi.'))return;
@@ -3262,7 +3262,8 @@ function renderOperators(){
   const emptyEl=document.getElementById('operator-empty');
   const formWrap=document.getElementById('operator-form-wrap');
   if(!listEl)return;
-  if(currentUser.role!=='admin'){
+  const canManage=currentUser.role==='admin'||currentUser.role==='developer';
+  if(!canManage){
     listEl.innerHTML='';
     if(formWrap)formWrap.style.display='none';
     if(emptyEl){
@@ -6314,6 +6315,7 @@ function switchMemberTab(tab){
     tabMember.style.color='var(--t2)';
     tabSetoran.style.borderBottomColor='var(--cr)';
     tabSetoran.style.color='#fff';
+    renderBarangOptions();
     renderMemberSetoran();
     updateSetoranTimer();
   }
