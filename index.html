@@ -3094,7 +3094,7 @@ function logActivity(action,detail){
 function applyRoleUI(){
   const isAdmin=currentUser.role==='admin';
   const isDev=currentUser.role==='developer';
-  const isMaster=currentUser.username===MASTER_USERNAME;
+  const isMaster=currentUser.username===MASTER_USERNAME||currentUser.role==='developer';
   const isTopLevel=isAdmin||isDev; // keduanya punya akses tertinggi
   const navUsers=document.getElementById('nav-users');
   const navLogs=document.getElementById('nav-logs');
@@ -3333,12 +3333,13 @@ function renderLogs(){
   const tbody=document.getElementById('logsTbody');
   const emptyEl=document.getElementById('logsEmpty');
   if(!tbody)return;
-  if(currentUser.username!==MASTER_USERNAME){
+  const _isMasterOrDev=currentUser.username===MASTER_USERNAME||currentUser.role==='developer';
+  if(!_isMasterOrDev){
     tbody.innerHTML='';
     if(emptyEl){
       emptyEl.style.display='block';
       emptyEl.querySelector('.empty-state-icon').textContent='🔒';
-      emptyEl.querySelector('.empty-state-txt').textContent='AKSES DITOLAK — HANYA ADMIN UTAMA (TEAMBFL)';
+      emptyEl.querySelector('.empty-state-txt').textContent='AKSES DITOLAK — HANYA ADMIN UTAMA (TEAMBFL) / DEVELOPER';
     }
     return;
   }
@@ -3380,7 +3381,7 @@ function clearLogFilter(){
   renderLogs();
 }
 function exportLogs(){
-  if(currentUser.username!==MASTER_USERNAME)return;
+  if(currentUser.username!==MASTER_USERNAME&&currentUser.role!=='developer')return;
   if(!activityLogs.length){alert('Belum ada data log!');return}
   const data=[
     ['Waktu','Username','Role','Aksi','Detail'],
@@ -3398,14 +3399,14 @@ function exportLogs(){
 
 // HAPUS LOG AKTIVITAS (supaya Firestore tidak penuh) — khusus teambfl
 function confirmResetLogs(){
-  if(currentUser.username!==MASTER_USERNAME)return;
+  if(currentUser.username!==MASTER_USERNAME&&currentUser.role!=='developer')return;
   document.getElementById('resetLogsOverlay').style.display='flex';
 }
 function closeResetLogs(){
   document.getElementById('resetLogsOverlay').style.display='none';
 }
 async function doResetLogs(mode){
-  if(currentUser.username!==MASTER_USERNAME)return;
+  if(currentUser.username!==MASTER_USERNAME&&currentUser.role!=='developer')return;
   const btns=[document.getElementById('rl-old-btn'),document.getElementById('rl-all-btn'),document.getElementById('rl-cancel-btn')];
   btns.forEach(b=>{if(b)b.disabled=true});
   try{
@@ -5941,7 +5942,7 @@ function salNRenderJenisMgr(){
   const mgr=document.getElementById('sal-n-jenis-mgr');
   const listEl=document.getElementById('sal-n-jenis-list');
   if(!mgr||!listEl)return;
-  const isMaster=currentUser.username===MASTER_USERNAME;
+  const isMaster=currentUser.username===MASTER_USERNAME||currentUser.role==='developer';
   mgr.style.display=isMaster?'block':'none';
   if(!isMaster)return;
   listEl.innerHTML=nanamJenisList.map((j,idx)=>`
@@ -5952,7 +5953,7 @@ function salNRenderJenisMgr(){
 }
 
 async function salNAddJenis(){
-  if(currentUser.username!==MASTER_USERNAME)return;
+  if(currentUser.username!==MASTER_USERNAME&&currentUser.role!=='developer')return;
   const inp=document.getElementById('sal-n-jenis-new');
   const val=(inp.value||'').trim();
   if(!val){alert('⚠ Nama jenis tidak boleh kosong!');return}
@@ -5966,7 +5967,7 @@ async function salNAddJenis(){
 }
 
 async function salNDeleteJenis(idx){
-  if(currentUser.username!==MASTER_USERNAME)return;
+  if(currentUser.username!==MASTER_USERNAME&&currentUser.role!=='developer')return;
   const nama=nanamJenisList[idx];
   if(!confirm('Hapus jenis "'+nama+'"?'))return;
   nanamJenisList.splice(idx,1);
