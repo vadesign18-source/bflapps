@@ -760,6 +760,13 @@ tbody tr:hover td{background:rgba(255,255,255,0.01)}
 .mob-toggle:active{background:var(--s2)}
 .sb-mask{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99}
 
+/* DEV BANNER */
+#dev-online-banner{display:none}
+body.dev-online #dev-online-banner{display:flex!important}
+body.dev-online .main{padding-top:40px}
+body.dev-online .sidebar{top:40px}
+body.dev-online .mob-toggle{top:54px}
+
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -1087,6 +1094,21 @@ position:relative;z-index:1;}
 
 <!-- ══ APP ══ -->
 <div id="app">
+
+<!-- DEV ONLINE BANNER -->
+<div id="dev-online-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9998;
+  background:linear-gradient(90deg,#1a0020,#0d0020,#1a0020);
+  border-bottom:1px solid rgba(168,85,247,0.5);
+  padding:10px 20px;
+  display:none;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 2px 20px rgba(168,85,247,0.25)">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="width:8px;height:8px;border-radius:50%;background:var(--vi);display:inline-block;animation:pipglow 1.2s infinite;box-shadow:0 0 8px rgba(168,85,247,0.8)"></span>
+    <span style="font-family:var(--fm);font-size:0.6rem;color:var(--vi);letter-spacing:3px">DEV ONLINE</span>
+    <span id="dev-banner-msg" style="font-family:var(--fm);font-size:0.62rem;color:rgba(168,85,247,0.7);letter-spacing:1px">— Developer sedang aktif di sistem</span>
+  </div>
+  <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:1px" id="dev-banner-time"></span>
+</div>
 
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
@@ -2024,6 +2046,7 @@ position:relative;z-index:1;}
         <!-- Tab Salary -->
         <div style="display:flex;gap:0;margin-bottom:24px;border:1px solid var(--ln)">
           <button id="sal-tab-jualan" onclick="switchSalaryTab('jualan')" style="flex:1;padding:12px;background:var(--cr3);border:none;border-right:1px solid var(--ln);color:var(--cr);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">🔴 JUALAN</button>
+          <button id="sal-tab-weekly" onclick="switchSalaryTab('weekly')" style="flex:1;padding:12px;background:transparent;border:none;border-right:1px solid var(--ln);color:var(--t3);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">📅 WEEKLY</button>
           <button id="sal-tab-nanam" onclick="switchSalaryTab('nanam')" style="flex:1;padding:12px;background:transparent;border:none;border-right:1px solid var(--ln);color:var(--t3);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">🌿 NANAM & OLAH</button>
           <button id="sal-tab-cumer" onclick="switchSalaryTab('cumer')" style="flex:1;padding:12px;background:transparent;border:none;color:var(--t3);font-family:var(--fw);font-size:0.95rem;letter-spacing:2px;cursor:pointer">🧺 CUMER</button>
         </div>
@@ -2034,7 +2057,7 @@ position:relative;z-index:1;}
             <div class="panel">
               <div class="panel-head">
                 <div class="panel-title"><div class="p-pip cr"></div>Input Setoran Jualan</div>
-                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">Gaji = 20% dari uang merah</div>
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">Input qty → simpan → isi umer di daftar → gaji 20% auto muncul</div>
               </div>
               <div class="panel-body">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
@@ -2058,18 +2081,13 @@ position:relative;z-index:1;}
                     <input type="hidden" id="sal-j-member">
                   </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
-                  <div>
-                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">JUMLAH UANG MERAH ($)</label>
-                    <input id="sal-j-jumlah" type="number" min="0" placeholder="350000" oninput="salJPreview()"
-                      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
-                      onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
-                  </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
                   <div>
                     <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">KUANTITAS (PCS)</label>
                     <input id="sal-j-qty" type="number" min="1" placeholder="10"
                       style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
                       onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
+                    <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);margin-top:4px;display:block">// input umer dilakukan di daftar setelah simpan</span>
                   </div>
                   <div>
                     <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">DITERIMA OLEH</label>
@@ -2082,16 +2100,6 @@ position:relative;z-index:1;}
                     <input type="hidden" id="sal-j-penerima">
                   </div>
                 </div>
-                <div id="sal-j-preview" style="display:none;background:var(--s2);border:1px solid var(--em3);padding:14px;margin-bottom:12px;font-family:var(--fm);font-size:0.8rem">
-                  <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln)">
-                    <span style="color:var(--t3)">Uang Merah Disetor</span>
-                    <span id="sal-j-prev-masuk" style="color:var(--cr)">$ 0</span>
-                  </div>
-                  <div style="display:flex;justify-content:space-between;padding:4px 0">
-                    <span style="color:var(--t3)">Alokasi Gaji (20%)</span>
-                    <span id="sal-j-prev-gaji" style="color:var(--em);font-weight:700;font-size:0.95rem">$ 0</span>
-                  </div>
-                </div>
                 <div style="display:flex;gap:10px">
                   <button onclick="salJSave()" style="flex:1;padding:12px;background:var(--cr);border:none;color:#fff;font-family:var(--fw);font-size:1rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">+ SIMPAN ALOKASI GAJI</button>
                 </div>
@@ -2102,7 +2110,7 @@ position:relative;z-index:1;}
                 <div class="panel-title"><div class="p-pip gd"></div>Kalkulasi Cepat</div>
               </div>
               <div class="panel-body">
-                <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:16px">20% dari setiap uang merah yang disetor menjadi gaji penjual.</div>
+                <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:16px">20% dari umer yang kamu input di kolom daftar = gaji penjual. Otomatis terhitung saat angka diisi.</div>
                 <div style="background:var(--s2);border:1px solid var(--ln);padding:16px;margin-bottom:12px">
                   <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">CONTOH KALKULASI</div>
                   <div style="font-size:0.8rem;color:var(--t2);line-height:2">
@@ -2127,13 +2135,110 @@ position:relative;z-index:1;}
             <div class="tbl-wrap">
               <table>
                 <thead><tr>
-                  <th>#</th><th>Member</th><th>Jenis Barang</th><th>Qty (pcs)</th><th>Uang Merah</th><th>Gaji (20%)</th><th>Diterima Oleh</th><th>Status Gaji</th><th>Waktu</th><th>Aksi</th>
+                  <th>#</th><th>Member</th><th>Jenis Barang</th><th>Qty (pcs)</th><th>Uang Merah ($)</th><th>Gaji (20%)</th><th>Diterima Oleh</th><th>Status Gaji</th><th>Waktu</th><th>Aksi</th>
                 </tr></thead>
                 <tbody id="sal-j-tbody"></tbody>
               </table>
               <div id="sal-j-empty" style="display:none;padding:48px;text-align:center">
                 <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">💸</div>
                 <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA ALOKASI GAJI JUALAN</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB WEEKLY ── -->
+        <div id="sal-panel-weekly" style="display:none">
+          <div style="display:grid;grid-template-columns:3fr 2fr;gap:20px;margin-bottom:20px">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><div class="p-pip vi"></div>Input Jualan Mingguan</div>
+                <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">Input qty → simpan → isi umer di daftar → gaji 20% auto muncul</div>
+              </div>
+              <div class="panel-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">JENIS BARANG</label>
+                    <select id="sal-w-barang" style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none;cursor:pointer" onfocus="this.style.borderColor='var(--vi)'" onblur="this.style.borderColor='var(--ln)'">
+                      <option value="">— Pilih Jenis —</option>
+                      <option value="🟢 Weed">🟢 Weed</option>
+                      <option value="🔴 Opium">🔴 Opium</option>
+                      <option value="🔵 Meth">🔵 Meth</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">MEMBER PENYETOR</label>
+                    <div style="position:relative">
+                      <input id="sal-w-member-search" type="text" autocomplete="off" placeholder="🔍 Cari member..."
+                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                        onfocus="salWMemberAcShow();this.style.borderColor='var(--vi)'" onblur="setTimeout(()=>{salWMemberAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salWMemberAcShow()">
+                      <div id="sal-w-member-ac" class="ac-list"></div>
+                    </div>
+                    <input type="hidden" id="sal-w-member">
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">KUANTITAS (PCS)</label>
+                    <input id="sal-w-qty" type="number" min="1" placeholder="10"
+                      style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
+                      onfocus="this.style.borderColor='var(--vi)'" onblur="this.style.borderColor='var(--ln)'">
+                    <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);margin-top:4px;display:block">// input umer dilakukan di daftar setelah simpan</span>
+                  </div>
+                  <div>
+                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">DITERIMA OLEH</label>
+                    <div style="position:relative">
+                      <input id="sal-w-penerima-search" type="text" autocomplete="off" placeholder="🔍 Cari member penerima..."
+                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
+                        onfocus="salWPenerimaAcShow();this.style.borderColor='var(--vi)'" onblur="setTimeout(()=>{salWPenerimaAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salWPenerimaAcShow()">
+                      <div id="sal-w-penerima-ac" class="ac-list"></div>
+                    </div>
+                    <input type="hidden" id="sal-w-penerima">
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button onclick="salWSave()" style="flex:1;padding:12px;background:var(--vi);border:none;color:#fff;font-family:var(--fw);font-size:1rem;letter-spacing:2px;cursor:pointer" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">+ SIMPAN JUALAN WEEKLY</button>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title"><div class="p-pip vi"></div>Info Minggu Ini</div>
+              </div>
+              <div class="panel-body">
+                <div style="font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:1px;margin-bottom:16px">Data weekly ter-link ke tab Member — setiap member akan terlihat sudah/belum jualan minggu ini.</div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:12px;margin-bottom:10px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:6px">PERIODE MINGGU INI</div>
+                  <div id="sal-w-week-label" style="font-family:var(--fw);font-size:1rem;color:var(--vi);letter-spacing:1px">—</div>
+                </div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:12px;margin-bottom:10px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:6px">SUDAH JUALAN</div>
+                  <div id="sal-w-done-count" style="font-family:var(--fw);font-size:1.8rem;color:var(--em)">0 member</div>
+                </div>
+                <div style="background:var(--s2);border:1px solid var(--ln);padding:12px">
+                  <div style="font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:3px;margin-bottom:6px">TOTAL PENDING GAJI</div>
+                  <div id="sal-w-total-pending" style="font-family:var(--fw);font-size:1.8rem;color:var(--gd)">$ 0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- List Weekly -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><div class="p-pip vi"></div>Daftar Jualan Mingguan</div>
+              <div id="sal-w-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr>
+                  <th>#</th><th>Member</th><th>Jenis Barang</th><th>Qty (pcs)</th><th>Uang Merah ($)</th><th>Gaji (20%)</th><th>Diterima Oleh</th><th>Status Gaji</th><th>Waktu</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="sal-w-tbody"></tbody>
+              </table>
+              <div id="sal-w-empty" style="display:none;padding:48px;text-align:center">
+                <div style="font-family:var(--fw);font-size:2rem;color:var(--t3);margin-bottom:8px">📅</div>
+                <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA JUALAN MINGGU INI</div>
               </div>
             </div>
           </div>
@@ -2866,7 +2971,14 @@ async function notifyDevUpdate(judul, perubahan=[]){
     footer:{text:'BFL Dev Notification • '+new Date().toLocaleString('id-ID'),icon_url:BFL_LOGO_URL},
     timestamp: new Date().toISOString()
   };
-  await sendDiscordEmbed(DISCORD_DEV_WEBHOOK, embed);
+  if(!DISCORD_DEV_WEBHOOK) return;
+  try{
+    await fetch(DISCORD_DEV_WEBHOOK,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({content:'@here',embeds:[embed]})
+    });
+  }catch(e){console.warn('Discord webhook gagal:',e);}
 }
 
 // ── Notifikasi LOG AKTIVITAS USER ──
@@ -3032,6 +3144,66 @@ function startRealtimeSync(){
       updateDashboard();
     }
   });
+  // Listen dev presence
+  onSnapshot(doc(db,'config','dev_presence'),snap=>{
+    if(snap.exists()){
+      const d=snap.data();
+      const isOnline=d.online===true;
+      const devName=d.username||'developer';
+      const sinceTs=d.since||Date.now();
+      applyDevBanner(isOnline, devName, sinceTs);
+    }else{
+      applyDevBanner(false);
+    }
+  });
+}
+
+// ── DEV PRESENCE BANNER ──
+function applyDevBanner(isOnline, devName='', sinceTs=0){
+  const banner=document.getElementById('dev-online-banner');
+  const msgEl=document.getElementById('dev-banner-msg');
+  const timeEl=document.getElementById('dev-banner-time');
+  if(!banner)return;
+  if(isOnline){
+    document.body.classList.add('dev-online');
+    if(msgEl)msgEl.textContent='— '+devName+' sedang aktif di sistem';
+    if(timeEl){
+      const since=new Date(sinceTs);
+      timeEl.textContent='Aktif sejak '+since.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    }
+  }else{
+    document.body.classList.remove('dev-online');
+  }
+}
+async function setDevPresence(online){
+  try{
+    await setDoc(doc(db,'config','dev_presence'),{
+      online,
+      username:currentUser.username||'developer',
+      since:online?Date.now():null,
+      updatedAt:Date.now()
+    });
+  }catch(e){console.warn('Dev presence gagal:',e);}
+}
+
+// Heartbeat dev presence setiap 5 menit supaya auto-clear kalau tab ditutup paksa
+let _devHeartbeatInterval=null;
+function startDevHeartbeat(){
+  setDevPresence(true);
+  _devHeartbeatInterval=setInterval(()=>setDevPresence(true),5*60*1000);
+  // Clear saat tab/window ditutup
+  window.addEventListener('beforeunload',()=>{
+    // pakai sendBeacon agar request sempat terkirim walaupun tab ditutup
+    const url='https://firestore.googleapis.com/v1/projects/bflstore/databases/(default)/documents/config/dev_presence';
+    const payload={fields:{online:{booleanValue:false},username:{stringValue:currentUser.username||'developer'},updatedAt:{integerValue:Date.now()}}};
+    navigator.sendBeacon&&navigator.sendBeacon(url,JSON.stringify(payload));
+    // fallback sync fetch (best effort)
+    setDevPresence(false);
+  });
+}
+function stopDevHeartbeat(){
+  if(_devHeartbeatInterval){clearInterval(_devHeartbeatInterval);_devHeartbeatInterval=null;}
+  setDevPresence(false);
 }
 
 // UTILS
@@ -3068,6 +3240,7 @@ function checkSession(){
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('app').style.display='block';
       applyRoleUI();
+      if(parsed.role==='developer') startDevHeartbeat();
       initApp();
       return true;
     }
@@ -3166,6 +3339,7 @@ async function doLogin(){
       document.getElementById('app').style.display='block';
       applyRoleUI();
       logActivity('LOGIN','Login berhasil sebagai '+(matched.role==='admin'?'admin utama':matched.role==='developer'?'developer':'operator'));
+      if(matched.role==='developer') startDevHeartbeat();
       initApp();
     }else{
       _registerAttempt();
@@ -3190,6 +3364,7 @@ async function doLogin(){
 
 function doLogout(){
   logActivity('LOGOUT','Keluar dari sistem');
+  if(currentUser.role==='developer') stopDevHeartbeat();
   clearSession();
   currentUser={username:'',role:''};
   document.getElementById('app').style.display='none';
@@ -4804,9 +4979,13 @@ function renderMember(){
     const rows=grouped[jab].map(m=>{
       const isRehat=(m.status||'AKTIF')==='REHAT';
       const setoranInfo=getMemberSetoranSummary(m.nama);
+      const weeklyInfo=getMemberWeeklySummary(m.nama);
       const rehatLabel=isRehat&&(m.rehatReason||m.rehatDurasi)
         ?`${m.rehatReason?m.rehatReason:''}${m.rehatReason&&m.rehatDurasi?' · ':''}${m.rehatDurasi?m.rehatDurasi+' '+m.rehatUnit:''}`
         :'';
+      const weeklyBadge=weeklyInfo.sudah
+        ?`<span style="font-family:var(--fm);font-size:0.5rem;padding:2px 7px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.35);color:var(--vi);letter-spacing:1px;flex-shrink:0">✓ WEEKLY</span>`
+        :`<span style="font-family:var(--fm);font-size:0.5rem;padding:2px 7px;background:rgba(255,45,85,0.06);border:1px solid rgba(255,45,85,0.2);color:rgba(255,45,85,0.5);letter-spacing:1px;flex-shrink:0">✗ WEEKLY</span>`;
       return`<div class="mb-row${isRehat?' mb-row-rehat':''}">
         <div style="width:6px;height:6px;border-radius:50%;background:${isRehat?'var(--gd)':'var(--em)'};flex-shrink:0;margin-top:2px"></div>
         <div style="flex:1;min-width:0;cursor:pointer" onclick="openMemberSetoranModal('${m.nama.replace(/'/g,"\\'")}')">
@@ -4815,8 +4994,10 @@ function renderMember(){
             <span style="font-family:var(--fm);font-size:0.5rem;color:var(--cr);margin-left:6px;letter-spacing:1px">+ SETOR</span>
           </div>
           ${setoranInfo?`<div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);margin-top:1px">💰 ${setoranInfo}</div>`:''}
+          ${weeklyInfo.sudah?`<div style="font-family:var(--fm);font-size:0.55rem;color:var(--vi);margin-top:1px">📅 Weekly: ${weeklyInfo.count}x jualan · ${weeklyInfo.totalQty} pcs total</div>`:''}
           ${rehatLabel?`<div style="font-family:var(--fm);font-size:0.55rem;color:rgba(255,184,0,0.7);margin-top:1px">📝 ${rehatLabel}</div>`:''}
         </div>
+        ${weeklyBadge}
         <span class="mb-badge${isRehat?' mb-badge-rehat':' mb-badge-aktif'}">${isRehat?'REHAT':'AKTIF'}</span>
         <div style="display:flex;gap:5px;flex-shrink:0">
           <button onclick="openEditMember('${m.id}')" class="mb-btn-edit">✎</button>
@@ -5424,10 +5605,20 @@ function renderMemberSetoran(){
 // ─────────────────────────────────────────────────────────────────
 let salaryJualanList=[];
 let salaryNanamList=[];
+let salaryWeeklyList=[]; // data jualan mingguan
 let nanamJenisList=[]; // jenis pekerjaan nanam, custom oleh admin utama
 let activeSalaryTab='jualan';
 
 function genSalaryId(){return'SAL-'+Math.random().toString(36).substr(2,8).toUpperCase();}
+
+// ── helper: week key (Senin WIB) ──
+function getSalaryWeekKey(){
+  const wib=new Date(Date.now()+7*3600000);
+  const day=wib.getDay(); // 0=Sun
+  const diff=wib.getDate()-(day===0?6:day-1);
+  const mon=new Date(wib);mon.setDate(diff);
+  return mon.toISOString().split('T')[0];
+}
 
 async function fbLoadSalary(){
   try{
@@ -5437,6 +5628,11 @@ async function fbLoadSalary(){
     const snapN=await getDocs(collection(db,'salary_nanam'));
     salaryNanamList=[];
     snapN.forEach(d=>salaryNanamList.push(d.data()));
+    // Load weekly untuk minggu ini
+    const wk=getSalaryWeekKey();
+    const snapW=await getDocs(collection(db,'salary_weekly_'+wk));
+    salaryWeeklyList=[];
+    snapW.forEach(d=>salaryWeeklyList.push(d.data()));
   }catch(e){console.error('fbLoadSalary:',e);}
 }
 async function fbSaveSalaryItem(col,item){
@@ -5448,22 +5644,26 @@ async function fbDeleteSalaryItem(col,id){
 
 function switchSalaryTab(tab){
   activeSalaryTab=tab;
-  ['jualan','nanam','cumer'].forEach(t=>{
+  ['jualan','weekly','nanam','cumer'].forEach(t=>{
     const panel=document.getElementById('sal-panel-'+t);
     const btn=document.getElementById('sal-tab-'+t);
     if(panel)panel.style.display=t===tab?'block':'none';
     if(btn){
-      if(t===tab){btn.style.background='var(--cr3)';btn.style.color='var(--cr)';}
-      else{btn.style.background='transparent';btn.style.color='var(--t3)';}
+      if(t===tab){
+        btn.style.background=t==='weekly'?'var(--vi2)':t==='nanam'?'rgba(0,255,148,0.08)':t==='cumer'?'rgba(255,184,0,0.08)':'var(--cr3)';
+        btn.style.color=t==='weekly'?'var(--vi)':t==='nanam'?'var(--em)':t==='cumer'?'var(--gd)':'var(--cr)';
+      }else{btn.style.background='transparent';btn.style.color='var(--t3)';}
     }
   });
   if(tab==='cumer')renderSalaryCumer();
+  if(tab==='weekly'){renderSalaryWeekly();}
 }
 
 function renderSalaryPage(){
   fbLoadSalary().then(()=>{
     renderSalaryJualan();
     renderSalaryNanam();
+    renderSalaryWeekly();
     switchSalaryTab(activeSalaryTab||'jualan');
   });
 }
@@ -5502,34 +5702,24 @@ function salJPenerimaPick(v){
 }
 function salJPenerimaAcClose(){document.getElementById('sal-j-penerima-ac').style.display='none';}
 function salJPreview(){
-  const j=parseFloat(document.getElementById('sal-j-jumlah').value)||0;
-  const gaji=j*0.2;
-  const prev=document.getElementById('sal-j-preview');
-  if(j>0){
-    prev.style.display='block';
-    document.getElementById('sal-j-prev-masuk').textContent=fmt(j);
-    document.getElementById('sal-j-prev-gaji').textContent=fmt(gaji);
-  }else{prev.style.display='none';}
+  // tidak dipakai lagi — umer diinput langsung di daftar
 }
 async function salJSave(){
   const member=document.getElementById('sal-j-member').value;
   const barang=document.getElementById('sal-j-barang').value;
-  const jumlah=parseFloat(document.getElementById('sal-j-jumlah').value)||0;
   const qty=parseInt(document.getElementById('sal-j-qty').value)||0;
   const penerima=document.getElementById('sal-j-penerima').value;
-  if(!member||!barang||!jumlah){alert('⚠ Isi semua field (member, barang, jumlah)!');return}
-  const gaji=Math.round(jumlah*0.2);
-  const item={id:genSalaryId(),member,barang,qty,jumlah,gaji,penerima,statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
+  if(!member||!barang||!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
+  // jumlah umer & gaji akan diisi di daftar setelah simpan
+  const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima,statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
   salaryJualanList.push(item);
   try{
     await fbSaveSalaryItem('salary_jualan',item);
-    logActivity('ADD_SALARY','[JUALAN] '+member+' - '+barang+(qty?' - '+qty+'pcs':'')+' - Gaji: '+fmt(gaji));
+    logActivity('ADD_SALARY','[JUALAN] '+member+' - '+barang+' - '+qty+' pcs (umer belum diisi)');
     // reset form
     document.getElementById('sal-j-member-search').value='';document.getElementById('sal-j-member').value='';
-    document.getElementById('sal-j-barang').value='';document.getElementById('sal-j-jumlah').value='';
-    document.getElementById('sal-j-qty').value='';
+    document.getElementById('sal-j-barang').value='';document.getElementById('sal-j-qty').value='';
     document.getElementById('sal-j-penerima-search').value='';document.getElementById('sal-j-penerima').value='';
-    document.getElementById('sal-j-preview').style.display='none';
     renderSalaryJualan();
   }catch(err){salaryJualanList=salaryJualanList.filter(x=>x.id!==item.id);alert('⚠ Gagal: '+err.message);}
 }
@@ -5567,12 +5757,24 @@ function renderSalaryJualan(){
     const dt=new Date(x.ts);
     const dtStr=dt.toLocaleDateString('id-ID')+' '+dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
     const isLunas=x.statusGaji==='lunas';
-    return`<tr>
+    const umerVal=x.jumlah>0?x.jumlah:'';
+    const gajiDisplay=x.gaji>0?`<span style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(x.gaji)}</span>`:`<span style="color:var(--t3);font-family:var(--fm);font-size:0.7rem">← isi umer dulu</span>`;
+    return`<tr id="sal-j-row-${x.id}">
       <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem">${i+1}</td>
       <td style="font-weight:600">${x.member}</td>
       <td><span style="font-family:var(--fm);font-size:0.72rem;color:var(--t2)">${x.barang}</span></td>
-      <td style="color:var(--cr);font-family:var(--fm);font-size:0.75rem">${fmt(x.jumlah)}</td>
-      <td style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(x.gaji)}</td>
+      <td style="color:var(--t1);font-family:var(--fm);font-size:0.75rem;text-align:center">${x.qty||'—'}</td>
+      <td style="min-width:130px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-family:var(--fm);font-size:0.75rem;color:var(--cr);flex-shrink:0">$</span>
+          <input type="number" min="0" placeholder="Nominal..." value="${umerVal}"
+            style="width:100px;padding:6px 10px;background:var(--s2);border:1px solid ${x.jumlah>0?'var(--em3)':'rgba(255,45,85,0.3)'};color:var(--t1);font-family:var(--fm);font-size:0.82rem;outline:none"
+            onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'"
+            oninput="salJUmerInput(this,'${x.id}')"
+            onchange="salJUmerSave(this,'${x.id}')">
+        </div>
+      </td>
+      <td id="sal-j-gaji-${x.id}">${gajiDisplay}</td>
       <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem">${x.penerima||'—'}</td>
       <td>
         <span onclick="salJToggleStatus('${x.id}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};color:${isLunas?'var(--em)':'var(--cr)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'};letter-spacing:1px">
@@ -5581,6 +5783,216 @@ function renderSalaryJualan(){
       </td>
       <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem;white-space:nowrap">${dtStr}</td>
       <td><button onclick="salJDelete('${x.id}')" class="btn-row-del">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── JUALAN: input umer inline di daftar ──
+function salJUmerInput(inp,id){
+  const jumlah=parseFloat(inp.value)||0;
+  const gaji=Math.round(jumlah*0.2);
+  const gajiEl=document.getElementById('sal-j-gaji-'+id);
+  if(gajiEl){
+    if(gaji>0){
+      gajiEl.innerHTML=`<span style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(gaji)}</span>`;
+    }else{
+      gajiEl.innerHTML=`<span style="color:var(--t3);font-family:var(--fm);font-size:0.7rem">← isi umer dulu</span>`;
+    }
+  }
+  inp.style.borderColor=jumlah>0?'var(--em)':'rgba(255,45,85,0.3)';
+}
+async function salJUmerSave(inp,id){
+  const jumlah=parseFloat(inp.value)||0;
+  if(jumlah<=0)return;
+  const gaji=Math.round(jumlah*0.2);
+  const item=salaryJualanList.find(x=>x.id===id);
+  if(!item)return;
+  item.jumlah=jumlah;
+  item.gaji=gaji;
+  try{
+    await fbSaveSalaryItem('salary_jualan',item);
+    inp.style.borderColor='var(--em)';
+    setTimeout(()=>{inp.style.borderColor='var(--ln)'},800);
+    // update total pending
+    const pendingEl=document.getElementById('sal-j-total-pending');
+    if(pendingEl){
+      const totalPending=salaryJualanList.filter(x=>x.statusGaji!=='lunas').reduce((a,x)=>a+x.gaji,0);
+      pendingEl.textContent=fmt(totalPending);
+    }
+    logActivity('EDIT_SALARY','[JUALAN] '+item.member+' - Umer: '+fmt(jumlah)+' - Gaji: '+fmt(gaji));
+  }catch(err){
+    alert('⚠ Gagal menyimpan umer: '+err.message);
+  }
+}
+
+// ── JUALAN WEEKLY ──
+function salWMemberAcShow(){
+  const inp=document.getElementById('sal-w-member-search');
+  const listEl=document.getElementById('sal-w-member-ac');
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>`<div class="ac-item" onmousedown="salWMemberPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span><span style="font-size:0.6rem;color:var(--t3);margin-left:6px">${m.jabatan||''}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function salWMemberPick(v){
+  document.getElementById('sal-w-member-search').value=v;
+  document.getElementById('sal-w-member').value=v;
+  document.getElementById('sal-w-member-ac').style.display='none';
+}
+function salWMemberAcClose(){document.getElementById('sal-w-member-ac').style.display='none';}
+function salWPenerimaAcShow(){
+  const inp=document.getElementById('sal-w-penerima-search');
+  const listEl=document.getElementById('sal-w-penerima-ac');
+  if(!inp||!listEl)return;
+  const q=inp.value.trim().toLowerCase();
+  const pool=q?getAktifMembers().filter(m=>m.nama.toLowerCase().includes(q)):getAktifMembers();
+  if(!pool.length){listEl.style.display='none';return}
+  listEl.innerHTML=pool.map(m=>`<div class="ac-item" onmousedown="salWPenerimaPick('${m.nama.replace(/'/g,"\\'")}')"><span style="font-weight:600">${m.nama}</span></div>`).join('');
+  listEl.style.display='block';
+}
+function salWPenerimaPick(v){
+  document.getElementById('sal-w-penerima-search').value=v;
+  document.getElementById('sal-w-penerima').value=v;
+  document.getElementById('sal-w-penerima-ac').style.display='none';
+}
+function salWPenerimaAcClose(){document.getElementById('sal-w-penerima-ac').style.display='none';}
+
+async function salWSave(){
+  const member=document.getElementById('sal-w-member').value;
+  const barang=document.getElementById('sal-w-barang').value;
+  const qty=parseInt(document.getElementById('sal-w-qty').value)||0;
+  const penerima=document.getElementById('sal-w-penerima').value;
+  if(!member||!barang||!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
+  const wk=getSalaryWeekKey();
+  const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima,statusGaji:'belum',weekKey:wk,ts:Date.now(),createdBy:currentUser.username||'—'};
+  salaryWeeklyList.push(item);
+  try{
+    await fbSaveSalaryItem('salary_weekly_'+wk,item);
+    logActivity('ADD_SALARY','[WEEKLY] '+member+' - '+barang+' - '+qty+' pcs');
+    document.getElementById('sal-w-member-search').value='';document.getElementById('sal-w-member').value='';
+    document.getElementById('sal-w-barang').value='';document.getElementById('sal-w-qty').value='';
+    document.getElementById('sal-w-penerima-search').value='';document.getElementById('sal-w-penerima').value='';
+    renderSalaryWeekly();
+    renderMember(); // update badge di member list
+  }catch(err){salaryWeeklyList=salaryWeeklyList.filter(x=>x.id!==item.id);alert('⚠ Gagal: '+err.message);}
+}
+async function salWToggleStatus(id){
+  const item=salaryWeeklyList.find(x=>x.id===id);
+  if(!item)return;
+  item.statusGaji=item.statusGaji==='lunas'?'belum':'lunas';
+  await fbSaveSalaryItem('salary_weekly_'+item.weekKey,item);
+  renderSalaryWeekly();
+}
+async function salWDelete(id){
+  if(!confirm('Hapus data jualan weekly ini?'))return;
+  const item=salaryWeeklyList.find(x=>x.id===id);
+  salaryWeeklyList=salaryWeeklyList.filter(x=>x.id!==id);
+  if(item) await fbDeleteSalaryItem('salary_weekly_'+item.weekKey,id);
+  renderSalaryWeekly();
+  renderMember();
+}
+function salWUmerInput(inp,id){
+  const jumlah=parseFloat(inp.value)||0;
+  const gaji=Math.round(jumlah*0.2);
+  const gajiEl=document.getElementById('sal-w-gaji-'+id);
+  if(gajiEl){
+    gajiEl.innerHTML=gaji>0
+      ?`<span style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(gaji)}</span>`
+      :`<span style="color:var(--t3);font-family:var(--fm);font-size:0.7rem">← isi umer dulu</span>`;
+  }
+  inp.style.borderColor=jumlah>0?'var(--em)':'rgba(168,85,247,0.4)';
+}
+async function salWUmerSave(inp,id){
+  const jumlah=parseFloat(inp.value)||0;
+  if(jumlah<=0)return;
+  const gaji=Math.round(jumlah*0.2);
+  const item=salaryWeeklyList.find(x=>x.id===id);
+  if(!item)return;
+  item.jumlah=jumlah;item.gaji=gaji;
+  try{
+    await fbSaveSalaryItem('salary_weekly_'+item.weekKey,item);
+    inp.style.borderColor='var(--em)';
+    setTimeout(()=>{inp.style.borderColor='var(--ln)'},800);
+    const pendingEl=document.getElementById('sal-w-total-pending');
+    if(pendingEl){
+      const total=salaryWeeklyList.filter(x=>x.statusGaji!=='lunas').reduce((a,x)=>a+x.gaji,0);
+      pendingEl.textContent=fmt(total);
+    }
+    logActivity('EDIT_SALARY','[WEEKLY] '+item.member+' - Umer: '+fmt(jumlah)+' - Gaji: '+fmt(gaji));
+  }catch(err){alert('⚠ Gagal menyimpan umer: '+err.message);}
+}
+
+// helper: cek apakah member sudah jualan minggu ini
+function getMemberWeeklySummary(nama){
+  const items=salaryWeeklyList.filter(x=>x.member.toLowerCase()===nama.toLowerCase());
+  return items.length>0?{sudah:true,count:items.length,totalQty:items.reduce((a,x)=>a+(x.qty||0),0)}:{sudah:false,count:0,totalQty:0};
+}
+
+function renderSalaryWeekly(){
+  const wk=getSalaryWeekKey();
+  // update week label
+  const labelEl=document.getElementById('sal-w-week-label');
+  if(labelEl){
+    const [y,m,d]=wk.split('-');
+    const mon=new Date(parseInt(y),parseInt(m)-1,parseInt(d));
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    const opts={day:'numeric',month:'short'};
+    labelEl.textContent=mon.toLocaleDateString('id-ID',opts)+' – '+sun.toLocaleDateString('id-ID',opts)+' '+y;
+  }
+  const tbody=document.getElementById('sal-w-tbody');
+  const emptyEl=document.getElementById('sal-w-empty');
+  const sumEl=document.getElementById('sal-w-summary');
+  const pendingEl=document.getElementById('sal-w-total-pending');
+  const doneCountEl=document.getElementById('sal-w-done-count');
+  if(!tbody)return;
+  const totalPending=salaryWeeklyList.filter(x=>x.statusGaji!=='lunas').reduce((a,x)=>a+x.gaji,0);
+  if(pendingEl)pendingEl.textContent=fmt(totalPending);
+  const lunas=salaryWeeklyList.filter(x=>x.statusGaji==='lunas').length;
+  if(sumEl)sumEl.textContent=lunas+'/'+salaryWeeklyList.length+' gaji sudah dibayar';
+  // unique member yg sudah jualan
+  const uniqueMembers=[...new Set(salaryWeeklyList.map(x=>x.member))];
+  if(doneCountEl)doneCountEl.textContent=uniqueMembers.length+' member';
+  if(!salaryWeeklyList.length){
+    tbody.innerHTML='';
+    if(emptyEl)emptyEl.style.display='block';
+    return;
+  }
+  if(emptyEl)emptyEl.style.display='none';
+  const sorted=[...salaryWeeklyList].sort((a,b)=>b.ts-a.ts);
+  tbody.innerHTML=sorted.map((x,i)=>{
+    const dt=new Date(x.ts);
+    const dtStr=dt.toLocaleDateString('id-ID')+' '+dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const isLunas=x.statusGaji==='lunas';
+    const umerVal=x.jumlah>0?x.jumlah:'';
+    const gajiDisplay=x.gaji>0
+      ?`<span style="color:var(--em);font-family:var(--fm);font-size:0.85rem;font-weight:700">${fmt(x.gaji)}</span>`
+      :`<span style="color:var(--t3);font-family:var(--fm);font-size:0.7rem">← isi umer dulu</span>`;
+    return`<tr id="sal-w-row-${x.id}">
+      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem">${i+1}</td>
+      <td style="font-weight:600">${x.member}</td>
+      <td><span style="font-family:var(--fm);font-size:0.72rem;color:var(--vi)">${x.barang}</span></td>
+      <td style="color:var(--t1);font-family:var(--fm);font-size:0.75rem;text-align:center">${x.qty||'—'}</td>
+      <td style="min-width:130px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-family:var(--fm);font-size:0.75rem;color:var(--cr);flex-shrink:0">$</span>
+          <input type="number" min="0" placeholder="Nominal..." value="${umerVal}"
+            style="width:100px;padding:6px 10px;background:var(--s2);border:1px solid ${x.jumlah>0?'var(--em3)':'rgba(168,85,247,0.3)'};color:var(--t1);font-family:var(--fm);font-size:0.82rem;outline:none"
+            onfocus="this.style.borderColor='var(--vi)'" onblur="this.style.borderColor='var(--ln)'"
+            oninput="salWUmerInput(this,'${x.id}')"
+            onchange="salWUmerSave(this,'${x.id}')">
+        </div>
+      </td>
+      <td id="sal-w-gaji-${x.id}">${gajiDisplay}</td>
+      <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem">${x.penerima||'—'}</td>
+      <td>
+        <span onclick="salWToggleStatus('${x.id}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(168,85,247,0.3)'};color:${isLunas?'var(--em)':'var(--vi)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(168,85,247,0.06)'};letter-spacing:1px">
+          ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+        </span>
+      </td>
+      <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem;white-space:nowrap">${dtStr}</td>
+      <td><button onclick="salWDelete('${x.id}')" class="btn-row-del">🗑</button></td>
     </tr>`;
   }).join('');
 }
@@ -5698,7 +6110,7 @@ function renderSalaryNanam(){
       <td>${penerimaCell}</td>
       <td>
         <span onclick="salNToggleStatus('${safeId}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};color:${isLunas?'var(--em)':'var(--cr)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'};letter-spacing:1px">
-          ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+          ${isLunas?'✓ SUDAH DISETOR':'✗ BELUM DISETOR'}
         </span>
       </td>
       <td style="color:var(--t3);font-family:var(--fm);font-size:0.65rem;white-space:nowrap">${dtStr}</td>
@@ -6330,6 +6742,20 @@ function switchMemberTab(tab){
 }
 
 window.switchMemberTab=switchMemberTab;
+window.salJUmerInput=salJUmerInput;
+window.salJUmerSave=salJUmerSave;
+window.salWMemberAcShow=salWMemberAcShow;
+window.salWMemberPick=salWMemberPick;
+window.salWMemberAcClose=salWMemberAcClose;
+window.salWPenerimaAcShow=salWPenerimaAcShow;
+window.salWPenerimaPick=salWPenerimaPick;
+window.salWPenerimaAcClose=salWPenerimaAcClose;
+window.salWSave=salWSave;
+window.salWToggleStatus=salWToggleStatus;
+window.salWDelete=salWDelete;
+window.salWUmerInput=salWUmerInput;
+window.salWUmerSave=salWUmerSave;
+window.renderSalaryWeekly=renderSalaryWeekly;
 window.saveDiscordDevWebhook=saveDiscordDevWebhook;
 window.saveDiscordLogWebhook=saveDiscordLogWebhook;
 window.testDiscordLog=testDiscordLog;
