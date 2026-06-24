@@ -2081,23 +2081,13 @@ position:relative;z-index:1;}
                     <input type="hidden" id="sal-j-member">
                   </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px">
                   <div>
                     <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">KUANTITAS (PCS)</label>
                     <input id="sal-j-qty" type="number" min="1" placeholder="10"
                       style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
                       onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
-                    <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);margin-top:4px;display:block">// input umer dilakukan di daftar setelah simpan</span>
-                  </div>
-                  <div>
-                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">DITERIMA OLEH</label>
-                    <div style="position:relative">
-                      <input id="sal-j-penerima-search" type="text" autocomplete="off" placeholder="🔍 Cari member penerima..."
-                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
-                        onfocus="salJPenerimaAcShow();this.style.borderColor='var(--cr)'" onblur="setTimeout(()=>{salJPenerimaAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salJPenerimaAcShow()">
-                      <div id="sal-j-penerima-ac" class="ac-list"></div>
-                    </div>
-                    <input type="hidden" id="sal-j-penerima">
+                    <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);margin-top:4px;display:block">// umer & diterima oleh diisi di daftar setelah simpan</span>
                   </div>
                 </div>
                 <div style="display:flex;gap:10px">
@@ -2177,23 +2167,13 @@ position:relative;z-index:1;}
                     <input type="hidden" id="sal-w-member">
                   </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px">
                   <div>
                     <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">KUANTITAS (PCS)</label>
                     <input id="sal-w-qty" type="number" min="1" placeholder="10"
                       style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
                       onfocus="this.style.borderColor='var(--vi)'" onblur="this.style.borderColor='var(--ln)'">
-                    <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);margin-top:4px;display:block">// input umer dilakukan di daftar setelah simpan</span>
-                  </div>
-                  <div>
-                    <label style="display:block;font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:3px;margin-bottom:8px">DITERIMA OLEH</label>
-                    <div style="position:relative">
-                      <input id="sal-w-penerima-search" type="text" autocomplete="off" placeholder="🔍 Cari member penerima..."
-                        style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.85rem;outline:none;box-sizing:border-box"
-                        onfocus="salWPenerimaAcShow();this.style.borderColor='var(--vi)'" onblur="setTimeout(()=>{salWPenerimaAcClose();this.style.borderColor='var(--ln)'},200)" oninput="salWPenerimaAcShow()">
-                      <div id="sal-w-penerima-ac" class="ac-list"></div>
-                    </div>
-                    <input type="hidden" id="sal-w-penerima">
+                    <span style="font-family:var(--fm);font-size:0.52rem;color:var(--t3);margin-top:4px;display:block">// umer & diterima oleh diisi di daftar setelah simpan</span>
                   </div>
                 </div>
                 <div style="display:flex;gap:10px">
@@ -5708,10 +5688,12 @@ async function salJSave(){
   const member=document.getElementById('sal-j-member').value;
   const barang=document.getElementById('sal-j-barang').value;
   const qty=parseInt(document.getElementById('sal-j-qty').value)||0;
-  const penerima=document.getElementById('sal-j-penerima').value;
-  if(!member||!barang||!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
-  // jumlah umer & gaji akan diisi di daftar setelah simpan
-  const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima,statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
+  if(!member&&!barang&&!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
+  if(!member){alert('⚠ Pilih Member Penyetor dulu!');return}
+  if(!barang){alert('⚠ Pilih Jenis Barang dulu!');return}
+  if(!qty){alert('⚠ Isi Kuantitas (qty) dulu!');return}
+  // jumlah umer, gaji & penerima akan diisi di daftar setelah simpan
+  const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima:'',statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
   salaryJualanList.push(item);
   try{
     await fbSaveSalaryItem('salary_jualan',item);
@@ -5719,7 +5701,6 @@ async function salJSave(){
     // reset form
     document.getElementById('sal-j-member-search').value='';document.getElementById('sal-j-member').value='';
     document.getElementById('sal-j-barang').value='';document.getElementById('sal-j-qty').value='';
-    document.getElementById('sal-j-penerima-search').value='';document.getElementById('sal-j-penerima').value='';
     renderSalaryJualan();
   }catch(err){salaryJualanList=salaryJualanList.filter(x=>x.id!==item.id);alert('⚠ Gagal: '+err.message);}
 }
@@ -5775,7 +5756,13 @@ function renderSalaryJualan(){
         </div>
       </td>
       <td id="sal-j-gaji-${x.id}">${gajiDisplay}</td>
-      <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem">${x.penerima||'—'}</td>
+      <td style="min-width:140px">
+        <input type="text" placeholder="Ketik nama..." value="${x.penerima||''}"
+          style="width:130px;padding:6px 10px;background:var(--s2);border:1px solid ${x.penerima?'rgba(255,184,0,0.4)':'var(--ln)'};color:${x.penerima?'var(--gd)':'var(--t3)'};font-family:var(--fm);font-size:0.75rem;outline:none"
+          onfocus="this.style.borderColor='var(--gd)';this.style.color='var(--t1)'"
+          onblur="salJPenerimaInlineSave(this,'${x.id}')"
+          onkeydown="if(event.key==='Enter')this.blur()">
+      </td>
       <td>
         <span onclick="salJToggleStatus('${x.id}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};color:${isLunas?'var(--em)':'var(--cr)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'};letter-spacing:1px">
           ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
@@ -5825,6 +5812,19 @@ async function salJUmerSave(inp,id){
   }
 }
 
+async function salJPenerimaInlineSave(inp,id){
+  const val=inp.value.trim();
+  const item=salaryJualanList.find(x=>x.id===id);
+  if(!item)return;
+  item.penerima=val;
+  inp.style.borderColor=val?'rgba(255,184,0,0.4)':'var(--ln)';
+  inp.style.color=val?'var(--gd)':'var(--t3)';
+  try{
+    await fbSaveSalaryItem('salary_jualan',item);
+    if(val) logActivity('EDIT_SALARY','[JUALAN] '+item.member+' - Penerima: '+val);
+  }catch(err){alert('⚠ Gagal simpan penerima: '+err.message);}
+}
+
 // ── JUALAN WEEKLY ──
 function salWMemberAcShow(){
   const inp=document.getElementById('sal-w-member-search');
@@ -5865,22 +5865,18 @@ async function salWSave(){
   const member=memberHidden||memberSearch;
   const barang=document.getElementById('sal-w-barang').value;
   const qty=parseInt(document.getElementById('sal-w-qty').value)||0;
-  const penerimaHidden=document.getElementById('sal-w-penerima').value;
-  const penerimaSearch=(document.getElementById('sal-w-penerima-search').value||'').trim();
-  const penerima=penerimaHidden||penerimaSearch;
   if(!member&&!barang&&!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
   if(!member){alert('⚠ Pilih Member Penyetor dulu!');return}
   if(!barang){alert('⚠ Pilih Jenis Barang dulu!');return}
   if(!qty){alert('⚠ Isi Kuantitas (qty) dulu!');return}
   const wk=getSalaryWeekKey();
-  const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima,statusGaji:'belum',weekKey:wk,ts:Date.now(),createdBy:currentUser.username||'—'};
+  const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima:'',statusGaji:'belum',weekKey:wk,ts:Date.now(),createdBy:currentUser.username||'—'};
   salaryWeeklyList.push(item);
   try{
     await fbSaveSalaryItem('salary_weekly_'+wk,item);
     logActivity('ADD_SALARY','[WEEKLY] '+member+' - '+barang+' - '+qty+' pcs');
     document.getElementById('sal-w-member-search').value='';document.getElementById('sal-w-member').value='';
     document.getElementById('sal-w-barang').value='';document.getElementById('sal-w-qty').value='';
-    document.getElementById('sal-w-penerima-search').value='';document.getElementById('sal-w-penerima').value='';
     renderSalaryWeekly();
     renderMember(); // update badge di member list
   }catch(err){salaryWeeklyList=salaryWeeklyList.filter(x=>x.id!==item.id);alert('⚠ Gagal: '+err.message);}
@@ -5932,6 +5928,19 @@ async function salWUmerSave(inp,id){
 }
 
 // helper: cek apakah member sudah jualan minggu ini
+async function salWPenerimaInlineSave(inp,id){
+  const val=inp.value.trim();
+  const item=salaryWeeklyList.find(x=>x.id===id);
+  if(!item)return;
+  item.penerima=val;
+  inp.style.borderColor=val?'rgba(255,184,0,0.4)':'var(--ln)';
+  inp.style.color=val?'var(--gd)':'var(--t3)';
+  try{
+    await fbSaveSalaryItem('salary_weekly_'+item.weekKey,item);
+    if(val) logActivity('EDIT_SALARY','[WEEKLY] '+item.member+' - Penerima: '+val);
+  }catch(err){alert('⚠ Gagal simpan penerima: '+err.message);}
+}
+
 function getMemberWeeklySummary(nama){
   const items=salaryWeeklyList.filter(x=>x.member.toLowerCase()===nama.toLowerCase());
   return items.length>0?{sudah:true,count:items.length,totalQty:items.reduce((a,x)=>a+(x.qty||0),0)}:{sudah:false,count:0,totalQty:0};
@@ -5992,7 +6001,13 @@ function renderSalaryWeekly(){
         </div>
       </td>
       <td id="sal-w-gaji-${x.id}">${gajiDisplay}</td>
-      <td style="color:var(--gd);font-family:var(--fm);font-size:0.72rem">${x.penerima||'—'}</td>
+      <td style="min-width:140px">
+        <input type="text" placeholder="Ketik nama..." value="${x.penerima||''}"
+          style="width:130px;padding:6px 10px;background:var(--s2);border:1px solid ${x.penerima?'rgba(255,184,0,0.4)':'var(--ln)'};color:${x.penerima?'var(--gd)':'var(--t3)'};font-family:var(--fm);font-size:0.75rem;outline:none"
+          onfocus="this.style.borderColor='var(--gd)';this.style.color='var(--t1)'"
+          onblur="salWPenerimaInlineSave(this,'${x.id}')"
+          onkeydown="if(event.key==='Enter')this.blur()">
+      </td>
       <td>
         <span onclick="salWToggleStatus('${x.id}')" style="cursor:pointer;font-family:var(--fm);font-size:0.65rem;padding:4px 10px;border:1px solid ${isLunas?'rgba(0,255,148,0.4)':'rgba(168,85,247,0.3)'};color:${isLunas?'var(--em)':'var(--vi)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(168,85,247,0.06)'};letter-spacing:1px">
           ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
@@ -6335,6 +6350,8 @@ window.salJPenerimaAcShow=salJPenerimaAcShow;
 window.salJPenerimaPick=salJPenerimaPick;
 window.salJPenerimaAcClose=salJPenerimaAcClose;
 window.salJPreview=salJPreview;
+window.salJPenerimaInlineSave=salJPenerimaInlineSave;
+window.salWPenerimaInlineSave=salWPenerimaInlineSave;
 window.salJSave=salJSave;
 window.salJToggleStatus=salJToggleStatus;
 window.salJDelete=salJDelete;
