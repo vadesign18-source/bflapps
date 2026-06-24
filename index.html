@@ -5860,11 +5860,18 @@ function salWPenerimaPick(v){
 function salWPenerimaAcClose(){document.getElementById('sal-w-penerima-ac').style.display='none';}
 
 async function salWSave(){
-  const member=document.getElementById('sal-w-member').value;
+  const memberHidden=document.getElementById('sal-w-member').value;
+  const memberSearch=(document.getElementById('sal-w-member-search').value||'').trim();
+  const member=memberHidden||memberSearch;
   const barang=document.getElementById('sal-w-barang').value;
   const qty=parseInt(document.getElementById('sal-w-qty').value)||0;
-  const penerima=document.getElementById('sal-w-penerima').value;
-  if(!member||!barang||!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
+  const penerimaHidden=document.getElementById('sal-w-penerima').value;
+  const penerimaSearch=(document.getElementById('sal-w-penerima-search').value||'').trim();
+  const penerima=penerimaHidden||penerimaSearch;
+  if(!member&&!barang&&!qty){alert('⚠ Isi semua field (member, barang, qty)!');return}
+  if(!member){alert('⚠ Pilih Member Penyetor dulu!');return}
+  if(!barang){alert('⚠ Pilih Jenis Barang dulu!');return}
+  if(!qty){alert('⚠ Isi Kuantitas (qty) dulu!');return}
   const wk=getSalaryWeekKey();
   const item={id:genSalaryId(),member,barang,qty,jumlah:0,gaji:0,penerima,statusGaji:'belum',weekKey:wk,ts:Date.now(),createdBy:currentUser.username||'—'};
   salaryWeeklyList.push(item);
