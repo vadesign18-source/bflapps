@@ -863,8 +863,48 @@ body.dev-online .mob-toggle{top:54px}
   .kpi:nth-child(2n){border-right:none !important}
   .form-grid{grid-template-columns:1fr}
   #receiptCard{width:90vw;max-width:380px}
+  /* Salary panels: stack on mobile */
+  #sal-panel-jualan > div:first-child,
+  #sal-panel-weekly > div:first-child,
+  #sal-panel-nanam > div:first-child,
+  #sal-panel-cumer > div:first-child {grid-template-columns:1fr !important}
+  /* Salary tabs: wrap */
+  #sal-panel-jualan ~ div,
+  .sal-tab-row{flex-wrap:wrap}
+  /* Hide table, show cards on mobile */
+  .tbl-mobile-hide{display:none !important}
+  .mobile-cards{display:block !important}
+  /* pg-hero buttons stack */
+  .pg-hero > div:last-child{flex-direction:column;gap:8px;align-items:flex-start}
 }
 @media(max-width:480px){.kpi-row{grid-template-columns:1fr}.kpi{border-right:none !important}}
+
+/* ── MOBILE CARD VIEW ── */
+.mobile-cards{display:none}
+.m-card{
+  background:var(--s2);border:1px solid var(--ln);
+  padding:14px 16px;margin-bottom:10px;
+  border-left:3px solid var(--cr);
+  position:relative;
+}
+.m-card-vi{border-left-color:var(--vi)}
+.m-card-em{border-left-color:var(--em)}
+.m-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px}
+.m-card-name{font-family:var(--fb);font-size:0.95rem;color:var(--t1);flex:1}
+.m-card-badge{font-family:var(--fm);font-size:0.6rem;letter-spacing:1px;padding:3px 8px;border:1px solid var(--ln);color:var(--t3);white-space:nowrap;flex-shrink:0}
+.m-card-rows{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-family:var(--fm);font-size:0.72rem;margin-bottom:10px}
+.m-card-lbl{color:var(--t3);letter-spacing:1px;font-size:0.6rem;margin-bottom:1px}
+.m-card-val{color:var(--t2);font-size:0.8rem}
+.m-card-val.cr{color:var(--cr)}
+.m-card-val.em{color:var(--em);font-weight:700}
+.m-card-val.gd{color:var(--gd)}
+.m-card-val.vi{color:var(--vi)}
+.m-card-input{width:100%;padding:7px 10px;background:var(--s1);border:1px solid rgba(255,45,85,0.3);color:var(--t1);font-family:var(--fm);font-size:0.82rem;outline:none;box-sizing:border-box;margin-top:2px}
+.m-card-input:focus{border-color:var(--cr)}
+.m-card-input.vi:focus{border-color:var(--vi)}
+.m-card-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--ln)}
+.m-card-status{font-family:var(--fm);font-size:0.6rem;padding:5px 12px;border:1px solid;letter-spacing:1px;cursor:pointer;flex:1;text-align:center}
+.m-card-del{background:rgba(255,45,85,0.1);border:1px solid var(--cr);color:var(--cr);padding:5px 10px;font-size:0.75rem;cursor:pointer;font-family:var(--fb);flex-shrink:0}
 
 /* EDIT MODAL */
 .edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center}
@@ -2116,13 +2156,12 @@ position:relative;z-index:1;}
             </div>
           </div>
 
-          <!-- List Alokasi Gaji Jualan -->
           <div class="panel">
             <div class="panel-head">
               <div class="panel-title"><div class="p-pip cr"></div>Daftar Alokasi Gaji Jualan</div>
               <div id="sal-j-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
             </div>
-            <div class="tbl-wrap">
+            <div class="tbl-wrap tbl-mobile-hide">
               <table>
                 <thead><tr>
                   <th>#</th><th>Member</th><th>Jenis Barang</th><th>Qty (pcs)</th><th>Uang Merah ($)</th><th>Gaji (20%)</th><th>Diterima Oleh</th><th>Status Gaji</th><th>Waktu</th><th>Aksi</th>
@@ -2134,8 +2173,8 @@ position:relative;z-index:1;}
                 <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA ALOKASI GAJI JUALAN</div>
               </div>
             </div>
+            <div class="mobile-cards" id="sal-j-cards" style="padding:12px"></div>
           </div>
-        </div>
 
         <!-- ── TAB WEEKLY ── -->
         <div id="sal-panel-weekly" style="display:none">
@@ -2209,7 +2248,7 @@ position:relative;z-index:1;}
               <div class="panel-title"><div class="p-pip vi"></div>Daftar Jualan Mingguan</div>
               <div id="sal-w-summary" style="font-family:var(--fm);font-size:0.65rem;color:var(--t3)">—</div>
             </div>
-            <div class="tbl-wrap">
+            <div class="tbl-wrap tbl-mobile-hide">
               <table>
                 <thead><tr>
                   <th>#</th><th>Member</th><th>Jenis Barang</th><th>Qty (pcs)</th><th>Uang Merah ($)</th><th>Gaji (20%)</th><th>Diterima Oleh</th><th>Status Gaji</th><th>Waktu</th><th>Aksi</th>
@@ -2221,6 +2260,7 @@ position:relative;z-index:1;}
                 <div style="font-family:var(--fm);font-size:0.7rem;color:var(--t3);letter-spacing:2px">BELUM ADA DATA JUALAN MINGGU INI</div>
               </div>
             </div>
+            <div class="mobile-cards" id="sal-w-cards" style="padding:12px"></div>
           </div>
         </div>
 
@@ -3539,15 +3579,28 @@ function clearLogFilter(){
 function exportLogs(){
   if(currentUser.username!==MASTER_USERNAME&&currentUser.role!=='developer')return;
   if(!activityLogs.length){alert('Belum ada data log!');return}
-  const data=[
+  const dateStr=new Date().toLocaleDateString('id-ID');
+  const rows=[
+    ['AUDIT TRAIL — BFL ACTIVITY LOG','','','',''],
+    ['Tanggal Export: '+dateStr+'  |  Total: '+activityLogs.length+' entri','','','',''],
+    [],
     ['Waktu','Username','Role','Aksi','Detail'],
     ...activityLogs.map(l=>{
       const dt=new Date(l.timestamp);
       return[dt.toLocaleString('id-ID'),l.username,l.role,logActionLabel(l.action),l.detail||''];
     })
   ];
-  const ws=XLSX.utils.aoa_to_sheet(data);
-  ws['!cols']=[20,16,12,24,40].map(w=>({wch:w}));
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:4}},{s:{r:1,c:0},e:{r:1,c:4}}];
+  ws['A1'].s={font:{bold:true,sz:13,color:{rgb:'FF4455'}},fill:{fgColor:{rgb:'0D0D0D'},patternType:'solid'},alignment:{horizontal:'center'}};
+  ws['A2'].s={font:{italic:true,sz:9,color:{rgb:'888888'}},alignment:{horizontal:'center'}};
+  ws['!cols']=[20,16,12,24,45].map(w=>({wch:w}));
+  const range=XLSX.utils.decode_range(ws['!ref']||'A1');
+  for(let C=range.s.c;C<=range.e.c;C++){
+    const addr=XLSX.utils.encode_cell({r:3,c:C});
+    if(!ws[addr])continue;
+    ws[addr].s={font:{bold:true,color:{rgb:'FFFFFF'},sz:10},fill:{fgColor:{rgb:'1A1A2E'},patternType:'solid'},alignment:{horizontal:'center'}};
+  }
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Activity Log');
   XLSX.writeFile(wb,'BFL-LOG-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
@@ -4076,17 +4129,34 @@ async function saveEdit(){
 // EXPORT
 function exportExcel(){
   if(transactions.length===0){alert('Belum ada data!');return}
-  const data=[
-    ['ID','Kelompok','Tanggal','Uang Merah','Potongan Tahap 1','Potongan Tahap 2','Uang Hijau','Pajak High Table','Yang Cuci','Yang Backup','Diinput Oleh','Catatan','Status'],
-    ...transactions.map(tx=>[tx.id,tx.kelompok,tx.tanggal,tx.jumlah,tx.pot1,tx.pot2,tx.bersih,
-      tx.pajak||tx.pot1,tx.pekerjaCuci||tx.pekerja||'',tx.pekerjaBackup||'',tx.inputBy||'',tx.catatan||'',
-      tx.status==='done'?'Berhasil':tx.status==='cancel'?'Cancel':'Dalam Proses'])
+  const dateStr=new Date().toLocaleDateString('id-ID');
+  const rows=[
+    ['REKAP TRANSAKSI — BFL','','','','','','','','','','','',''],
+    ['Tanggal Export: '+dateStr,'','','','','','','','','','','',''],
+    [],
+    ['ID','Kelompok','Tanggal','Uang Merah','Potongan 1','Potongan 2','Uang Hijau','Pajak High Table','Yang Cuci','Yang Backup','Diinput Oleh','Catatan','Status'],
+    ...transactions.map(tx=>[
+      tx.id, tx.kelompok, tx.tanggal, tx.jumlah, tx.pot1, tx.pot2, tx.bersih,
+      tx.pajak||tx.pot1, tx.pekerjaCuci||tx.pekerja||'', tx.pekerjaBackup||'',
+      tx.inputBy||'', tx.catatan||'',
+      tx.status==='done'?'✓ Berhasil':tx.status==='cancel'?'✗ Cancel':'⏳ Proses'
+    ])
   ];
-  const ws=XLSX.utils.aoa_to_sheet(data);
-  ws['!cols']=[10,20,12,15,18,18,15,18,16,16,18,20,12].map(w=>({wch:w}));
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:12}},{s:{r:1,c:0},e:{r:1,c:12}}];
+  ws['A1'].s={font:{bold:true,sz:14,color:{rgb:'FF4455'}},fill:{fgColor:{rgb:'0D0D0D'},patternType:'solid'},alignment:{horizontal:'center'}};
+  ws['A2'].s={font:{italic:true,sz:9,color:{rgb:'888888'}},alignment:{horizontal:'center'}};
+  ws['!cols']=[10,20,12,15,14,14,15,16,18,18,16,20,12].map(w=>({wch:w}));
+  // Header styling
+  const range=XLSX.utils.decode_range(ws['!ref']||'A1');
+  for(let C=range.s.c;C<=range.e.c;C++){
+    const addr=XLSX.utils.encode_cell({r:3,c:C});
+    if(!ws[addr])continue;
+    ws[addr].s={font:{bold:true,color:{rgb:'FFFFFF'},sz:10},fill:{fgColor:{rgb:'C0392B'},patternType:'solid'},alignment:{horizontal:'center',vertical:'center'}};
+  }
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Transaksi BFL');
-  XLSX.writeFile(wb,'BFL-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
+  XLSX.writeFile(wb,'BFL-Transaksi-'+new Date().toLocaleDateString('id-ID').replace(/\//g,'-')+'.xlsx');
 }
 
 // RESET ALL DATA
@@ -5719,6 +5789,7 @@ async function salJDelete(id){
 }
 function renderSalaryJualan(){
   const tbody=document.getElementById('sal-j-tbody');
+  const cardsEl=document.getElementById('sal-j-cards');
   const emptyEl=document.getElementById('sal-j-empty');
   const sumEl=document.getElementById('sal-j-summary');
   const pendingEl=document.getElementById('sal-j-total-pending');
@@ -5729,6 +5800,7 @@ function renderSalaryJualan(){
   if(sumEl)sumEl.textContent=lunas+'/'+salaryJualanList.length+' gaji sudah dibayar';
   if(!salaryJualanList.length){
     tbody.innerHTML='';
+    if(cardsEl)cardsEl.innerHTML='';
     if(emptyEl)emptyEl.style.display='block';
     return;
   }
@@ -5772,6 +5844,46 @@ function renderSalaryJualan(){
       <td><button onclick="salJDelete('${x.id}')" class="btn-row-del">🗑</button></td>
     </tr>`;
   }).join('');
+  // Mobile cards
+  if(cardsEl){
+    cardsEl.innerHTML=sorted.map((x,i)=>{
+      const isLunas=x.statusGaji==='lunas';
+      const umerVal=x.jumlah>0?x.jumlah:'';
+      const dt=new Date(x.ts).toLocaleDateString('id-ID');
+      return`<div class="m-card">
+        <div class="m-card-head">
+          <div class="m-card-name">${x.member}</div>
+          <div class="m-card-badge" style="color:var(--t2)">${x.barang}</div>
+        </div>
+        <div class="m-card-rows">
+          <div><div class="m-card-lbl">QTY</div><div class="m-card-val">${x.qty||'—'} pcs</div></div>
+          <div><div class="m-card-lbl">GAJI (20%)</div><div class="m-card-val ${x.gaji>0?'em':''}">${x.gaji>0?fmt(x.gaji):'—'}</div></div>
+          <div style="grid-column:1/-1">
+            <div class="m-card-lbl">UANG MERAH ($)</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+              <span style="color:var(--cr);font-size:0.75rem">$</span>
+              <input type="number" min="0" placeholder="Isi nominal..." value="${umerVal}" class="m-card-input"
+                oninput="salJUmerInput(this,'${x.id}')" onchange="salJUmerSave(this,'${x.id}')">
+            </div>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="m-card-lbl">DITERIMA OLEH</div>
+            <input type="text" placeholder="Ketik nama penerima..." value="${x.penerima||''}" class="m-card-input"
+              style="border-color:${x.penerima?'rgba(255,184,0,0.4)':'rgba(255,45,85,0.3)'};color:${x.penerima?'var(--gd)':'var(--t3)'}"
+              onblur="salJPenerimaInlineSave(this,'${x.id}')" onkeydown="if(event.key==='Enter')this.blur()">
+          </div>
+        </div>
+        <div class="m-card-footer">
+          <span class="m-card-status" onclick="salJToggleStatus('${x.id}')"
+            style="border-color:${isLunas?'rgba(0,255,148,0.4)':'rgba(255,45,85,0.3)'};color:${isLunas?'var(--em)':'var(--cr)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(255,45,85,0.06)'}">
+            ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+          </span>
+          <button class="m-card-del" onclick="salJDelete('${x.id}')">🗑</button>
+        </div>
+        <div style="font-family:var(--fm);font-size:0.58rem;color:var(--t3);margin-top:8px">${dt}</div>
+      </div>`;
+    }).join('');
+  }
 }
 
 // ── JUALAN: input umer inline di daftar ──
@@ -5948,7 +6060,6 @@ function getMemberWeeklySummary(nama){
 
 function renderSalaryWeekly(){
   const wk=getSalaryWeekKey();
-  // update week label
   const labelEl=document.getElementById('sal-w-week-label');
   if(labelEl){
     const [y,m,d]=wk.split('-');
@@ -5958,6 +6069,7 @@ function renderSalaryWeekly(){
     labelEl.textContent=mon.toLocaleDateString('id-ID',opts)+' – '+sun.toLocaleDateString('id-ID',opts)+' '+y;
   }
   const tbody=document.getElementById('sal-w-tbody');
+  const cardsEl=document.getElementById('sal-w-cards');
   const emptyEl=document.getElementById('sal-w-empty');
   const sumEl=document.getElementById('sal-w-summary');
   const pendingEl=document.getElementById('sal-w-total-pending');
@@ -5967,11 +6079,11 @@ function renderSalaryWeekly(){
   if(pendingEl)pendingEl.textContent=fmt(totalPending);
   const lunas=salaryWeeklyList.filter(x=>x.statusGaji==='lunas').length;
   if(sumEl)sumEl.textContent=lunas+'/'+salaryWeeklyList.length+' gaji sudah dibayar';
-  // unique member yg sudah jualan
   const uniqueMembers=[...new Set(salaryWeeklyList.map(x=>x.member))];
   if(doneCountEl)doneCountEl.textContent=uniqueMembers.length+' member';
   if(!salaryWeeklyList.length){
     tbody.innerHTML='';
+    if(cardsEl)cardsEl.innerHTML='';
     if(emptyEl)emptyEl.style.display='block';
     return;
   }
@@ -6017,6 +6129,46 @@ function renderSalaryWeekly(){
       <td><button onclick="salWDelete('${x.id}')" class="btn-row-del">🗑</button></td>
     </tr>`;
   }).join('');
+  // Mobile cards
+  if(cardsEl){
+    cardsEl.innerHTML=sorted.map((x,i)=>{
+      const isLunas=x.statusGaji==='lunas';
+      const umerVal=x.jumlah>0?x.jumlah:'';
+      const dt=new Date(x.ts).toLocaleDateString('id-ID');
+      return`<div class="m-card m-card-vi">
+        <div class="m-card-head">
+          <div class="m-card-name">${x.member}</div>
+          <div class="m-card-badge" style="color:var(--vi);border-color:rgba(168,85,247,0.3)">${x.barang}</div>
+        </div>
+        <div class="m-card-rows">
+          <div><div class="m-card-lbl">QTY</div><div class="m-card-val">${x.qty||'—'} pcs</div></div>
+          <div><div class="m-card-lbl">GAJI (20%)</div><div class="m-card-val ${x.gaji>0?'em':''}">${x.gaji>0?fmt(x.gaji):'—'}</div></div>
+          <div style="grid-column:1/-1">
+            <div class="m-card-lbl">UANG MERAH ($)</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+              <span style="color:var(--cr);font-size:0.75rem">$</span>
+              <input type="number" min="0" placeholder="Isi nominal..." value="${umerVal}" class="m-card-input vi"
+                oninput="salWUmerInput(this,'${x.id}')" onchange="salWUmerSave(this,'${x.id}')">
+            </div>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="m-card-lbl">DITERIMA OLEH</div>
+            <input type="text" placeholder="Ketik nama penerima..." value="${x.penerima||''}" class="m-card-input vi"
+              style="border-color:${x.penerima?'rgba(255,184,0,0.4)':'rgba(168,85,247,0.3)'};color:${x.penerima?'var(--gd)':'var(--t3)'}"
+              onblur="salWPenerimaInlineSave(this,'${x.id}')" onkeydown="if(event.key==='Enter')this.blur()">
+          </div>
+        </div>
+        <div class="m-card-footer">
+          <span class="m-card-status" onclick="salWToggleStatus('${x.id}')"
+            style="border-color:${isLunas?'rgba(0,255,148,0.4)':'rgba(168,85,247,0.3)'};color:${isLunas?'var(--em)':'var(--vi)'};background:${isLunas?'rgba(0,255,148,0.06)':'rgba(168,85,247,0.06)'}">
+            ${isLunas?'✓ SUDAH DIBAYAR':'✗ BELUM DIBAYAR'}
+          </span>
+          <button class="m-card-del" onclick="salWDelete('${x.id}')">🗑</button>
+        </div>
+        <div style="font-family:var(--fm);font-size:0.58rem;color:var(--t3);margin-top:8px">${dt}</div>
+      </div>`;
+    }).join('');
+  }
 }
 
 // ── NANAM & OLAH ──
@@ -6443,29 +6595,115 @@ async function salJEditQty(id, val){
 
 // ── EXPORT EXCEL SALARY (semua tab) ──
 function exportSalaryExcel(){
-  // Build CSV dengan semua data salary
-  const rows=[];
+  const wb=XLSX.utils.book_new();
 
-  // ── Sheet 1: Gaji Cumer Minggu Ini ──
-  rows.push(['=== REKAP GAJI CUMER MINGGU INI ===']);
-  rows.push(['Nama Pekerja','Role','Jumlah Transaksi','Total Gaji','Status']);
+  // ── Helper: style header row ──
+  function styleSheet(ws,headerRow,colWidths){
+    ws['!cols']=colWidths.map(w=>({wch:w}));
+    // Bold + fill header
+    const range=XLSX.utils.decode_range(ws['!ref']||'A1');
+    for(let C=range.s.c;C<=range.e.c;C++){
+      const addr=XLSX.utils.encode_cell({r:headerRow,c:C});
+      if(!ws[addr])continue;
+      ws[addr].s={
+        font:{bold:true,color:{rgb:'FFFFFF'},sz:11},
+        fill:{fgColor:{rgb:'C0392B'},patternType:'solid'},
+        alignment:{horizontal:'center',vertical:'center',wrapText:true},
+        border:{bottom:{style:'medium',color:{rgb:'000000'}}}
+      };
+    }
+    // Zebra rows
+    for(let R=headerRow+1;R<=range.e.r;R++){
+      const fill=R%2===0?{fgColor:{rgb:'1A1A1A'},patternType:'solid'}:{fgColor:{rgb:'111111'},patternType:'solid'};
+      for(let C=range.s.c;C<=range.e.c;C++){
+        const addr=XLSX.utils.encode_cell({r:R,c:C});
+        if(!ws[addr])ws[addr]={v:'',t:'s'};
+        ws[addr].s={fill,alignment:{vertical:'center'},font:{color:{rgb:'E0E0E0'},sz:10}};
+      }
+    }
+    return ws;
+  }
 
-  // Hitung minggu ini
+  // ── Sheet 1: GAJI JUALAN ──
   const nowX=new Date();
-  const dayX=nowX.getDay();
-  const diffX=dayX===0?6:dayX-1;
-  const monX=new Date(nowX);
-  monX.setHours(0,0,0,0);
-  monX.setDate(nowX.getDate()-diffX);
-  const sunX=new Date(monX);
-  sunX.setDate(monX.getDate()+7);
-  const weekLabel=monX.toLocaleDateString('id-ID')+' s/d '+new Date(sunX.getTime()-86400000).toLocaleDateString('id-ID');
-  rows[0]=['=== REKAP GAJI CUMER MINGGU INI ('+weekLabel+') ==='];
+  const dateStr=nowX.toLocaleDateString('id-ID');
+  const jualanRows=[
+    ['REKAP GAJI JUALAN — BFL','','','','','','','','',''],
+    ['Tanggal Export: '+dateStr,'','','','','','','','',''],
+    [],
+    ['#','Member','Jenis Barang','Qty (pcs)','Uang Merah ($)','Gaji 20% ($)','Diterima Oleh','Status','Waktu','Dibuat Oleh'],
+    ...[...salaryJualanList].sort((a,b)=>b.ts-a.ts).map((x,i)=>[
+      i+1, x.member, x.barang, x.qty||0, x.jumlah||0, x.gaji||0,
+      x.penerima||'—', x.statusGaji==='lunas'?'✓ LUNAS':'✗ BELUM',
+      new Date(x.ts).toLocaleString('id-ID'), x.createdBy||'—'
+    ])
+  ];
+  const wsJ=XLSX.utils.aoa_to_sheet(jualanRows);
+  // Merge title
+  wsJ['!merges']=[{s:{r:0,c:0},e:{r:0,c:9}},{s:{r:1,c:0},e:{r:1,c:9}}];
+  wsJ['A1'].s={font:{bold:true,sz:14,color:{rgb:'FF4455'}},fill:{fgColor:{rgb:'0D0D0D'},patternType:'solid'},alignment:{horizontal:'center'}};
+  wsJ['A2'].s={font:{italic:true,sz:9,color:{rgb:'888888'}},alignment:{horizontal:'center'}};
+  styleSheet(wsJ,3,[4,20,16,10,16,14,18,14,18,14]);
+  XLSX.utils.book_append_sheet(wb,wsJ,'Gaji Jualan');
 
+  // ── Sheet 2: GAJI WEEKLY ──
+  const dayX=nowX.getDay();const diffX=dayX===0?6:dayX-1;
+  const monX=new Date(nowX);monX.setHours(0,0,0,0);monX.setDate(nowX.getDate()-diffX);
+  const sunX=new Date(monX);sunX.setDate(monX.getDate()+6);
+  const weekLabel=monX.toLocaleDateString('id-ID')+' s/d '+sunX.toLocaleDateString('id-ID');
+  const weeklyRows=[
+    ['REKAP GAJI WEEKLY — BFL','','','','','','','','',''],
+    ['Periode: '+weekLabel,'','','','','','','','',''],
+    [],
+    ['#','Member','Jenis Barang','Qty (pcs)','Uang Merah ($)','Gaji 20% ($)','Diterima Oleh','Status','Waktu','Dibuat Oleh'],
+    ...[...salaryWeeklyList].sort((a,b)=>b.ts-a.ts).map((x,i)=>[
+      i+1, x.member, x.barang, x.qty||0, x.jumlah||0, x.gaji||0,
+      x.penerima||'—', x.statusGaji==='lunas'?'✓ LUNAS':'✗ BELUM',
+      new Date(x.ts).toLocaleString('id-ID'), x.createdBy||'—'
+    ])
+  ];
+  const wsW=XLSX.utils.aoa_to_sheet(weeklyRows);
+  wsW['!merges']=[{s:{r:0,c:0},e:{r:0,c:9}},{s:{r:1,c:0},e:{r:1,c:9}}];
+  wsW['A1'].s={font:{bold:true,sz:14,color:{rgb:'A855F7'}},fill:{fgColor:{rgb:'0D0D0D'},patternType:'solid'},alignment:{horizontal:'center'}};
+  wsW['A2'].s={font:{italic:true,sz:9,color:{rgb:'888888'}},alignment:{horizontal:'center'}};
+  styleSheet(wsW,3,[4,20,16,10,16,14,18,14,18,14]);
+  // Override header fill color to violet
+  const wRange=XLSX.utils.decode_range(wsW['!ref']||'A1');
+  for(let C=wRange.s.c;C<=wRange.e.c;C++){
+    const addr=XLSX.utils.encode_cell({r:3,c:C});
+    if(wsW[addr]&&wsW[addr].s)wsW[addr].s.fill={fgColor:{rgb:'6B21A8'},patternType:'solid'};
+  }
+  XLSX.utils.book_append_sheet(wb,wsW,'Gaji Weekly');
+
+  // ── Sheet 3: GAJI NANAM & OLAH ──
+  const nanamRows=[
+    ['REKAP GAJI NANAM & OLAH — BFL','','','','','','',''],
+    ['Tanggal Export: '+dateStr,'','','','','','',''],
+    [],
+    ['#','Member','Jenis Pekerjaan','Pcs','Gaji ($)','Pemberi Gaji','Status','Waktu'],
+    ...[...salaryNanamList].sort((a,b)=>b.ts-a.ts).map((x,i)=>[
+      i+1, x.member, x.jenis, x.pcs||0, x.gaji||0,
+      x.penerima||'—', x.statusGaji==='lunas'?'✓ LUNAS':'✗ BELUM',
+      new Date(x.ts).toLocaleString('id-ID')
+    ])
+  ];
+  const wsN=XLSX.utils.aoa_to_sheet(nanamRows);
+  wsN['!merges']=[{s:{r:0,c:0},e:{r:0,c:7}},{s:{r:1,c:0},e:{r:1,c:7}}];
+  wsN['A1'].s={font:{bold:true,sz:14,color:{rgb:'00FF94'}},fill:{fgColor:{rgb:'0D0D0D'},patternType:'solid'},alignment:{horizontal:'center'}};
+  wsN['A2'].s={font:{italic:true,sz:9,color:{rgb:'888888'}},alignment:{horizontal:'center'}};
+  styleSheet(wsN,3,[4,20,20,8,14,18,14,18]);
+  const nRange=XLSX.utils.decode_range(wsN['!ref']||'A1');
+  for(let C=nRange.s.c;C<=nRange.e.c;C++){
+    const addr=XLSX.utils.encode_cell({r:3,c:C});
+    if(wsN[addr]&&wsN[addr].s)wsN[addr].s.fill={fgColor:{rgb:'065F46'},patternType:'solid'};
+  }
+  XLSX.utils.book_append_sheet(wb,wsN,'Nanam & Olah');
+
+  // ── Sheet 4: REKAP CUMER ──
   const ppw={};
   transactions.forEach(tx=>{
     const ts=tx.ts||tx.createdAt||0;
-    if(ts<monX.getTime()||ts>=sunX.getTime())return;
+    if(ts<monX.getTime()||ts>=sunX.getTime()+86400000)return;
     const ca=(tx.pekerjaCuci||tx.pekerja||'').split(',').map(s=>s.trim()).filter(Boolean);
     const ba=(tx.pekerjaBackup||'').split(',').map(s=>s.trim()).filter(Boolean);
     if(!ca.length&&!ba.length)return;
@@ -6476,44 +6714,30 @@ function exportSalaryExcel(){
     ca.forEach(p=>{if(!ppw[p])ppw[p]={total:0,count:0,role:'Cuci'};ppw[p].total+=Math.round(gpp);ppw[p].count++;});
     ba.forEach(p=>{if(!ppw[p])ppw[p]={total:0,count:0,role:'Backup'};ppw[p].total+=Math.round(gpp*0.7);ppw[p].count++;});
   });
-  Object.entries(ppw).sort((a,b)=>b[1].total-a[1].total).forEach(([nama,d])=>{
-    rows.push([nama,d.role,d.count,d.total,cumerPayStatus[nama]==='lunas'?'Sudah Dibayar':'Belum Dibayar']);
-  });
-  if(!Object.keys(ppw).length) rows.push(['Tidak ada data minggu ini','','','','']);
+  const cumerRows=[
+    ['REKAP GAJI CUMER MINGGU INI — BFL','','','',''],
+    ['Periode: '+weekLabel,'','','',''],
+    [],
+    ['Nama Pekerja','Role','Jumlah Transaksi','Total Gaji ($)','Status'],
+    ...Object.entries(ppw).sort((a,b)=>b[1].total-a[1].total).map(([nama,d])=>[
+      nama, d.role, d.count, d.total, cumerPayStatus[nama]==='lunas'?'✓ LUNAS':'✗ BELUM'
+    ])
+  ];
+  if(Object.keys(ppw).length===0) cumerRows.push(['Tidak ada data minggu ini','','','','']);
+  const wsC=XLSX.utils.aoa_to_sheet(cumerRows);
+  wsC['!merges']=[{s:{r:0,c:0},e:{r:0,c:4}},{s:{r:1,c:0},e:{r:1,c:4}}];
+  wsC['A1'].s={font:{bold:true,sz:14,color:{rgb:'60A5FA'}},fill:{fgColor:{rgb:'0D0D0D'},patternType:'solid'},alignment:{horizontal:'center'}};
+  wsC['A2'].s={font:{italic:true,sz:9,color:{rgb:'888888'}},alignment:{horizontal:'center'}};
+  styleSheet(wsC,3,[22,12,18,16,14]);
+  const cRange=XLSX.utils.decode_range(wsC['!ref']||'A1');
+  for(let C=cRange.s.c;C<=cRange.e.c;C++){
+    const addr=XLSX.utils.encode_cell({r:3,c:C});
+    if(wsC[addr]&&wsC[addr].s)wsC[addr].s.fill={fgColor:{rgb:'1D4ED8'},patternType:'solid'};
+  }
+  XLSX.utils.book_append_sheet(wb,wsC,'Cumer');
 
-  rows.push([]);
-  rows.push(['=== DATA GAJI JUALAN ===']);
-  rows.push(['#','Member','Jenis Barang','Qty (pcs)','Uang Merah','Gaji (20%)','Diterima Oleh','Status','Waktu','Dibuat Oleh']);
-  const sortedJ=[...salaryJualanList].sort((a,b)=>b.ts-a.ts);
-  sortedJ.forEach((x,i)=>{
-    const dt=new Date(x.ts).toLocaleString('id-ID');
-    rows.push([i+1,x.member,x.barang,x.qty||'',x.jumlah,x.gaji,x.penerima||'',x.statusGaji==='lunas'?'Lunas':'Belum',dt,x.createdBy||'']);
-  });
-
-  rows.push([]);
-  rows.push(['=== DATA GAJI NANAM & OLAH ===']);
-  rows.push(['#','Member','Jenis Pekerjaan','Pcs','Gaji','Pemberi Gaji','Status','Waktu']);
-  const sortedN=[...salaryNanamList].sort((a,b)=>b.ts-a.ts);
-  sortedN.forEach((x,i)=>{
-    const dt=new Date(x.ts).toLocaleString('id-ID');
-    rows.push([i+1,x.member,x.jenis,x.pcs,x.gaji,x.penerima||'',x.statusGaji==='lunas'?'Lunas':'Belum',dt]);
-  });
-
-  // Convert to CSV
-  const csv=rows.map(r=>r.map(c=>{const s=String(c===null||c===undefined?'':c);return s.includes(',')||s.includes('"')||s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
-
-  // Download
-  const bom='﻿'; // BOM for Excel UTF-8
-  const blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='BFL_Salary_'+new Date().toISOString().slice(0,10)+'.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  logActivity('EXPORT','Export Excel Salary');
+  XLSX.writeFile(wb,'BFL_Salary_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  logActivity('EXPORT','Export Excel Salary (4 sheet)');
 }
 
 window.salNMemberAcShow=salNMemberAcShow;
