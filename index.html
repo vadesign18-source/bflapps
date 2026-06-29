@@ -2294,7 +2294,7 @@ position:relative;z-index:1;}
                     <input id="sal-n-pcs" type="number" min="1" placeholder="100" oninput="salNPreview()"
                       style="width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--ln);color:var(--t1);font-family:var(--fb);font-size:0.88rem;outline:none"
                       onfocus="this.style.borderColor='var(--cr)'" onblur="this.style.borderColor='var(--ln)'">
-                    <span style="font-family:var(--fm);font-size:0.55rem;color:var(--t3)">@ <span style="color:var(--em)">$200</span> / pcs</span>
+                    <span style="font-family:var(--fm);font-size:0.55rem;color:var(--t3)">@ <span style="color:var(--em)">$300</span> / pcs</span>
                   </div>
                   <div style="display:flex;align-items:flex-end">
                     <div id="sal-n-preview" style="display:none;background:var(--s2);border:1px solid var(--em3);padding:14px;font-family:var(--fm);font-size:0.8rem;width:100%">
@@ -2365,11 +2365,11 @@ position:relative;z-index:1;}
           <div class="panel" style="margin-bottom:20px">
             <div class="panel-head">
               <div class="panel-title"><div class="p-pip vi"></div>Alokasi Gaji Cumer (Cuci Uang)</div>
-              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">33% keuntungan tiap transaksi ÷ jumlah pekerja cuci</div>
+              <div style="font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:2px">40% keuntungan tiap transaksi ÷ jumlah pekerja cuci</div>
             </div>
             <div class="panel-body">
               <div style="font-family:var(--fm);font-size:0.65rem;color:var(--t3);margin-bottom:16px;line-height:1.8">
-                ⓘ Data berikut berasal otomatis dari transaksi cuci uang yang memiliki pekerja cuci. Gaji dihitung: <span style="color:var(--vi)">33% dari keuntungan</span> dibagi rata antar pekerja yang cuci.
+                ⓘ Data berikut berasal otomatis dari transaksi cuci uang yang memiliki pekerja cuci. Gaji dihitung: <span style="color:var(--vi)">40% dari keuntungan</span> dibagi rata antar pekerja yang cuci.
               </div>
               <div id="sal-c-list">
                 <div style="padding:40px;text-align:center;color:var(--t3);font-family:var(--fm);font-size:0.7rem;letter-spacing:2px">Memuat data...</div>
@@ -6455,7 +6455,7 @@ function salNPenerimaPick(v){
 function salNPenerimaAcClose(){document.getElementById('sal-n-penerima-ac').style.display='none';}
 function salNPreview(){
   const pcs=parseFloat(document.getElementById('sal-n-pcs').value)||0;
-  const gaji=pcs*200;
+  const gaji=pcs*300;
   const prev=document.getElementById('sal-n-preview');
   if(pcs>0){
     prev.style.display='block';
@@ -6468,7 +6468,7 @@ async function salNSave(){
   const jenis=document.getElementById('sal-n-jenis').value;
   const pcs=parseFloat(document.getElementById('sal-n-pcs').value)||0;
   if(!member||!jenis||!pcs){alert('⚠ Isi semua field!');return}
-  const gaji=pcs*200;
+  const gaji=pcs*300;
   // penerima dikosongkan dulu — diisi inline di tabel setelah disimpan
   const item={id:genSalaryId(),member,jenis,pcs,gaji,penerima:'',statusGaji:'belum',ts:Date.now(),createdBy:currentUser.username||'—'};
   salaryNanamList.push(item);
@@ -6565,7 +6565,7 @@ function renderSalaryCumer(){
     const cuciArr=(tx.pekerjaCuci||tx.pekerja||'').split(',').map(s=>s.trim()).filter(Boolean);
     const backupArr=(tx.pekerjaBackup||'').split(',').map(s=>s.trim()).filter(Boolean);
     const profit=tx.profit||tx.pot2||0;
-    const totalGajiPool=Math.round(profit*0.33);
+    const totalGajiPool=Math.round(profit*0.40);
     const pajakTx=tx.pajak||0;
     const profitBersih=profit-totalGajiPool-pajakTx;
     // Bobot total
@@ -6607,7 +6607,7 @@ function renderSalaryCumer(){
           <div style="font-family:var(--fw);font-size:0.9rem;color:var(--gd);margin-top:2px">${fmt(profit)}</div>
         </div>
         <div>
-          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">ALOKASI GAJI (33%)</div>
+          <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);letter-spacing:2px">ALOKASI GAJI (40%)</div>
           <div style="font-family:var(--fw);font-size:0.9rem;color:var(--vi);margin-top:2px">${fmt(totalGajiPool)}</div>
           <div style="font-family:var(--fm);font-size:0.48rem;color:var(--t3);margin-top:2px">${bobotInfo}</div>
         </div>
